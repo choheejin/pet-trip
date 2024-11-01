@@ -8,11 +8,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor
 public class AttractionsDto {
-	private final int content_id;
+	private int id;
+	private int content_id;
 	private String title;
-	private int si_gun_gu_code;
+	private int gugun_code;
 	private String first_image1;
 	private String first_image2;
 	private int map_level;
@@ -23,6 +23,6 @@ public class AttractionsDto {
 	private String addr2;
 	private String homepage;
 	private String overview;
-	private int area_code;
+	private int sido_code;
 	private int content_type_id;
 }
