@@ -337,4 +337,4 @@
 
 ## ER-다이어그램
 
-![image.png](image.png)
+![pettrip.png](pettrip.png)
