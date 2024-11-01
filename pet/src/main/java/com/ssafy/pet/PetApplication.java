@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PetApplication {
 
 	public static void main(String[] args) {
+		// test 바뀌나요?
 		SpringApplication.run(PetApplication.class, args);
 	}
 
