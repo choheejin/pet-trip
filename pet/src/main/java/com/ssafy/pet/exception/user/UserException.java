@@ -1,4 +1,4 @@
-package com.ssafy.pet.exception;
+package com.ssafy.pet.exception.user;
 
 public class UserException extends RuntimeException {
 	private final UserExceptionType type;

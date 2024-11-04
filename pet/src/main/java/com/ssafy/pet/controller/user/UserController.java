@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ssafy.pet.dto.UsersDto;
-import com.ssafy.pet.exception.UserException;
-import com.ssafy.pet.exception.UserExceptionType;
+import com.ssafy.pet.exception.user.UserException;
+import com.ssafy.pet.exception.user.UserExceptionType;
 import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
 

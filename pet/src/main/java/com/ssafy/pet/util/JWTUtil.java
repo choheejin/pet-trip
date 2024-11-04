@@ -7,8 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ssafy.pet.exception.UserException;
-import com.ssafy.pet.exception.UserExceptionType;
+import com.ssafy.pet.exception.user.UserException;
+import com.ssafy.pet.exception.user.UserExceptionType;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;

@@ -6,8 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.pet.dto.UsersDto;
-import com.ssafy.pet.exception.UserException;
-import com.ssafy.pet.exception.UserExceptionType;
+import com.ssafy.pet.exception.user.UserException;
+import com.ssafy.pet.exception.user.UserExceptionType;
 import com.ssafy.pet.model.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
