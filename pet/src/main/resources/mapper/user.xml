@@ -14,7 +14,7 @@
 		where user_id=#{user_id} and password=#{password} and is_activate=1
 	</select>
 	
-	<select id="userInfo" parameterType="usersDto">
+	<select id="userInfo" parameterType="string">
 		select *
 		from users
 		where user_id=#{user_id} and is_activate=1
@@ -26,9 +26,9 @@
 		where user_id=#{user_id}
 	</update>
 	
-	<update id="deactivate" parameterType="usersDto">
+	<update id="deactivate" parameterType="string">
 		update users
-		set deactivate=0
+		set is_activate=0
 		where user_id=#{user_id}
 	</update>
 	

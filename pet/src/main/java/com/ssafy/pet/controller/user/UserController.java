@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,7 +72,7 @@ public class UserController {
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
 	}
 	
-	@GetMapping("/info/{user_id}")
+	@GetMapping("/protected/info/{user_id}")
 	public ResponseEntity<?> userInfo(@RequestHeader("accessToken") String header, @PathVariable("user_id") String user_id) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
@@ -91,7 +92,25 @@ public class UserController {
 		}
 
 		
-		return null;
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
+	}
+	
+	@PatchMapping("/protected/{user_id}")
+	public ResponseEntity<?> userPatch(@RequestHeader("accessToken") String header, @PathVariable("user_id") String user_id) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		HttpStatus status = HttpStatus.ACCEPTED;
+
+		try {
+			userService.deactivate(user_id).orElseThrow(() -> new UnAuthorizedException());
+			
+			status = HttpStatus.NO_CONTENT;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+
+		return new ResponseEntity<>(status);	
 	}
 	
 	

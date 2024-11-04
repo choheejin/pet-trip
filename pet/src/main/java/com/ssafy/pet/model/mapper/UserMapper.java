@@ -19,5 +19,5 @@ public interface UserMapper {
 	int update(UsersDto user);
 	
 	// 탈퇴
-	int deactivate(UsersDto user);
+	int deactivate(String user_id);
 }

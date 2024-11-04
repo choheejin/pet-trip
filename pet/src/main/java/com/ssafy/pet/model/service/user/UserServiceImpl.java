@@ -46,15 +46,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public int update(UsersDto user) {
+	public Optional<Integer> update(UsersDto user) {
 		// TODO Auto-generated method stub
-		return userMapper.update(user);
+		return Optional.empty();
 	}
 
 	@Override
-	public int deactivate(UsersDto user) {
-		// TODO Auto-generated method stub
-		return userMapper.deactivate(user);
+	public Optional<Integer> deactivate(String user_id) {
+		int cnt = userMapper.deactivate(user_id);
+		
+		return cnt != 0 ? Optional.of(cnt) : Optional.empty();
 	}
 
 

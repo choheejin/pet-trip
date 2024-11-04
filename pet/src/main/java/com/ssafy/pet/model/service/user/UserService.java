@@ -15,10 +15,10 @@ public interface UserService {
 	Optional<UsersDto> userInfo(String user_id);
 	
 	// 정보 수정
-	int update(UsersDto user);
+	Optional<Integer> update(UsersDto user);
 	
 	//TODO:: 비밀번호 수정도 만들면 좋을듯
 	
 	// 탈퇴
-	int deactivate(UsersDto user);
+	Optional<Integer> deactivate(String user_id);
 }
