@@ -11,13 +11,13 @@
 	<select id="login" parameterType="usersDto">
 		select user_id, username
 		from users
-		where user_id=#{user_id} and password=#{password}
+		where user_id=#{user_id} and password=#{password} and is_activate=1
 	</select>
 	
 	<select id="userInfo" parameterType="usersDto">
 		select *
 		from users
-		where user_id=#{user_id}
+		where user_id=#{user_id} and is_activate=1
 	</select>
 	
 	<update id="update" parameterType="usersDto">

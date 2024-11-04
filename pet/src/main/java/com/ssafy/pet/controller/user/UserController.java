@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
-	//TODO: jwt로 바꾸기
 	private final UserService userService;
 	private final JWTUtil jwtUtil;
 	
