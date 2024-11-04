@@ -1,6 +1,8 @@
 package com.ssafy.pet.controller.user;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ssafy.pet.dto.UsersDto;
+import com.ssafy.pet.exception.UnAuthorizedException;
 import com.ssafy.pet.model.service.user.UserService;
+import com.ssafy.pet.util.JWTUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	//TODO: jwt로 바꾸기
 	private final UserService userService;
+	private final JWTUtil jwtUtil;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> userRegister(@RequestBody UsersDto userDto) {
@@ -41,6 +46,28 @@ public class UserController {
 		return null;
 	}
 	
+	@PostMapping("/login")
+	public ResponseEntity<?> userLogin(@RequestBody UsersDto user) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		try {
+			UsersDto loginUser = userService.login(user).orElseThrow(() -> new UnAuthorizedException());
+		
+			String accessToken = jwtUtil.createAccessToken(loginUser.getUser_id());
+			
+			resultMap.put("access-token", accessToken);
+			
+			status = HttpStatus.CREATED;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			if(e instanceof UnAuthorizedException) status = HttpStatus.UNAUTHORIZED;
+			else status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
+	}
 	
 	private ResponseEntity<String> exceptionHandling(Exception e) {
 		e.printStackTrace();

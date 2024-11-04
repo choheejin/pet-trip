@@ -9,7 +9,7 @@ public interface UserService {
 	Optional<Integer> signup(UsersDto user);
 	
 	// 아이디, 패스워드로 조회
-	UsersDto login(UsersDto user);
+	Optional<UsersDto> login(UsersDto user);
 	
 	// 정보 수정
 	int update(UsersDto user);

@@ -14,6 +14,12 @@
 		where user_id=#{user_id} and password=#{password}
 	</select>
 	
+	<select id="userInfo" parameterType="usersDto">
+		select *
+		from users
+		where user_id=#{user_id}
+	</select>
+	
 	<update id="update" parameterType="usersDto">
 		update users
 		set username=#{username}, email=#{email}

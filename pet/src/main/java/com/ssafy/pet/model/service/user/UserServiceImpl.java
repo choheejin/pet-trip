@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.pet.dto.UsersDto;
+import com.ssafy.pet.exception.UnAuthorizedException;
 import com.ssafy.pet.model.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,23 @@ public class UserServiceImpl implements UserService {
 		return cnt > 0 ? Optional.of(cnt) : Optional.empty();
 	}
 
+	public Optional<UsersDto> info(UsersDto user) {
+		UsersDto info = userMapper.userInfo(user.getUser_id());
+		
+		return info != null ? Optional.of(info) : Optional.empty();
+	}
+	
 	@Override
-	public UsersDto login(UsersDto user) {
-		// TODO Auto-generated method stub
-		return userMapper.login(user);
+	public Optional<UsersDto> login(UsersDto user) {
+		String encodePw = this.info(user).orElseThrow(() -> new UnAuthorizedException()).getPassword();
+		UsersDto loginUser = null;
+		
+		if(passwordEncoder.matches(user.getPassword(), encodePw)) {
+			user.setPassword(encodePw);
+			loginUser = userMapper.login(user);
+		}
+		
+		return loginUser != null ? Optional.of(loginUser) : Optional.empty();
 	}
 
 	@Override
