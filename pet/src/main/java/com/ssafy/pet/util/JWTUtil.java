@@ -22,22 +22,21 @@ public class JWTUtil {
 	@Value("${jwt.access-token.expiretime}")
 	private long accessTokenExpireTime;
 
-	@Value("${jwt.refresh-token.expiretime}")
-	private long refreshTokenExpireTime;
-
-	public String createAccessToken(String userId) {
-		return create(userId, "access-token", accessTokenExpireTime);
+	public String createAccessToken(String user_id) {
+		return create(user_id, "access-token", accessTokenExpireTime);
 	}
 	
-	private String create(String userId, String subject, long expireTime) {
+	private String create(String user_id, String subject, long expireTime) {
 		Claims claims = Jwts.claims()
 				.setSubject(subject) // 토큰 제목 설정 ex) access-token, refresh-token
 				.setIssuedAt(new Date()) // 생성일 설정
 //				만료일 설정 (유효기간)
 				.setExpiration(new Date(System.currentTimeMillis() + expireTime));
-
+		
+		System.out.println(claims);
+		
 //		저장할 data의 key, value
-		claims.put("userId", userId);
+		claims.put("user_id", user_id);
 
 		String jwt = Jwts.builder()
 //			Header 설정 : 토큰의 타입, 해쉬 알고리즘 정보 세팅.
@@ -67,12 +66,13 @@ public class JWTUtil {
 //			Json Web Signature? 서버에서 인증을 근거로 인증 정보를 서버의 private key 서명 한것을 토큰화 한것
 //			setSigningKey : JWS 서명 검증을 위한  secret key 세팅
 //			parseClaimsJws : 파싱하여 원본 jws 만들기
-			Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(this.generateKey()).build().parseClaimsJws(token);
-//			Claims 는 Map 구현체 형태
+			Jws<Claims> claims = Jwts.parserBuilder()
+					.setSigningKey(this.generateKey())
+					.build()
+					.parseClaimsJws(token);
 			
 			return true;
 		} catch (Exception e) {
-			
 			return false;
 		}
 	}
@@ -85,6 +85,6 @@ public class JWTUtil {
 			throw new UnAuthorizedException();
 		}
 		Map<String, Object> value = claims.getBody();
-		return (String) value.get("userId");
+		return (String) value.get("user_id");
 	}
 }

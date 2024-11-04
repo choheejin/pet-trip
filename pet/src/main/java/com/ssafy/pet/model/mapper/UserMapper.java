@@ -13,7 +13,7 @@ public interface UserMapper {
 	UsersDto login(UsersDto user);
 	
 	// 사용자 정보 가져오기
-	UsersDto userInfo(String userId);
+	UsersDto userInfo(String user_id);
 	
 	// 정보 수정
 	int update(UsersDto user);

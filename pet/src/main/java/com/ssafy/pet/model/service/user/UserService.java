@@ -11,6 +11,9 @@ public interface UserService {
 	// 아이디, 패스워드로 조회
 	Optional<UsersDto> login(UsersDto user);
 	
+	// 정보 조회
+	Optional<UsersDto> userInfo(String user_id);
+	
 	// 정보 수정
 	int update(UsersDto user);
 	

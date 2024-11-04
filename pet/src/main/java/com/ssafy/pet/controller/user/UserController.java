@@ -9,8 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ssafy.pet.dto.UsersDto;
@@ -68,6 +71,30 @@ public class UserController {
 		
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
 	}
+	
+	@GetMapping("/info/{user_id}")
+	public ResponseEntity<?> userInfo(@RequestHeader("accessToken") String header, @PathVariable("user_id") String user_id) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		HttpStatus status = HttpStatus.ACCEPTED;
+
+		try {
+			UsersDto userInfo = userService.userInfo(user_id).orElseThrow(() -> new Exception());
+			
+			resultMap.put("user_id", userInfo.getUser_id());
+			resultMap.put("username", userInfo.getUsername());
+			resultMap.put("email", userInfo.getEmail());
+			
+			status = HttpStatus.CREATED;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+
+		
+		return null;
+	}
+	
 	
 	private ResponseEntity<String> exceptionHandling(Exception e) {
 		e.printStackTrace();

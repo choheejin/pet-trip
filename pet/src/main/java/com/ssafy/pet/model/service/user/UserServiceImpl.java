@@ -25,15 +25,16 @@ public class UserServiceImpl implements UserService {
 		return cnt > 0 ? Optional.of(cnt) : Optional.empty();
 	}
 
-	public Optional<UsersDto> info(UsersDto user) {
-		UsersDto info = userMapper.userInfo(user.getUser_id());
+	@Override
+	public Optional<UsersDto> userInfo(String userId) {
+		UsersDto info = userMapper.userInfo(userId);
 		
 		return info != null ? Optional.of(info) : Optional.empty();
 	}
 	
 	@Override
 	public Optional<UsersDto> login(UsersDto user) {
-		String encodePw = this.info(user).orElseThrow(() -> new UnAuthorizedException()).getPassword();
+		String encodePw = this.userInfo(user.getUser_id()).orElseThrow(() -> new UnAuthorizedException()).getPassword();
 		UsersDto loginUser = null;
 		
 		if(passwordEncoder.matches(user.getPassword(), encodePw)) {
@@ -55,5 +56,6 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return userMapper.deactivate(user);
 	}
+
 
 }
