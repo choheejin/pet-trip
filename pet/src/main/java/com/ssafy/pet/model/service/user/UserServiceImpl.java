@@ -58,5 +58,12 @@ public class UserServiceImpl implements UserService {
 		return cnt != 0 ? Optional.of(cnt) : Optional.empty();
 	}
 
+	@Override
+	public Optional<Boolean> findById(String user_id) {
+		int cnt = userMapper.findById(user_id);
+		
+		return cnt == 0 ? Optional.of(true) : Optional.empty();
+	}
+
 
 }

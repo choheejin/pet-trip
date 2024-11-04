@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.UnAuthorizedException;
+import com.ssafy.pet.exception.UserAlreadyExistsException;
 import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
 
@@ -36,14 +37,14 @@ public class UserController {
 	public ResponseEntity<?> userRegister(@RequestBody UsersDto userDto) {
 		HttpStatus status = HttpStatus.ACCEPTED;
 
-		try {
+		try {			
 			System.out.println(userDto);
 			
 			userService.signup(userDto).orElseThrow(() -> new RuntimeException("로그인 중 에러 발생"));
 			
-			status = HttpStatus.NO_CONTENT;
+			status = HttpStatus.NO_CONTENT;	
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			return exceptionHandling(e, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return new ResponseEntity<>(status);		
@@ -63,10 +64,28 @@ public class UserController {
 			
 			status = HttpStatus.CREATED;
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			return exceptionHandling(e, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
+	}
+	
+	@GetMapping("/{user_id}")
+	public ResponseEntity<?> userFind(@PathVariable("user_id") String user_id){
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		try {
+			boolean is_validate = userService.findById(user_id).orElseThrow(() -> new UserAlreadyExistsException());
+			
+			status = HttpStatus.NO_CONTENT;
+		} catch (Exception e) {
+			if(e instanceof UserAlreadyExistsException) status = HttpStatus.CONFLICT;
+			else status = HttpStatus.INTERNAL_SERVER_ERROR;
+			
+			return exceptionHandling(e, status);
+		}
+		
+		return new ResponseEntity<>(status);
 	}
 	
 	@GetMapping("/protected/info/{user_id}")
@@ -83,7 +102,7 @@ public class UserController {
 			
 			status = HttpStatus.CREATED;
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			return exceptionHandling(e, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		
@@ -100,14 +119,14 @@ public class UserController {
 			
 			status = HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
-			return exceptionHandling(e);
+			return exceptionHandling(e, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
 		return new ResponseEntity<>(status);	
 	}
 	
 	
-	private ResponseEntity<Map<String, Object>> exceptionHandling(Exception e) {
+	private ResponseEntity<Map<String, Object>> exceptionHandling(Exception e, HttpStatus status) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
 		e.printStackTrace();
@@ -116,7 +135,6 @@ public class UserController {
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 		
 		resultMap.put("error", e.getMessage());
-//		return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultMap);
+		return ResponseEntity.status(status).body(resultMap);
 	}
 }

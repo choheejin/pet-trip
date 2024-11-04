@@ -32,5 +32,11 @@
 		where user_id=#{user_id}
 	</update>
 	
+	<select id="findById" parameterType="string">
+		select count(*)
+		from users
+		where user_id=#{user_id}
+	</select>
+	
 </mapper>
 

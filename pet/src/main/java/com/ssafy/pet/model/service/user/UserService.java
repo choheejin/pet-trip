@@ -14,6 +14,9 @@ public interface UserService {
 	// 정보 조회
 	Optional<UsersDto> userInfo(String user_id);
 	
+	// 사용자 아이디 이미 사용중인지 확인하기
+	Optional<Boolean> findById(String user_id);
+	
 	// 정보 수정
 	Optional<Integer> update(UsersDto user);
 	
