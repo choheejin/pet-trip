@@ -34,19 +34,19 @@ public class UserController {
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> userRegister(@RequestBody UsersDto userDto) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+		HttpStatus status = HttpStatus.ACCEPTED;
 
 		try {
 			System.out.println(userDto);
-			userService.signup(userDto).orElseThrow(() -> new Exception("로그인 중 에러 발생"));
 			
-			return ResponseEntity.ok().headers(headers).body("성공");
+			userService.signup(userDto).orElseThrow(() -> new RuntimeException("로그인 중 에러 발생"));
+			
+			status = HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
-			exceptionHandling(e);
+			return exceptionHandling(e);
 		}
 		
-		return null;
+		return new ResponseEntity<>(status);		
 	}
 	
 	@PostMapping("/login")
@@ -63,10 +63,7 @@ public class UserController {
 			
 			status = HttpStatus.CREATED;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			if(e instanceof UnAuthorizedException) status = HttpStatus.UNAUTHORIZED;
-			else status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return exceptionHandling(e);
 		}
 		
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
@@ -86,9 +83,7 @@ public class UserController {
 			
 			status = HttpStatus.CREATED;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return exceptionHandling(e);
 		}
 
 		
@@ -105,18 +100,23 @@ public class UserController {
 			
 			status = HttpStatus.NO_CONTENT;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+			return exceptionHandling(e);
 		}
 
 		return new ResponseEntity<>(status);	
 	}
 	
 	
-	private ResponseEntity<String> exceptionHandling(Exception e) {
+	private ResponseEntity<Map<String, Object>> exceptionHandling(Exception e) {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		
 		e.printStackTrace();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
+		
+		resultMap.put("error", e.getMessage());
 //		return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error : " + e.getMessage());
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resultMap);
 	}
 }
