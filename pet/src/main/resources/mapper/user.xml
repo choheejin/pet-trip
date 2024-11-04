@@ -4,26 +4,26 @@
 
 <mapper namespace="com.ssafy.pet.model.mapper.UserMapper" >
 	<insert id="signup" parameterType="usersDto">
-		insert into users(username, email, password)
-		values (#{username}, #{email}, #{password});
+		insert into users(user_id, username, email, password)
+		values (#{user_id}, #{username}, #{email}, #{password});
 	</insert>
 	
 	<select id="login" parameterType="usersDto">
-		select id, username
+		select user_id, username
 		from users
-		where id=#{id} and password=#{password}
+		where user_id=#{user_id} and password=#{password}
 	</select>
 	
 	<update id="update" parameterType="usersDto">
 		update users
 		set username=#{username}, email=#{email}
-		where id=#{id}
+		where user_id=#{user_id}
 	</update>
 	
 	<update id="deactivate" parameterType="usersDto">
 		update users
 		set deactivate=0
-		where id=#{id}
+		where user_id=#{user_id}
 	</update>
 	
 </mapper>
