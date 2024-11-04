@@ -9,6 +9,5 @@ public class UsersDto {
 	private String email;
 	private String password;
 	private String create_at;
-	private boolean is_activate;
-
+	private short is_activate;
 }
