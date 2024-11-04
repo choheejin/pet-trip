@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.ssafy.pet.dto.UsersDto;
-import com.ssafy.pet.exception.UnAuthorizedException;
-import com.ssafy.pet.exception.UserAlreadyExistsException;
+import com.ssafy.pet.exception.UserException;
+import com.ssafy.pet.exception.UserExceptionType;
 import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
 
@@ -42,9 +42,11 @@ public class UserController {
 			
 			userService.signup(userDto).orElseThrow(() -> new RuntimeException("로그인 중 에러 발생"));
 			
-			status = HttpStatus.NO_CONTENT;	
+			status = HttpStatus.NO_CONTENT;
+		} catch (UserException e) {
+			return exceptionHandling(e);
 		} catch (Exception e) {
-			return exceptionHandling(e, HttpStatus.INTERNAL_SERVER_ERROR);
+			return exceptionHandling(new UserException(UserExceptionType.ACCESS_DENIED));
 		}
 		
 		return new ResponseEntity<>(status);		
@@ -56,15 +58,17 @@ public class UserController {
 		HttpStatus status = HttpStatus.ACCEPTED;
 		
 		try {
-			UsersDto loginUser = userService.login(user).orElseThrow(() -> new UnAuthorizedException());
+			UsersDto loginUser = userService.login(user).orElseThrow(() -> new UserException(UserExceptionType.UN_AUTHORIZED));
 		
 			String accessToken = jwtUtil.createAccessToken(loginUser.getUser_id());
 			
 			resultMap.put("access-token", accessToken);
 			
 			status = HttpStatus.CREATED;
+		} catch (UserException e) {
+			return exceptionHandling(e);
 		} catch (Exception e) {
-			return exceptionHandling(e, HttpStatus.INTERNAL_SERVER_ERROR);
+			return exceptionHandling(new UserException(UserExceptionType.ACCESS_DENIED));
 		}
 		
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
@@ -75,14 +79,13 @@ public class UserController {
 		HttpStatus status = HttpStatus.ACCEPTED;
 		
 		try {
-			boolean is_validate = userService.findById(user_id).orElseThrow(() -> new UserAlreadyExistsException());
+			boolean is_validate = userService.findById(user_id).orElseThrow(() -> new UserException(UserExceptionType.USER_ALREADY_EXISTS));
 			
 			status = HttpStatus.NO_CONTENT;
+		} catch (UserException e) {
+			return exceptionHandling(e);
 		} catch (Exception e) {
-			if(e instanceof UserAlreadyExistsException) status = HttpStatus.CONFLICT;
-			else status = HttpStatus.INTERNAL_SERVER_ERROR;
-			
-			return exceptionHandling(e, status);
+			return exceptionHandling(new UserException(UserExceptionType.ACCESS_DENIED));
 		}
 		
 		return new ResponseEntity<>(status);
@@ -94,15 +97,17 @@ public class UserController {
 		HttpStatus status = HttpStatus.ACCEPTED;
 
 		try {
-			UsersDto userInfo = userService.userInfo(user_id).orElseThrow(() -> new Exception());
+			UsersDto userInfo = userService.userInfo(user_id).orElseThrow(() -> new UserException(UserExceptionType.UN_AUTHORIZED));
 			
 			resultMap.put("user_id", userInfo.getUser_id());
 			resultMap.put("username", userInfo.getUsername());
 			resultMap.put("email", userInfo.getEmail());
 			
 			status = HttpStatus.CREATED;
+		} catch (UserException e) {
+			return exceptionHandling(e);
 		} catch (Exception e) {
-			return exceptionHandling(e, HttpStatus.INTERNAL_SERVER_ERROR);
+			return exceptionHandling(new UserException(UserExceptionType.ACCESS_DENIED));
 		}
 
 		
@@ -115,18 +120,20 @@ public class UserController {
 		HttpStatus status = HttpStatus.ACCEPTED;
 
 		try {
-			userService.deactivate(user_id).orElseThrow(() -> new UnAuthorizedException());
+			userService.deactivate(user_id).orElseThrow(() -> new UserException(UserExceptionType.UN_AUTHORIZED));
 			
 			status = HttpStatus.NO_CONTENT;
+		} catch (UserException e) {
+			return exceptionHandling(e);
 		} catch (Exception e) {
-			return exceptionHandling(e, HttpStatus.INTERNAL_SERVER_ERROR);
+			return exceptionHandling(new UserException(UserExceptionType.ACCESS_DENIED));
 		}
 
 		return new ResponseEntity<>(status);	
 	}
 	
 	
-	private ResponseEntity<Map<String, Object>> exceptionHandling(Exception e, HttpStatus status) {
+	private ResponseEntity<Map<String, Object>> exceptionHandling(UserException e) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
 		e.printStackTrace();
@@ -135,6 +142,6 @@ public class UserController {
 		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
 		
 		resultMap.put("error", e.getMessage());
-		return ResponseEntity.status(status).body(resultMap);
+		return ResponseEntity.status(e.getType().getStatus()).body(resultMap);
 	}
 }

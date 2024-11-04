@@ -7,7 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ssafy.pet.exception.UnAuthorizedException;
+import com.ssafy.pet.exception.UserException;
+import com.ssafy.pet.exception.UserExceptionType;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
@@ -82,7 +83,7 @@ public class JWTUtil {
 		try {
 			claims = Jwts.parserBuilder().setSigningKey(this.generateKey()).build().parseClaimsJws(authorization);
 		} catch (Exception e) {
-			throw new UnAuthorizedException();
+			throw new UserException(UserExceptionType.UN_AUTHORIZED);
 		}
 		Map<String, Object> value = claims.getBody();
 		return (String) value.get("user_id");

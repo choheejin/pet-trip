@@ -1,11 +1,8 @@
 package com.ssafy.pet.interceptor;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.ssafy.pet.exception.UnAuthorizedException;
 import com.ssafy.pet.util.JWTUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
