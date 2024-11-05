@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -32,38 +33,35 @@ import lombok.RequiredArgsConstructor;
 public class TravelPlanController {
 	private final JWTUtil jwtUtil;
 	private final TravelPlanService travelPlanService;
-	
+
 	@PostMapping("/{user_id}")
-	public ResponseEntity<?> postPlans(
-			@PathVariable("user_id") String user_id,
-			@RequestBody ObjectNode request) {
+	public ResponseEntity<?> postPlans(@PathVariable("user_id") String user_id, @RequestBody ObjectNode request) {
 		HttpStatus status = HttpStatus.ACCEPTED;
-		
+
 		ObjectMapper objectMapper = new ObjectMapper();
-		
+
 		Map<String, Object> resultMap = new HashMap<>();
 
 		try {
 			Map<String, Object> params = new HashMap<>();
-			
+
 			TravelPlansDto plan = objectMapper.treeToValue(request.get("plan"), TravelPlansDto.class);
-			
+
 			List<TravelPlanItemsDto> items = new ArrayList<>();
-			ArrayNode itemsNode = (ArrayNode) request.get("items");			
-			
-			for(JsonNode node: itemsNode) {
+			ArrayNode itemsNode = (ArrayNode) request.get("items");
+
+			for (JsonNode node : itemsNode) {
 				items.add(objectMapper.treeToValue(node, TravelPlanItemsDto.class));
 			}
-			
+
 			params.put("u_id", user_id);
 			params.put("plan", plan);
 			params.put("items", items);
-			
-			
+
 			int id = travelPlanService.insert(params).orElseThrow(() -> new Exception());
-			
+
 			resultMap.put("plan_id", id);
-			
+
 			status = HttpStatus.CREATED;
 		} catch (JsonProcessingException | IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -72,23 +70,38 @@ public class TravelPlanController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
-	
+
 	@PutMapping("/{plan_id}")
-	public ResponseEntity<?> updatePlans(@PathVariable("plan_id") String plan_id) {
-		
+	public ResponseEntity<?> updatePlans(@RequestHeader("accessToken") String header,
+			@PathVariable("plan_id") String plan_id, @RequestBody ObjectNode request) {
+
 		HttpStatus status = HttpStatus.ACCEPTED;
-		
+		ObjectMapper objectMapper = new ObjectMapper();
+
 		// 수정하려고 하는 이와 작성자가 동일한지 확인한다.
 		try {
+			String loginUserId = jwtUtil.getUserId(header);
 			
+			Map<String, Object> params = new HashMap<>();
+
+			String writerId = objectMapper.treeToValue(request.get("writer_id"), String.class);
+			TravelPlansDto plan = objectMapper.treeToValue(request.get("plan"), TravelPlansDto.class);
+
+			List<TravelPlanItemsDto> items = new ArrayList<>();
+			ArrayNode itemsNode = (ArrayNode) request.get("items");
+
+			
+			if (!loginUserId.equals(writerId)) {
+				
+			}
+
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
-		
+
 		return null;
 	}
 
