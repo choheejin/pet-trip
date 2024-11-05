@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -21,6 +22,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.model.service.travelplan.TravelPlanService;
+import com.ssafy.pet.util.JWTUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/plan")
 public class TravelPlanController {
+	private final JWTUtil jwtUtil;
 	private final TravelPlanService travelPlanService;
 	
 	@PostMapping("/{user_id}")
@@ -72,4 +75,21 @@ public class TravelPlanController {
 		
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
+	
+	@PutMapping("/{plan_id}")
+	public ResponseEntity<?> updatePlans(@PathVariable("plan_id") String plan_id) {
+		
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		// 수정하려고 하는 이와 작성자가 동일한지 확인한다.
+		try {
+			
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		
+		return null;
+	}
+
 }

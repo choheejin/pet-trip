@@ -60,7 +60,7 @@ public class UserController {
 		try {
 			UsersDto loginUser = userService.login(user).orElseThrow(() -> new UserException(UserExceptionType.UN_AUTHORIZED));
 		
-			String accessToken = jwtUtil.createAccessToken(loginUser.getUser_id());
+			String accessToken = jwtUtil.createAccessToken(loginUser.getId(), loginUser.getUser_id());
 			
 			resultMap.put("access-token", accessToken);
 			
@@ -91,12 +91,13 @@ public class UserController {
 		return new ResponseEntity<>(status);
 	}
 	
-	@GetMapping("/protected/info/{user_id}")
-	public ResponseEntity<?> userInfo(@RequestHeader("accessToken") String header, @PathVariable("user_id") String user_id) {
+	@GetMapping("/info")
+	public ResponseEntity<?> userInfo(@RequestHeader("accessToken") String header) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
 
 		try {
+			String user_id = jwtUtil.getUserId(header);
 			UsersDto userInfo = userService.userInfo(user_id).orElseThrow(() -> new UserException(UserExceptionType.UN_AUTHORIZED));
 			
 			resultMap.put("user_id", userInfo.getUser_id());
@@ -114,12 +115,13 @@ public class UserController {
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
 	}
 	
-	@PatchMapping("/protected/{user_id}")
-	public ResponseEntity<?> userPatch(@RequestHeader("accessToken") String header, @PathVariable("user_id") String user_id) {
+	@PatchMapping("/delete")
+	public ResponseEntity<?> userPatch(@RequestHeader("accessToken") String header) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
 
 		try {
+			String user_id = jwtUtil.getUserId(header);
 			userService.deactivate(user_id).orElseThrow(() -> new UserException(UserExceptionType.UN_AUTHORIZED));
 			
 			status = HttpStatus.NO_CONTENT;

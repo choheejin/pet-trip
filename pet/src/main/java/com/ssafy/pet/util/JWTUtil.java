@@ -23,11 +23,11 @@ public class JWTUtil {
 	@Value("${jwt.access-token.expiretime}")
 	private long accessTokenExpireTime;
 
-	public String createAccessToken(String user_id) {
-		return create(user_id, "access-token", accessTokenExpireTime);
+	public String createAccessToken(int i, String user_id) {
+		return create(i, user_id, "access-token", accessTokenExpireTime);
 	}
 	
-	private String create(String user_id, String subject, long expireTime) {
+	private String create(int id, String user_id, String subject, long expireTime) {
 		Claims claims = Jwts.claims()
 				.setSubject(subject) // 토큰 제목 설정 ex) access-token, refresh-token
 				.setIssuedAt(new Date()) // 생성일 설정
@@ -38,6 +38,7 @@ public class JWTUtil {
 		
 //		저장할 data의 key, value
 		claims.put("user_id", user_id);
+		claims.put("id", id);
 
 		String jwt = Jwts.builder()
 //			Header 설정 : 토큰의 타입, 해쉬 알고리즘 정보 세팅.
@@ -76,6 +77,17 @@ public class JWTUtil {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+	
+	public int getId(String authorization) {
+		Jws<Claims> claims = null;
+		try {
+			claims = Jwts.parserBuilder().setSigningKey(this.generateKey()).build().parseClaimsJws(authorization);
+		} catch (Exception e) {
+			throw new UserException(UserExceptionType.UN_AUTHORIZED);
+		}
+		Map<String, Object> value = claims.getBody();
+		return (int) value.get("id");
 	}
 	
 	public String getUserId(String authorization) {

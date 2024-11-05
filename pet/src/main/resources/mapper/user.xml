@@ -9,7 +9,7 @@
 	</insert>
 	
 	<select id="login" parameterType="usersDto">
-		select user_id, username
+		select id, user_id, username
 		from users
 		where user_id=#{user_id} and password=#{password} and is_activate=1
 	</select>
