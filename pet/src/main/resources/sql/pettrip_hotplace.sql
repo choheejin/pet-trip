@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `hotplace`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `hotplace` (
-  `id` int NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `content_id` int NOT NULL,
   `favorite_cnt` int DEFAULT '0',
   `user_id` int NOT NULL,
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-04 11:24:10
+-- Dump completed on 2024-11-05 11:34:57
