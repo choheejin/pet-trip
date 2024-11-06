@@ -37,49 +37,44 @@ public class TravelPlanController {
 	private final JWTUtil jwtUtil;
 	private final TravelPlanService travelPlanService;
 
-	@PostMapping("/{user_id}")
-	public ResponseEntity<?> postPlans(@PathVariable("user_id") String user_id, @RequestBody ObjectNode request) {
+	@PostMapping
+	public ResponseEntity<?> postPlans(@RequestHeader("accessToken") String header, @RequestBody ObjectNode request) throws RuntimeException, Exception {
 		HttpStatus status = HttpStatus.ACCEPTED;
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		Map<String, Object> resultMap = new HashMap<>();
 
-		try {
-			Map<String, Object> params = new HashMap<>();
+		String user_id = jwtUtil.getUserId(header);
 
-			TravelPlansDto plan = objectMapper.treeToValue(request.get("plan"), TravelPlansDto.class);
+		Map<String, Object> params = new HashMap<>();
 
-			List<TravelPlanItemsDto> items = new ArrayList<>();
-			ArrayNode itemsNode = (ArrayNode) request.get("items");
+		TravelPlansDto plan = objectMapper.treeToValue(request.get("plan"), TravelPlansDto.class);
 
-			for (JsonNode node : itemsNode) {
-				items.add(objectMapper.treeToValue(node, TravelPlanItemsDto.class));
-			}
+		List<TravelPlanItemsDto> items = new ArrayList<>();
+		ArrayNode itemsNode = (ArrayNode) request.get("items");
 
-			params.put("u_id", user_id);
-			params.put("plan", plan);
-			params.put("items", items);
-
-			int id = travelPlanService.insert(params).orElseThrow(() -> new Exception());
-
-			resultMap.put("plan_id", id);
-
-			status = HttpStatus.CREATED;
-		} catch (JsonProcessingException | IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (JsonNode node : itemsNode) {
+			items.add(objectMapper.treeToValue(node, TravelPlanItemsDto.class));
 		}
+
+		params.put("u_id", user_id);
+		params.put("plan", plan);
+		params.put("items", items);
+
+		int id = travelPlanService.insert(params).orElseThrow(() -> new RuntimeException());
+
+		resultMap.put("plan_id", id);
+
+		status = HttpStatus.CREATED;
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 
 	@PutMapping("/{plan_id}")
 	public ResponseEntity<?> updatePlans(@RequestHeader("accessToken") String header,
-			@PathVariable("plan_id") String plan_id, @RequestBody ObjectNode request) throws JsonProcessingException, IllegalArgumentException {
+			@PathVariable("plan_id") String plan_id, @RequestBody ObjectNode request)
+			throws JsonProcessingException, IllegalArgumentException {
 
 		HttpStatus status = HttpStatus.ACCEPTED;
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -146,7 +141,8 @@ public class TravelPlanController {
 
 	@PatchMapping("/{plan_id}/route")
 	public ResponseEntity<?> patchPlanRoute(@RequestHeader("accessToken") String header,
-			@PathVariable("plan_id") String plan_id, @RequestBody ObjectNode request) throws JsonProcessingException, IllegalArgumentException {
+			@PathVariable("plan_id") String plan_id, @RequestBody ObjectNode request)
+			throws JsonProcessingException, IllegalArgumentException {
 		HttpStatus status = HttpStatus.ACCEPTED;
 		ObjectMapper objectMapper = new ObjectMapper();
 
