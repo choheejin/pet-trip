@@ -63,7 +63,7 @@ public class UserController {
 	public ResponseEntity<?> userFind(@PathVariable("user_id") String user_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
 		
-		boolean is_validate = userService.findById(user_id).orElseThrow(() -> new ApplicationException(UserErrorCode.USER_ALREADY_EXISTS));
+		userService.findIdByUserId(user_id).orElseThrow(() -> new ApplicationException(UserErrorCode.USER_ALREADY_EXISTS));
 		
 		status = HttpStatus.NO_CONTENT;
 		
@@ -84,7 +84,6 @@ public class UserController {
 		
 		status = HttpStatus.CREATED;
 
-		
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
 	}
 	

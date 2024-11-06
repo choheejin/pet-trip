@@ -29,8 +29,7 @@
 		UPDATE travel_plans
 		SET title = #{title}, end_at = now(), is_public = #{is_public},
 		description = #{description}
-		WHERE id = #{plan_id} and user_id in (select id
-		from users where user_id = #{user_id})
+		WHERE id = #{plan_id} and user_id = #{user_id}
 	</update>
 
 	<update id="updatePlanItem" parameterType="java.util.Map">
@@ -40,5 +39,13 @@
 			WHERE `id`=#{item.id} and `plan_id`=#{plan_id}
 		</foreach>
 	</update>
+	
+	<select id="findPlanById" parameterType="int" resultType="int">
+		select count(*) from travel_plans where id=#{id}
+	</select>
+	
+	<select id="findPlanByUserIdAndId" parameterType="java.util.Map" resultType="travelPlansDto">
+		select * from travel_plans where id=#{id} and user_id=#{user_id}
+	</select>
 </mapper>
 

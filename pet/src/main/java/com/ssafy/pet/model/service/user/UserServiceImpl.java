@@ -60,8 +60,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<Boolean> findById(String user_id) {
-		int cnt = userMapper.findById(user_id);
+	public Optional<Boolean> findIdByUserId(String user_id) {
+		int cnt = userMapper.findIdByUserId(user_id);
 		
 		return cnt == 0 ? Optional.of(true) : Optional.empty();
 	}

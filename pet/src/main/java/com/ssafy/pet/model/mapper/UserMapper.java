@@ -16,7 +16,7 @@ public interface UserMapper {
 	UsersDto userInfo(String user_id);
 	
 	// 가입된 아이디인지 확인하기
-	int findById(String user_id);
+	int findIdByUserId(String user_id);
 	
 	// 정보 수정
 	int update(UsersDto user);

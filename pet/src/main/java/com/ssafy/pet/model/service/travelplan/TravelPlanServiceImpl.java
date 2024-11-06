@@ -11,7 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
+import com.ssafy.pet.exception.ApplicationException;
+import com.ssafy.pet.exception.errorcode.TravelPlanErrorCode;
 import com.ssafy.pet.model.mapper.TravelPlanMapper;
+import com.ssafy.pet.model.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TravelPlanServiceImpl implements TravelPlanService {
 	private final TravelPlanMapper travelPlanMapper;
+	private final UserMapper userMapper;
 
 	@Override
 	@Transactional
@@ -72,8 +76,9 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	@Override
 	@Transactional
 	public Optional<Integer> update(Map<String, Object> params) {
-		int plan_id = Integer.parseInt(params.get("plan_id").toString());
-		String user_id = (String) params.get("user_id");
+		int plan_id = (Integer) params.get("plan_id");
+		int user_id = (Integer) params.get("user_id");
+		
 		TravelPlansDto plan = (TravelPlansDto) params.get("plan");
 		List<TravelPlanItemsDto> items = (List<TravelPlanItemsDto>) params.get("items");
 		
@@ -92,7 +97,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
 	@Override
 	public Optional<Integer> updatePlan(Map<String, Object> params) {
-		String user_id = (String) params.get("user_id");
+		int user_id = (Integer) params.get("user_id");
 		int plan_id = Integer.parseInt(params.get("plan_id").toString());
 		TravelPlansDto plan = (TravelPlansDto) params.get("plan");
 		
@@ -114,5 +119,23 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		int cnt = travelPlanMapper.updatePlanItem(params);
 		
 		return cnt == 0 ? Optional.empty() : Optional.of(cnt);
+	}
+
+
+	@Override
+	public TravelPlansDto findPlanByIdAndUserId(int id, String userId) {
+		int u_id = userMapper.findIdByUserId(userId); // 사용자의 PK 가져오기
+		int cnt = travelPlanMapper.findPlanById(id); // 요청한 게시글이 존재하는지 확인
+		
+		if(cnt <= 0) throw new ApplicationException(TravelPlanErrorCode.NO_CONTENT); // 요청 게시글 존재하지 않음
+		
+		Map<String, Object> param = new HashMap<>();
+		param.put("id", id);
+		param.put("user_id", u_id);
+
+		TravelPlansDto plan = travelPlanMapper.findPlanByUserIdAndId(param); // 수정하고자 하는 게시글을 반환
+		if(plan == null || u_id != plan.getUser_id()) throw new ApplicationException(TravelPlanErrorCode.UPDATE_FROBIDDEN); // 작성자와 요청한 사람이 다름
+		
+		return plan;
 	}
 }
