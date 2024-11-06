@@ -1,4 +1,4 @@
-package com.ssafy.pet.controller.user;
+package com.ssafy.pet.controller;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
