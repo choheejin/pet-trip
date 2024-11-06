@@ -1,10 +1,8 @@
 package com.ssafy.pet.model.service.travelplan;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 
 public interface TravelPlanService {
@@ -19,4 +17,6 @@ public interface TravelPlanService {
 	Optional<Integer> updatePlan(Map<String, Object> params);
 	
 	Optional<Integer> updateItem(Map<String, Object> parmas);
+	
+	TravelPlansDto findPlanByIdAndUserId(int id, String userId);
 }

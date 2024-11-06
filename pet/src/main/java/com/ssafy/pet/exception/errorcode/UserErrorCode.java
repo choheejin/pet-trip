@@ -2,6 +2,9 @@ package com.ssafy.pet.exception.errorcode;
 
 import org.springframework.http.HttpStatus;
 
+import lombok.Getter;
+
+@Getter
 public enum UserErrorCode implements ErrorCode {
 	USER_ALREADY_EXISTS("이미 존재하는 아이디 입니다.\n다시 입력해주세요", HttpStatus.CONFLICT),
 	EXPIRED_JWT("로그인 시간이 만료 되었습니다.\n다시 로그인 하세요", HttpStatus.UNAUTHORIZED),
@@ -14,15 +17,4 @@ public enum UserErrorCode implements ErrorCode {
 		this.message = message;
 		this.status = status;
 	}
-
-	@Override
-	public HttpStatus getStatus() {
-		return this.status;
-	}
-
-	@Override
-	public String getMessage() {
-		return this.message;
-	}
-
 }

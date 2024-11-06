@@ -31,9 +31,9 @@
 		set is_activate=0
 		where user_id=#{user_id}
 	</update>
-	
-	<select id="findById" parameterType="string">
-		select count(*)
+		
+	<select id="findIdByUserId" parameterType="string">
+		select id
 		from users
 		where user_id=#{user_id}
 	</select>
