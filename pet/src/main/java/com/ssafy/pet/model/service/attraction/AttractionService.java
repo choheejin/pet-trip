@@ -1,21 +1,21 @@
-package com.ssafy.pet.model.mapper;
+package com.ssafy.pet.model.service.attraction;
 
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Mapper;
-
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
 
-@Mapper
-public interface AttractionMapper {
+public interface AttractionService {
 	// 관광지 검색 모드
 	List<AttractionsDto> searchAttractions(Map<String, Object> params);
+
 	// 관광지 상세 검색
-	AttractionDetailDto detailAttraction(int content_id); 
+	AttractionDetailDto detailAttraction(int content_id);
+
 	// 핫플레이스로 장소 등록
 	int addHotplace(int content_id);
+
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();
 }
