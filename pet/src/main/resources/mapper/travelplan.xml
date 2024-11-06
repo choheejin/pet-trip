@@ -25,5 +25,20 @@
 		</foreach>
 	</insert>
 
+	<update id="updatePlan" parameterType="java.util.Map">
+		UPDATE travel_plans
+		SET title = #{title}, end_at = now(), is_public = #{is_public},
+		description = #{description}
+		WHERE id = #{plan_id} and user_id in (select id
+		from users where user_id = #{user_id})
+	</update>
+
+	<update id="updatePlanItem" parameterType="java.util.Map">
+		<foreach collection="items" item="item" separator=";">
+			UPDATE travel_plan_items
+			SET `note`=#{item.note}, `order`=#{item.order}, `content_id`=#{item.content_id}
+			WHERE `id`=#{item.id} and `plan_id`=#{plan_id}
+		</foreach>
+	</update>
 </mapper>
 
