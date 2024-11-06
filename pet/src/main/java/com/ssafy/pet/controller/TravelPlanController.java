@@ -1,14 +1,11 @@
 package com.ssafy.pet.controller;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,12 +23,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
-import com.ssafy.pet.exception.user.UserException;
-import com.ssafy.pet.exception.user.UserExceptionType;
+import com.ssafy.pet.exception.ApplicationException;
+import com.ssafy.pet.exception.errorcode.UserErrorCode;
 import com.ssafy.pet.model.service.travelplan.TravelPlanService;
 import com.ssafy.pet.util.JWTUtil;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 
 @Controller
@@ -83,133 +79,100 @@ public class TravelPlanController {
 
 	@PutMapping("/{plan_id}")
 	public ResponseEntity<?> updatePlans(@RequestHeader("accessToken") String header,
-			@PathVariable("plan_id") String plan_id, @RequestBody ObjectNode request) {
+			@PathVariable("plan_id") String plan_id, @RequestBody ObjectNode request) throws JsonProcessingException, IllegalArgumentException {
 
 		HttpStatus status = HttpStatus.ACCEPTED;
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		try {
-			String loginUserId = jwtUtil.getUserId(header);
-			
-			Map<String, Object> params = new HashMap<>();
+		String loginUserId = jwtUtil.getUserId(header);
 
-			String writerId = objectMapper.treeToValue(request.get("writer_id"), String.class);
-			if (!loginUserId.equals(writerId)) throw new UserException(UserExceptionType.UN_AUTHORIZED);
+		Map<String, Object> params = new HashMap<>();
 
-			TravelPlansDto plan = objectMapper.treeToValue(request.get("plan"), TravelPlansDto.class);
+		String writerId = objectMapper.treeToValue(request.get("writer_id"), String.class);
+		if (!loginUserId.equals(writerId))
+			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
 
-			List<TravelPlanItemsDto> items = new ArrayList<>();
-			ArrayNode itemsNode = (ArrayNode) request.get("items");
-			
-			for (JsonNode node : itemsNode) {
-				items.add(objectMapper.treeToValue(node, TravelPlanItemsDto.class));
-			}
+		TravelPlansDto plan = objectMapper.treeToValue(request.get("plan"), TravelPlansDto.class);
 
-			params.put("user_id", writerId);
-			params.put("plan_id", plan_id);
-			params.put("plan", plan);
-			params.put("items", items);
-			
-			travelPlanService.update(params).orElseThrow(() -> new RuntimeException());
-			status = HttpStatus.NO_CONTENT;
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		List<TravelPlanItemsDto> items = new ArrayList<>();
+		ArrayNode itemsNode = (ArrayNode) request.get("items");
+
+		for (JsonNode node : itemsNode) {
+			items.add(objectMapper.treeToValue(node, TravelPlanItemsDto.class));
 		}
+
+		params.put("user_id", writerId);
+		params.put("plan_id", plan_id);
+		params.put("plan", plan);
+		params.put("items", items);
+
+		travelPlanService.update(params).orElseThrow(() -> new RuntimeException());
+		status = HttpStatus.NO_CONTENT;
 
 		return new ResponseEntity<>(status);
 	}
-	
+
 	@PatchMapping("/{plan_id}/content")
-	public ResponseEntity<?> patchPlanContent(@RequestHeader("accessToken") String header, 
-			@PathVariable("plan_id") String plan_id, 
-			@RequestBody ObjectNode request) {
+	public ResponseEntity<?> patchPlanContent(@RequestHeader("accessToken") String header,
+			@PathVariable("plan_id") String plan_id, @RequestBody ObjectNode request)
+			throws JsonProcessingException, IllegalArgumentException {
 		HttpStatus status = HttpStatus.ACCEPTED;
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		System.out.println(plan_id);
-		try {
-			String loginUserId = jwtUtil.getUserId(header);
-			
-			System.out.println(loginUserId);
-			
-			Map<String, Object> params = new HashMap<>();
+		String loginUserId = jwtUtil.getUserId(header);
 
-			String writerId = objectMapper.treeToValue(request.get("writer_id"), String.class);
-			TravelPlansDto plan = objectMapper.treeToValue(request.get("plan"), TravelPlansDto.class);
-			
-			// 수정하려고 하는 이와 작성자가 동일한지 확인한다.
-			if (!loginUserId.equals(writerId)) throw new UserException(UserExceptionType.UN_AUTHORIZED);
-			
-			params.put("user_id", writerId);
-			params.put("plan", plan);
-			params.put("plan_id", plan_id);
-			
-			travelPlanService.updatePlan(params).orElseThrow(() -> new RuntimeException());
-			
-			status = HttpStatus.NO_CONTENT;
-		} catch (UserException e) {
-			exceptionHandling(e);
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
-		}
+		System.out.println(loginUserId);
+
+		Map<String, Object> params = new HashMap<>();
+
+		String writerId = objectMapper.treeToValue(request.get("writer_id"), String.class);
+		TravelPlansDto plan = objectMapper.treeToValue(request.get("plan"), TravelPlansDto.class);
+
+		// 수정하려고 하는 이와 작성자가 동일한지 확인한다.
+		if (!loginUserId.equals(writerId))
+			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
+
+		params.put("user_id", writerId);
+		params.put("plan", plan);
+		params.put("plan_id", plan_id);
+
+		travelPlanService.updatePlan(params).orElseThrow(() -> new RuntimeException());
+
+		status = HttpStatus.NO_CONTENT;
 
 		return new ResponseEntity<>(status);
 	}
 
-	
 	@PatchMapping("/{plan_id}/route")
-	public ResponseEntity<?> patchPlanRoute(@RequestHeader("accessToken") String header, 
-			@PathVariable("plan_id") String plan_id, 
-			@RequestBody ObjectNode request) {
+	public ResponseEntity<?> patchPlanRoute(@RequestHeader("accessToken") String header,
+			@PathVariable("plan_id") String plan_id, @RequestBody ObjectNode request) throws JsonProcessingException, IllegalArgumentException {
 		HttpStatus status = HttpStatus.ACCEPTED;
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		try {
-			String loginUserId = jwtUtil.getUserId(header);
-			
-			Map<String, Object> params = new HashMap<>();
+		String loginUserId = jwtUtil.getUserId(header);
 
-			String writerId = objectMapper.treeToValue(request.get("writer_id"), String.class);
+		Map<String, Object> params = new HashMap<>();
 
-			// 수정하려고 하는 이와 작성자가 동일한지 확인한다.
-			if (!loginUserId.equals(writerId)) throw new UserException(UserExceptionType.UN_AUTHORIZED);
-			
-			List<TravelPlanItemsDto> items = new ArrayList<>();
-			ArrayNode itemsNode = (ArrayNode) request.get("items");
-			
-			for (JsonNode node : itemsNode) {
-				items.add(objectMapper.treeToValue(node, TravelPlanItemsDto.class));
-			}
-			
-			
-			params.put("items", items);
-			params.put("plan_id", Integer.parseInt(plan_id));
-			
-			System.out.println(params);
-			travelPlanService.updateItem(params).orElseThrow(() -> new RuntimeException());
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			status = HttpStatus.INTERNAL_SERVER_ERROR;
+		String writerId = objectMapper.treeToValue(request.get("writer_id"), String.class);
+
+		// 수정하려고 하는 이와 작성자가 동일한지 확인한다.
+		if (!loginUserId.equals(writerId))
+			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
+
+		List<TravelPlanItemsDto> items = new ArrayList<>();
+		ArrayNode itemsNode = (ArrayNode) request.get("items");
+
+		for (JsonNode node : itemsNode) {
+			items.add(objectMapper.treeToValue(node, TravelPlanItemsDto.class));
 		}
 
-		return new ResponseEntity<>(status);
-	}
-	
-	private ResponseEntity<Map<String, Object>> exceptionHandling(UserException e) {
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		
-		e.printStackTrace();
+		params.put("items", items);
+		params.put("plan_id", Integer.parseInt(plan_id));
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
-		
-		resultMap.put("error", e.getMessage());
-		return ResponseEntity.status(e.getType().getStatus()).body(resultMap);
+		System.out.println(params);
+		travelPlanService.updateItem(params).orElseThrow(() -> new RuntimeException());
+
+		return new ResponseEntity<>(status);
 	}
 }

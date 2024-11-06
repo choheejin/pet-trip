@@ -7,8 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.ssafy.pet.exception.user.UserException;
-import com.ssafy.pet.exception.user.UserExceptionType;
+import com.ssafy.pet.exception.ApplicationException;
+import com.ssafy.pet.exception.errorcode.UserErrorCode;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -76,20 +76,16 @@ public class JWTUtil {
 		}
 	}
 
-	public int getId(String authorization) {
+	public String getUserId(String authorization) {
 		Jws<Claims> claims = null;
+		
 		try {
 			claims = Jwts.parserBuilder().setSigningKey(this.generateKey()).build().parseClaimsJws(authorization);
-		} catch (Exception e) {
-			throw new UserException(UserExceptionType.UN_AUTHORIZED);
+		} catch (ExpiredJwtException e) {
+			// TODO: handle exception
+			throw new ApplicationException(UserErrorCode.EXPIRED_JWT);
 		}
-		Map<String, Object> value = claims.getBody();
-		return (int) value.get("id");
-	}
-
-	public String getUserId(String authorization) throws UserException, ExpiredJwtException {
-		Jws<Claims> claims = null;
-		claims = Jwts.parserBuilder().setSigningKey(this.generateKey()).build().parseClaimsJws(authorization);
+		
 		Map<String, Object> value = claims.getBody();
 		return (String) value.get("user_id");
 	}

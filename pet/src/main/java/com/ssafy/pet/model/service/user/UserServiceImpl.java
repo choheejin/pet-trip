@@ -6,8 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.pet.dto.UsersDto;
-import com.ssafy.pet.exception.user.UserException;
-import com.ssafy.pet.exception.user.UserExceptionType;
+import com.ssafy.pet.exception.ApplicationException;
+import com.ssafy.pet.exception.errorcode.UserErrorCode;
 import com.ssafy.pet.model.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Optional<UsersDto> login(UsersDto user) {
 		// 아이디가 존재하지 않는다면 바로 return
-		String encodePw = this.userInfo(user.getUser_id()).orElseThrow(() -> new UserException(UserExceptionType.UN_AUTHORIZED)).getPassword();
+		String encodePw = this.userInfo(user.getUser_id()).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED)).getPassword();
 		UsersDto loginUser = null;
 		
 		if(passwordEncoder.matches(user.getPassword(), encodePw)) {
