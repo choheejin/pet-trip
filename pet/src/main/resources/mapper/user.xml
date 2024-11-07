@@ -38,5 +38,11 @@
 		where user_id=#{user_id}
 	</select>
 	
+	<select id="findUserIdById" parameterType="int">
+		select user_id
+		from users
+		where id=#{id}
+	</select>
+	
 </mapper>
 

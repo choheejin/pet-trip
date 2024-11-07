@@ -45,9 +45,9 @@
 		</foreach>
 	</update>
 
-	<select id="findPlanById" parameterType="int" resultType="int">
-		select
-		count(*) from travel_plans where id=#{id}
+	<select id="findPlanById" parameterType="int"
+		resultType="travelPlansDto">
+		select * from travel_plans where id=#{id}
 	</select>
 
 	<select id="findPlanByUserIdAndId" parameterType="java.util.Map"
@@ -56,9 +56,19 @@
 		user_id=#{user_id}
 	</select>
 
-	<select id="selectWithLimit" parameterType="int" resultType="travelPlansDto">
+	<select id="selectWithLimit" parameterType="int"
+		resultType="travelPlansDto">
 		select * from travel_plans
 		limit #{page}, 10;
+	</select>
+
+	<select id="findItemById" parameterType="int" resultType="java.util.Map">
+		select t.id, t.note, a.content_id, a.title, a.gugun_code, a.sido_code,
+		a.content_type_id, a.latitude, a.longitude, a.addr1, t.`order` from
+		travel_plan_items as t
+		left join attractions as a
+		on a.content_id = t.content_id
+		where plan_id = #{id};
 	</select>
 </mapper>
 
