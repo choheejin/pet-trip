@@ -51,6 +51,15 @@ public class TravelPlanController {
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 	
+	@GetMapping("/{plan_id}")
+	public ResponseEntity<?> getPlanById(@PathVariable("plan_id") Integer plan_id) {
+		
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		Map<String, Object> resultMap = travelPlanService.findPlanWithItemsById(plan_id).orElseThrow(() -> new RuntimeException());
+
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
 	
 	@PostMapping
 	public ResponseEntity<?> postPlans(@RequestHeader("accessToken") String header, @RequestBody ObjectNode request) throws RuntimeException, Exception {

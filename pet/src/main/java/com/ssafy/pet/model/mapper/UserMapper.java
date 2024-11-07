@@ -23,4 +23,6 @@ public interface UserMapper {
 	
 	// 탈퇴
 	int deactivate(String user_id);
+	
+	String findUserIdById(int id);
 }

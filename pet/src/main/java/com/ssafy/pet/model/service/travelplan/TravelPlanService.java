@@ -22,4 +22,6 @@ public interface TravelPlanService {
 	TravelPlansDto findPlanByIdAndUserId(int id, String userId);
 	
 	Optional<List<TravelPlansDto>> selectWithLimit(Integer page);
+
+	Optional<Map<String, Object>> findPlanWithItemsById(int id); 
 }
