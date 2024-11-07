@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
+import com.ssafy.pet.dto.PetAttractionsDto;
 import com.ssafy.pet.model.service.attraction.AttractionService;
 
 import lombok.RequiredArgsConstructor;
@@ -42,13 +43,17 @@ public class AttractionController {
 		return attractionService.searchAttractions(params);
 	}
 	// content_id로 상세 내용 조회
-	@GetMapping("/detail/{id}")
+	@GetMapping("/detail/{content_id}")
+	@ResponseBody
 	public AttractionDetailDto detailAttraction(@PathVariable("content_id") int content_id) {
 		AttractionDetailDto result = new AttractionDetailDto();
-//		
-//		result.setAttraction(attractionService.);
+
+		// attractions 정보 추가
+		result.setAttraction(attractionService.searchByContentID(content_id));
+		// petattractions 정보 추가
+		result.setPetAttraction(attractionService.searchPetByContentID(content_id));
 		
-		return null;
+		return result;
 	}
 	
 	

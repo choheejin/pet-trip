@@ -22,4 +22,15 @@
 		</where>
 	</select>
 	
+	<select id="searchByContentID" parameterType="int" resultType="AttractionsDto">
+		select * from attractions
+		where content_id = #{content_id}
+	</select>
+	
+	<select id="searchPetByContentID" parameterType="int" resultType="PetAttractionsDto">
+		select * 
+		from pet_attractions 
+		where content_id=#{content_id}
+	</select>
+	
 </mapper>
