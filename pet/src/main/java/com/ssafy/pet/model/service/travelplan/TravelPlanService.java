@@ -1,5 +1,6 @@
 package com.ssafy.pet.model.service.travelplan;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,4 +20,6 @@ public interface TravelPlanService {
 	Optional<Integer> updateItem(Map<String, Object> parmas);
 	
 	TravelPlansDto findPlanByIdAndUserId(int id, String userId);
+	
+	Optional<List<TravelPlansDto>> selectWithLimit(Integer page);
 }

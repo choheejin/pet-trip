@@ -1,6 +1,5 @@
 package com.ssafy.pet.model.service.travelplan;
 
-import java.awt.Insets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,5 +136,16 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		if(plan == null || u_id != plan.getUser_id()) throw new ApplicationException(TravelPlanErrorCode.UPDATE_FROBIDDEN); // 작성자와 요청한 사람이 다름
 		
 		return plan;
+	}
+
+
+	@Override
+	public Optional<List<TravelPlansDto>> selectWithLimit(Integer page) {
+		
+		int limit = (page - 1) * 10;
+		
+		List<TravelPlansDto> list = travelPlanMapper.selectWithLimit(limit);
+		
+		return list == null ? Optional.empty() : Optional.of(list);
 	}
 }
