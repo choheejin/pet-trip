@@ -1,5 +1,6 @@
 package com.ssafy.pet.model.mapper;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -21,4 +22,6 @@ public interface TravelPlanMapper {
 	int findPlanById(int id);
 	
 	TravelPlansDto findPlanByUserIdAndId(Map<String, Object> param);
+	
+	List<TravelPlansDto> selectWithLimit(Integer page);
 }
