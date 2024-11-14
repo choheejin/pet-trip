@@ -1,9 +1,11 @@
 package com.ssafy.pet.model.mapper;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 
 @Mapper
@@ -18,7 +20,11 @@ public interface TravelPlanMapper {
 	
 	int updatePlanItem(Map<String, Object> param);
 	
-	int findPlanById(int id);
+	TravelPlansDto findPlanById(int id);
 	
 	TravelPlansDto findPlanByUserIdAndId(Map<String, Object> param);
+	
+	List<TravelPlansDto> selectWithLimit(Integer page);
+	
+	List<Map<String, Object>> findItemById(int id);
 }
