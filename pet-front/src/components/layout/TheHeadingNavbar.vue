@@ -29,7 +29,7 @@ const logout = () => {
       <!-- 메뉴 리스트 -->
       <div class="collapse navbar-collapse" id="navbarNav">
         <!-- 왼쪽 메뉴 -->
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <ul class="navbar-nav me-auto">
           <li class="nav-item">
             <a class="nav-link" href="/board">게시판</a>
           </li>
@@ -80,6 +80,12 @@ const logout = () => {
 
 .navbar-nav .nav-link:hover {
   color: #0056b3;
+}
+.navbar-nav.me-auto .nav-link:hover {
+  color: #000000; /* 초록색으로 변경 */
+  background-color: rgb(254, 250, 224); /* 배경 색상 추가 */
+  border-radius: 5px; /* 약간 둥근 효과 */
+  transition: background-color 0.3s ease; /* 부드러운 전환 */
 }
 
 .container-fluid {
