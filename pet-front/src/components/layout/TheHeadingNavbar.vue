@@ -13,7 +13,10 @@ const logout = () => {
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
       <!-- 로고 및 토글 버튼 -->
-      <a class="navbar-brand" href="#">PetTrip</a>
+      <a class="navbar-brand" href="#"
+        ><img class="logo" src="@/assets/logo.png"
+      /></a>
+
       <button
         class="navbar-toggler"
         type="button"
@@ -67,8 +70,11 @@ const logout = () => {
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+.logo {
+  height: 40px;
+  width: auto;
+}
 .navbar-collapse {
-  padding-left: 50px;
   font-weight: bold;
   font-size: 1.25rem;
 }
