@@ -17,7 +17,6 @@ function selectSize(size) {
 
 <template>
   <div>
-    <!-- <h2>강아지 크기 선택하는 버튼입니다.</h2> -->
     <div class="buttons">
       <button
         v-for="size in sizes"
@@ -34,23 +33,22 @@ function selectSize(size) {
 
 <style scoped>
 .buttons {
+  height: 100%;
   display: flex;
   gap: 20px;
   justify-content: center;
-  margin-top: 20px;
 }
 
 .size-btn {
   border: solid 2px #ccd5ae;
   border-radius: 15px;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 150px;
-  height: 50px;
-  padding: 0 10px;
+  width: 230px;
+  padding: 0 20px;
   background-color: white;
   cursor: pointer;
   transition: background-color 0.3s ease, opacity 0.3s ease;
@@ -68,7 +66,7 @@ function selectSize(size) {
 
 .size-icon {
   margin-right: 15px;
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
 }
 </style>

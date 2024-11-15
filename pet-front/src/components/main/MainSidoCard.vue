@@ -22,7 +22,7 @@ const images = [
 ];
 
 const currentIndex = ref(0);
-const itemsPerPage = 3;
+const itemsPerPage = 4;
 
 const currentGroup = computed(() => {
   const start = currentIndex.value;
@@ -31,7 +31,6 @@ const currentGroup = computed(() => {
 });
 
 function getImagePath(image) {
-  console.log("얻어지는 image : ", image);
   return `/src/assets/sido/${image.sido_code}.jpg`;
 }
 
@@ -54,21 +53,35 @@ function sendFileName(image) {
 
 <template>
   <div class="main-sido-card">
-    <button class="arrow left" @click="prevGroup">&#9664;</button>
-
-    <div class="card-container">
-      <div
-        v-for="(image, index) in currentGroup"
-        :key="index"
-        class="card"
-        @click="sendFileName(image)"
-      >
-        <img :src="getImagePath(image)" :alt="image.sido_name" />
-        <div class="sido-name">{{ image.sido_name }}</div>
-      </div>
+    <div class="arrow left">
+      <button @click="prevGroup" :disabled="currentIndex === 0">&#9664;</button>
     </div>
 
-    <button class="arrow right" @click="nextGroup">&#9654;</button>
+    <div class="card-container">
+      <div>
+        <h1>지역별 관광지</h1>
+      </div>
+      <transition-group name="slide" tag="div" class="cards">
+        <div
+          v-for="(image, index) in currentGroup"
+          :key="image.sido_code"
+          class="card"
+          @click="sendFileName(image)"
+        >
+          <img :src="getImagePath(image)" :alt="image.sido_name" />
+          <div class="sido-name">{{ image.sido_name }}</div>
+        </div>
+      </transition-group>
+    </div>
+
+    <div class="arrow right">
+      <button
+        @click="nextGroup"
+        :disabled="currentIndex + itemsPerPage >= images.length"
+      >
+        &#9654;
+      </button>
+    </div>
   </div>
 </template>
 
@@ -77,6 +90,8 @@ function sendFileName(image) {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .arrow {
@@ -84,18 +99,33 @@ function sendFileName(image) {
   border: none;
   font-size: 24px;
   cursor: pointer;
-  padding: 10px;
+  text-align: center;
   user-select: none;
   transition: transform 0.2s ease;
 }
 
 .arrow:hover {
-  transform: scale(1.2);
+  color: #ccd5ae;
+}
+
+.arrow.left {
+  left: 10px; /* 왼쪽 화살표 위치 */
+}
+
+.arrow.right {
+  right: 10px; /* 오른쪽 화살표 위치 */
 }
 
 .card-container {
+  overflow: hidden;
+  width: 880px; /* Adjust width based on itemsPerPage and card width */
+  padding: 0 40px; /* 화살표와 간격을 만들기 위한 여백 추가 */
+}
+
+.cards {
   display: flex;
   gap: 16px;
+  transition: transform 0.5s ease-in-out;
 }
 
 .card {
@@ -117,6 +147,7 @@ function sendFileName(image) {
   height: 100%;
   background: linear-gradient(135deg, rgba(0, 0, 0, 0.1), transparent);
 }
+
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
@@ -131,9 +162,23 @@ function sendFileName(image) {
   font-weight: bold;
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
 }
+
 .card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.02s ease;
+}
+
+.slide-enter-from {
+  transform: translateX(100%);
+}
+
+.slide-leave-to {
+  transform: translateX(-100%);
 }
 </style>
