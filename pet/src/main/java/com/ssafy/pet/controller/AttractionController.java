@@ -5,19 +5,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
+import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
+import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
+import com.ssafy.pet.util.JWTUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/attraction")
 public class AttractionController {
 	private final AttractionService attractionService;
+	private final JWTUtil jwtUtil;
 	
 	// (시도, 구군, 이름, 관광지 타입) 선택적 조회
 	@GetMapping("/search")
@@ -64,8 +74,6 @@ public class AttractionController {
 	@ResponseBody
 	public List<AttractionDetailDto> searchDetailByKeyword(@RequestParam(value = "keyword", required = false) String keyword) {
 	    if (keyword == null) {
-	        // 기본 content_id에 따른 조회 로직
-	        // 적절한 에러 처리나 반환 값을 설정
 	    	throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND, keyword);
 	    } else {
 	        
@@ -73,6 +81,26 @@ public class AttractionController {
 	        
 	        return result;
 	    }
+	}
+	
+	@PostMapping("/hotplace/{content_id}")
+	public ResponseEntity<?> updateHotplace(@RequestHeader("accessToken") String header, @PathVariable("content_id") int content_id)
+	{
+		//유저 아이디 테이블의 아이디 받기
+		String user_id = jwtUtil.getUserId(header);
+		int id = attractionService.searchUserByUserId(user_id);
+		
+		
+		//핫플레이스 테이블에 데이터 추가하기
+		int result = attractionService.addHotplace(content_id, id);
+		
+		if(result > 0)
+		{
+			return ResponseEntity.ok("핫플레이스 추가 성공"); 
+		}
+		else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("핫플레이스 추가 실패");
+		}
 	}
 	
 }

@@ -5,7 +5,9 @@ import java.util.Map;
 
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
+import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
+import com.ssafy.pet.dto.UsersDto;
 
 public interface AttractionService {
 	// 관광지 검색 모드
@@ -23,8 +25,14 @@ public interface AttractionService {
 	//반려견 타입으로 검색
 	List<AttractionDetailDto> searchDetailByKeyword(String keyword);
 
+	//content_id로 hotplace 찾기
+	HotplaceDto searchHotplaceById(int content_id);
+	
+	//user_id로 user table의 primary-key인 id 찾기
+	int searchUserByUserId(String user_id);
+	
 	// 핫플레이스로 장소 등록
-	int addHotplace(int content_id);
+	int addHotplace(int content_id, int user_id);
 
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();

@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
+import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
+import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.model.mapper.AttractionMapper;
 import lombok.RequiredArgsConstructor;
 
@@ -38,8 +40,13 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 	
 	@Override
-	public int addHotplace(int content_id) {
-		return attractionMapper.addHotplace(content_id);
+	public int addHotplace(int content_id, int user_id) {
+		return attractionMapper.addHotplace(content_id, user_id);
+	}
+	
+	@Override
+	public HotplaceDto searchHotplaceById(int content_id) {
+		return attractionMapper.searchHotplaceById(content_id);
 	}
 
 	@Override
@@ -61,5 +68,10 @@ public class AttractionServiceImpl implements AttractionService {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public int searchUserByUserId(String user_id) { 
+		return attractionMapper.searchUserByUserId(user_id);
 	}
 }
