@@ -1,6 +1,5 @@
 package com.ssafy.pet.model.service.travelplan;
 
-import java.awt.Insets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,9 +124,8 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	@Override
 	public TravelPlansDto findPlanByIdAndUserId(int id, String userId) {
 		int u_id = userMapper.findIdByUserId(userId); // 사용자의 PK 가져오기
-		int cnt = travelPlanMapper.findPlanById(id); // 요청한 게시글이 존재하는지 확인
 		
-		if(cnt <= 0) throw new ApplicationException(TravelPlanErrorCode.NO_CONTENT); // 요청 게시글 존재하지 않음
+		if(travelPlanMapper.findPlanById(id) == null) throw new ApplicationException(TravelPlanErrorCode.NO_CONTENT); // 요청 게시글 존재하지 않음
 		
 		Map<String, Object> param = new HashMap<>();
 		param.put("id", id);
@@ -137,5 +135,33 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		if(plan == null || u_id != plan.getUser_id()) throw new ApplicationException(TravelPlanErrorCode.UPDATE_FROBIDDEN); // 작성자와 요청한 사람이 다름
 		
 		return plan;
+	}
+
+
+	@Override
+	public Optional<List<TravelPlansDto>> selectWithLimit(Integer page) {
+		
+		int limit = (page - 1) * 10;
+		
+		List<TravelPlansDto> list = travelPlanMapper.selectWithLimit(limit);
+		
+		return list == null ? Optional.empty() : Optional.of(list);
+	}
+
+
+	@Override
+	public Optional<Map<String, Object>> findPlanWithItemsById(int id) {
+		TravelPlansDto plan = travelPlanMapper.findPlanById(id);
+		String userId = userMapper.findUserIdById(plan.getUser_id());
+		List<Map<String, Object>> items = travelPlanMapper.findItemById(id);
+		
+		Map<String, Object> resultMap = new HashMap<>();
+		
+		resultMap.put("user_id", userId);
+		resultMap.put("plan", plan);
+		resultMap.put("items", items);
+
+		
+		return plan == null ? Optional.empty() : Optional.of(resultMap);
 	}
 }
