@@ -33,4 +33,10 @@
 		where content_id=#{content_id}
 	</select>
 	
+	<select id="searchDetailByKeyword" parameterType="String" resultType="int">
+		select content_id
+		from pet_attractions
+		where acmpyPsblCpam = #{keyword}
+	</select>
+	
 </mapper>

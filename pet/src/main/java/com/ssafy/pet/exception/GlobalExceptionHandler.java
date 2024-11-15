@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 	@ExceptionHandler({ ApplicationException.class })
 	protected ResponseEntity handleCustomException(ApplicationException e) {
+		e.printStackTrace();
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap.put("errorCode", e.getStatus());
 		resultMap.put("message", e.getMessage());
@@ -20,6 +21,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler({ Exception.class })
 	protected ResponseEntity handleServerException(Exception e) {
+		e.printStackTrace();
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		resultMap.put("errorCode", HttpStatus.INTERNAL_SERVER_ERROR);
 		resultMap.put("message", e.getMessage());

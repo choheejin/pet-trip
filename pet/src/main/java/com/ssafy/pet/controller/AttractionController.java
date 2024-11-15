@@ -1,5 +1,6 @@
 package com.ssafy.pet.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
+import com.ssafy.pet.exception.ApplicationException;
+import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
 
 import lombok.RequiredArgsConstructor;
@@ -42,6 +45,7 @@ public class AttractionController {
 		
 		return attractionService.searchAttractions(params);
 	}
+	
 	// content_id로 상세 내용 조회
 	@GetMapping("/detail/{content_id}")
 	@ResponseBody
@@ -56,5 +60,19 @@ public class AttractionController {
 		return result;
 	}
 	
+	@GetMapping("/detail")
+	@ResponseBody
+	public List<AttractionDetailDto> searchDetailByKeyword(@RequestParam(value = "keyword", required = false) String keyword) {
+	    if (keyword == null) {
+	        // 기본 content_id에 따른 조회 로직
+	        // 적절한 에러 처리나 반환 값을 설정
+	    	throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND, keyword);
+	    } else {
+	        
+	        List<AttractionDetailDto> result = attractionService.searchDetailByKeyword(keyword);
+	        
+	        return result;
+	    }
+	}
 	
 }

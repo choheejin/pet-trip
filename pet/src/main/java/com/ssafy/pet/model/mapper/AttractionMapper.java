@@ -22,6 +22,9 @@ public interface AttractionMapper {
 
 	// 반려견 동반 관광지 content_id로 찾기
 	PetAttractionsDto searchPetByContentID(int content_id);
+	
+	//반려견 타입으로 검색
+	List<Integer> searchDetailByKeyword(String keyword);
 
 	// 핫플레이스로 장소 등록
 	int addHotplace(int content_id);
