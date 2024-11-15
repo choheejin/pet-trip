@@ -6,7 +6,7 @@ defineProps(["attraction"]);
 
 <template>
   <div class="container">
-    <div>{{ attraction.title }}</div>
+    <div class="title">{{ attraction.title }}</div>
     <div>{{ attraction.addr1 }}</div>
   </div>
 </template>
@@ -14,11 +14,21 @@ defineProps(["attraction"]);
 <style scoped>
 .container {
   cursor: pointer;
-  margin: 10px 0px;
-  border-bottom: 1px solid;
-  padding-bottom: 10px;
+  padding: 1.5rem 3rem;
+  border-bottom: 1px solid rgb(209 213 219);
 }
+
 .container:nth-last-child(1) {
   border-bottom: none;
+}
+
+.container:hover {
+  background-color: rgb(209 213 219);
+}
+
+.container > .title {
+  color: rgb(29 78 216);
+  font-weight: 600;
+  font-size: large;
 }
 </style>
