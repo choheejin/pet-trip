@@ -1,6 +1,8 @@
 <script setup>
-import { useMenuStore } from "@/stores/menu";
-import { storeToRefs } from "pinia";
+import { ref } from 'vue';
+import { useMenuStore } from '@/stores/menu';
+import { storeToRefs } from 'pinia';
+import LoginModal from "@/components/layout/LoginModal.vue";
 
 const menuStore = useMenuStore();
 const { isLoggedIn, changeLoginState } = storeToRefs(menuStore);
@@ -8,13 +10,24 @@ const { isLoggedIn, changeLoginState } = storeToRefs(menuStore);
 const logout = () => {
   changeLoginState(false); // 로그아웃 시 상태 변경
 };
+
+// 모달 상태 관리
+const isModalVisible = ref(false);
+
+const showLoginModal = () => {
+  isModalVisible.value = true;
+};
+
+const closeModal = () => {
+  isModalVisible.value = false; // 로그인 성공 후 모달 닫기
+};
 </script>
 <template>
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
       <!-- 로고 및 토글 버튼 -->
-      <a class="navbar-brand" href="#"
-        ><img class="logo" src="@/assets/logo.png"
+      <a class="navbar-brand" href="/"
+      ><img class="logo" src="@/assets/logo.png"
       /></a>
 
       <button
@@ -53,17 +66,22 @@ const logout = () => {
           </template>
           <template v-else>
             <li class="nav-item">
-              <a class="nav-link" href="/user-join">회원가입</a>
+              <a class="nav-link" href="#" @click.prevent="showSignUpModal">회원가입</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/user-login">로그인</a>
+              <a class="nav-link" href="#" @click.prevent="showLoginModal">로그인</a>
             </li>
           </template>
         </ul>
       </div>
     </div>
   </nav>
+
+  <!-- 모달 컴포넌트 삽입 -->
+  <LoginModal v-if="isModalVisible" @close="closeModal" />
 </template>
+
+
 
 <style scoped>
 .navbar {

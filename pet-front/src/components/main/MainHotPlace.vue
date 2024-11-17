@@ -10,12 +10,7 @@ const hotplaces = [
     content_id: "125408",
     name: "청송 자연휴양림 퇴적암층 (청송 국가지질공원)",
     cnt: "11",
-  },
-  { content_id: "125409", name: "국립 유명산자연휴양림", cnt: "10" },
-  { content_id: "125410", name: "국립 청옥산자연휴양림", cnt: "9" },
-  { content_id: "125411", name: "금원산자연휴양림", cnt: "8" },
-  { content_id: "125412", name: "국립 용대자연휴양림", cnt: "7" },
-  { content_id: "125413", name: "국립 가리왕산자연휴양림", cnt: "6" },
+  }
 ];
 
 const hottravelplans = [
