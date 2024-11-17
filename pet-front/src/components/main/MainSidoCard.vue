@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed } from "vue";
+import {useMainSelectStore} from "@/stores/mainselect.js";
+import router from "@/router/index.js";
 
 const images = [
   { sido_name: "서울", sido_code: 1 },
@@ -21,6 +23,7 @@ const images = [
   { sido_name: "제주도", sido_code: 39 },
 ];
 
+const mainSelectStore = useMainSelectStore();
 const currentIndex = ref(0);
 const itemsPerPage = 4;
 
@@ -47,14 +50,15 @@ function nextGroup() {
 }
 
 function sendFileName(image) {
-  console.log(`Selected file: ${image.sido_code}.jpg`);
+  mainSelectStore.setSidoCode(image.sido_code);
+  router.push({name:'BaseMap'})
 }
 </script>
 
 <template>
   <div class="main-sido-card">
     <div class="arrow left">
-      <button @click="prevGroup" :disabled="currentIndex === 0">&#9664;</button>
+      <button @click="prevGroup" :disabled="currentIndex.value === 0">&#9664;</button>
     </div>
 
     <div class="card-container">
@@ -77,7 +81,7 @@ function sendFileName(image) {
     <div class="arrow right">
       <button
         @click="nextGroup"
-        :disabled="currentIndex + itemsPerPage >= images.length"
+        :disabled="currentIndex.value + itemsPerPage >= images.length"
       >
         &#9654;
       </button>
