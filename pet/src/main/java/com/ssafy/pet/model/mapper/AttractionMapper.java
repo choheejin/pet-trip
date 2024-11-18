@@ -37,6 +37,9 @@ public interface AttractionMapper {
 	
 	//user_id로 user table의 primary-key인 id 찾기
 	int searchUserByUserId(String user_id);
+	
+	//sido_code로 gugun_code 찾기
+	List<Integer> searchGugunCodeBySidoCode(int sido_code);
 
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();

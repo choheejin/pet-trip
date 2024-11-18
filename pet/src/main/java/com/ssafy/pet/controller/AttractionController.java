@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
+import com.ssafy.pet.dto.GugunsDto;
 import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
 import com.ssafy.pet.dto.UsersDto;
@@ -90,7 +91,6 @@ public class AttractionController {
 		String user_id = jwtUtil.getUserId(header);
 		int id = attractionService.searchUserByUserId(user_id);
 		
-		
 		//핫플레이스 테이블에 데이터 추가하기
 		int result = attractionService.addHotplace(content_id, id);
 		
@@ -101,6 +101,19 @@ public class AttractionController {
 		else {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("핫플레이스 추가 실패");
 		}
+	}
+	
+	@GetMapping("/search/{sido_code}")
+	@ResponseBody
+	public ResponseEntity<List<Integer>> searchGugunCode(@PathVariable("sido_code") int sido_code){
+		List<Integer> gugun_code = attractionService.searchGugunCodeBySidoCode(sido_code);
+		
+		if(gugun_code == null)
+		{
+			throw new ApplicationException(SearchErrorCode.KEYWORD_MISSING, (Integer.toString(sido_code)));
+		}
+		
+		return ResponseEntity.ok(gugun_code);
 	}
 	
 }

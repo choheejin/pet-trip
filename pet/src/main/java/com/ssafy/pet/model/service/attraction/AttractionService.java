@@ -33,6 +33,9 @@ public interface AttractionService {
 	
 	// 핫플레이스로 장소 등록
 	int addHotplace(int content_id, int user_id);
+	
+	//sido_code로 gugun_code 찾기
+	List<Integer> searchGugunCodeBySidoCode(int sido_code);
 
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();

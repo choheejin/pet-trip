@@ -8,5 +8,4 @@ public class GugunsDto {
 	private int sido_code;
 	private int gugun_code;
 	private String gugun_name;
-
 }

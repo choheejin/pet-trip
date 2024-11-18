@@ -74,4 +74,9 @@ public class AttractionServiceImpl implements AttractionService {
 	public int searchUserByUserId(String user_id) { 
 		return attractionMapper.searchUserByUserId(user_id);
 	}
+
+	@Override
+	public List<Integer> searchGugunCodeBySidoCode(int sido_code) {
+		return attractionMapper.searchGugunCodeBySidoCode(sido_code);
+	}
 }
