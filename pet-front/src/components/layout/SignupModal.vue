@@ -29,7 +29,7 @@ const passwordValid = computed(() => signupForm.value.password.length >= 6);
 
 // 회원가입 함수
 const join = async () => {
-  if (idValid.value && emailValid.value && passwordValid.value) {
+  if (emailValid.value && passwordValid.value) {
     try {
       // user.js 스토어의 signup 호출
       await userStore.join(signupForm.value);
