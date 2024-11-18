@@ -1,25 +1,34 @@
 <script setup>
-import { ref } from 'vue';
-import { useMenuStore } from '@/stores/menu';
-import { storeToRefs } from 'pinia';
+import { ref } from "vue";
+import { useMenuStore } from "@/stores/menu";
+import { useAuthStore } from "@/stores/user";
+import { storeToRefs } from "pinia";
 import LoginModal from "@/components/layout/LoginModal.vue";
+import SignupModal from "@/components/layout/SignupModal.vue";
 
+const userStore = useAuthStore();
 const menuStore = useMenuStore();
-const { isLoggedIn, changeLoginState } = storeToRefs(menuStore);
+const { isLoggedIn } = storeToRefs(menuStore);
 
 const logout = () => {
-  changeLoginState(false); // 로그아웃 시 상태 변경
+  userStore.logout();
 };
 
 // 모달 상태 관리
-const isModalVisible = ref(false);
+const isLoginModalVisible = ref(false);
+const isSignupModalVisible = ref(false);
 
 const showLoginModal = () => {
-  isModalVisible.value = true;
+  isLoginModalVisible.value = true;
+};
+const showSignUpModal = () => {
+  console.log("회원가입 모달 열기"); // 디버깅 로그
+  isSignupModalVisible.value = true;
 };
 
 const closeModal = () => {
-  isModalVisible.value = false; // 로그인 성공 후 모달 닫기
+  isLoginModalVisible.value = false; // 로그인 성공 후 모달 닫기
+  isSignupModalVisible.value = false;
 };
 </script>
 <template>
@@ -27,7 +36,7 @@ const closeModal = () => {
     <div class="container-fluid">
       <!-- 로고 및 토글 버튼 -->
       <a class="navbar-brand" href="/"
-      ><img class="logo" src="@/assets/logo.png"
+        ><img class="logo" src="@/assets/logo.png"
       /></a>
 
       <button
@@ -66,10 +75,14 @@ const closeModal = () => {
           </template>
           <template v-else>
             <li class="nav-item">
-              <a class="nav-link" href="#" @click.prevent="showSignUpModal">회원가입</a>
+              <a class="nav-link" href="#" @click.prevent="showSignUpModal"
+                >회원가입</a
+              >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#" @click.prevent="showLoginModal">로그인</a>
+              <a class="nav-link" href="#" @click.prevent="showLoginModal"
+                >로그인</a
+              >
             </li>
           </template>
         </ul>
@@ -78,10 +91,9 @@ const closeModal = () => {
   </nav>
 
   <!-- 모달 컴포넌트 삽입 -->
-  <LoginModal v-if="isModalVisible" @close="closeModal" />
+  <LoginModal v-if="isLoginModalVisible" @close="closeModal" />
+  <SignupModal v-if="isSignupModalVisible" @close="closeModal" />
 </template>
-
-
 
 <style scoped>
 .navbar {
