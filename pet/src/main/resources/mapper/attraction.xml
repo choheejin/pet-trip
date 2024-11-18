@@ -63,8 +63,12 @@
 	<select id="getPlanRanking" resultType="TravelPlansDto">
 		select tp.* 
 		from travel_plans tp 
-		join plans_favorites pf
-		on tp.id = pf.plan_id
-		order by pf.plans_favorite_cnt desc;
+		join ( 
+			select plan_id, COUNT(*) as plan_count
+			from plans_favorites
+			group by plan_id
+		) pf_grouped
+		on tp.id = pf_grouped.plan_id
+		order by pf_grouped.plan_count desc;
 	</select>	
 </mapper>
