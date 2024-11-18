@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { defineStore, storeToRefs } from "pinia";
+import { defineStore } from "pinia";
 
 export const useMenuStore = defineStore("menuStore", () => {
   // 사용자 로그인 상태 추적

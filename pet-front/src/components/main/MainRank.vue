@@ -9,8 +9,6 @@ onMounted(() => {
   rankStore.fetchTravelPlans();
 });
 
-console.log("여기여기여기");
-
 const { sortedHotPlaces, sortedTravelPlans } = rankStore;
 </script>
 <template>

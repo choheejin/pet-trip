@@ -26,12 +26,19 @@ const images = [
 
 const mainSelectStore = useMainSelectStore();
 const currentIndex = ref(0);
-const itemsPerPage = 4;
+const itemsPerPage = 3;
 
 const currentGroup = computed(() => {
   const start = currentIndex.value;
   const end = start + itemsPerPage;
-  return images.slice(start, end);
+  const group = images.slice(start, end);
+
+  // 빈 카드 추가
+  while (group.length < itemsPerPage) {
+    group.push({ sido_name: "", sido_code: 0 }); // 빈 객체로 채움
+  }
+
+  return group;
 });
 
 function getImagePath(image) {
@@ -74,12 +81,14 @@ function sendFileName(image) {
           :key="image.sido_code"
           class="card"
           @click="sendFileName(image)"
+          :class="{ 'empty-card': image.sido_name === '' }"
         >
-          <img :src="getImagePath(image)" :alt="image.sido_name" />
-          <div class="sido-name">{{ image.sido_name }}</div>
-        </div>
-      </transition-group>
+          <img v-if="image.sido_name" :src="getImagePath(image)" :alt="image.sido_name" />
+          <div v-if="image.sido_name" class="sido-name">{{ image.sido_name }}</div>
     </div>
+    </transition-group>
+
+  </div>
 
     <div class="arrow right">
       <button
@@ -116,11 +125,11 @@ function sendFileName(image) {
 }
 
 .arrow.left {
-  left: 10px; /* 왼쪽 화살표 위치 */
+  margin-top: 50px;
 }
 
 .arrow.right {
-  right: 10px; /* 오른쪽 화살표 위치 */
+  margin-top: 50px;
 }
 
 .card-container {
@@ -143,6 +152,12 @@ function sendFileName(image) {
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+  visibility: visible;
+}
+
+.card.empty-card {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .card::before {

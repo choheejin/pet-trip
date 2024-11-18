@@ -5,12 +5,12 @@ import MainDogSize from "@/components/main/MainDogSize.vue";
 </script>
 
 <template>
-  <div style="height: calc(100vh - 66px); width: 100%">
-    <div style="height: 100%; display: flex">
-      <div style="width: 35%">
+  <div style="height: calc(100vh - 66px); display: flex; align-items: center;">
+    <div style="width: 1000px; margin: 0 auto; height: 100%; display: flex;">
+      <div style="width: 30%">
         <MainRank />
       </div>
-      <div style="display: flex; width: 65%; flex-direction: column">
+      <div style="display: flex; width: 70%; flex-direction: column">
         <div style="height: 70%">
           <MainSidoCard />
         </div>
