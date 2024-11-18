@@ -1,8 +1,9 @@
 <script setup>
 import axios from "axios";
-import { ref, computed, watch, onMounted } from "vue";
 import MapList from "@/components/map/MapList.vue";
 import MapDetail from "@/components/map/MapDetail.vue";
+import MapCart from "./MapCart.vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useMainSelectStore } from "@/stores/mainselect.js";
 
 // 검색관련
@@ -16,7 +17,8 @@ const selectAttraction = ref(null); // 상세 보기의 값
 const showDetail = ref(false);
 const dogsize = ref(""); // 강아지 크기
 
-const cartItems = ref([1]); // 여행경로 계획 예정 아이템들
+const cartItems = ref([]); // 여행경로 계획 예정 아이템들
+const isCartShowed = ref(false); //  장바구니 보기
 
 const setShowDetail = (isShowed) => {
   showDetail.value = isShowed;
@@ -48,10 +50,10 @@ const getAttractionsBySize = async () => {
   attractions.value = data.map((item) => item.attraction);
 };
 
+// 특정 여행장소 클릭
 const selected = (attraction) => {
-  console.log("체크!");
-  console.log(attraction);
   setShowDetail(true);
+  isCartShowed.value = false;
   selectAttraction.value = attraction;
 };
 
@@ -82,13 +84,33 @@ watch([sido_code, dogsize], () => {
     getAttractionsBySize();
   }
 });
+
+const setShowCart = (isShowed) => {
+  isCartShowed.value = isShowed;
+};
+
+// 장바구니 버튼 클릭
+const clickCart = () => {
+  if (isCartShowed.value) {
+    setShowCart(false);
+  } else {
+    setShowDetail(false);
+    setShowCart(true);
+  }
+  console.log("카트 클릭");
+};
+
+// 장바구니 추가
+const selectCartItem = (attraction) => {
+  cartItems.value.push(attraction);
+};
 </script>
 
 <template>
   <div
     style="
       display: flex;
-      height: calc(100vh - 56px);
+      height: calc(100vh - 66px);
       position: relative;
       box-sizing: content-box;
     "
@@ -171,17 +193,25 @@ watch([sido_code, dogsize], () => {
         <MapDetail
           :attraction="selectAttraction"
           @set-show-detail="setShowDetail"
+          @add-cart-item="selectCartItem"
         />
 
-        <!-- 게시글 작성버튼 -->
-
         <!-- 지도 -->
+      </div>
+
+      <!-- 게시글 작성버튼 -->
+      <div class="cart-div" v-if="isCartShowed == true">
+        <MapCart :attractions="cartItems" @click-handler="setShowCart" />
       </div>
 
       지도 화면
     </div>
 
-    <div class="cart-group cart-hover">
+    <div
+      class="cart-group cart-hover"
+      @click="clickCart"
+      v-if="isCartShowed != true"
+    >
       <div class="cart-button">
         <div v-if="cartItems.length != 0">
           <span>{{ cartItems.length }}</span>
@@ -191,13 +221,13 @@ watch([sido_code, dogsize], () => {
           fill="none"
           viewBox="0 0 24 24"
           stroke-width="1.5"
-          stroke="white"
+          stroke="currentColor"
           class="size-6"
         >
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
-            d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
           />
         </svg>
       </div>
@@ -207,14 +237,16 @@ watch([sido_code, dogsize], () => {
 
 <style scoped>
 .left-side {
+  box-sizing: border-box;
   position: relative;
+  min-width: 390px;
   width: 390px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   margin-bottom: 54px;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding-bottom: 64px;
 }
 
 .left-side > .search-group {
@@ -227,7 +259,7 @@ watch([sido_code, dogsize], () => {
 .left-side > .pagination-group {
   position: fixed;
   bottom: 0;
-  width: 390px;
+  min-width: 390px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -241,6 +273,7 @@ watch([sido_code, dogsize], () => {
 }
 
 .outer {
+  overflow-y: auto;
   min-height: calc(100% - 200px);
 }
 
@@ -263,6 +296,7 @@ watch([sido_code, dogsize], () => {
 
 .right-side {
   width: calc(100% - 380px);
+  height: 100%;
   z-index: 0;
   position: relative;
 }
@@ -275,21 +309,31 @@ watch([sido_code, dogsize], () => {
 
 .cart-group {
   position: fixed;
+  box-sizing: border-box;
+  width: fit-content;
   bottom: 10px;
   right: 10px;
-  width: 3rem;
   padding: 0.5rem;
   border-radius: 3rem;
   background-color: rgb(34 197 94);
+  border: 2px solid rgb(34 197 94);
+}
+
+.cart-group > .cart-button > svg {
+  stroke: white;
+  width: 2rem;
 }
 
 .cart-group:hover {
+  box-sizing: border-box;
+  width: fit-content;
   border: 2px solid rgb(34 197 94);
   background-color: white;
 }
 
 .cart-group:hover > .cart-button > svg {
   stroke: rgb(34 197 94);
+  width: 2rem;
 }
 
 .cart-group > .cart-button {
@@ -313,5 +357,16 @@ watch([sido_code, dogsize], () => {
   color: white;
   font-weight: bold;
   border-radius: 3rem;
+}
+
+.cart-div {
+  position: absolute;
+  margin: 20px 15px;
+  width: calc(100% - 30px);
+  height: calc(100% - 40px);
+  z-index: 100;
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border: 1px solid rgba(209, 213, 219, 0.418);
 }
 </style>
