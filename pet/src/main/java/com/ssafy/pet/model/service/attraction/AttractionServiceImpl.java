@@ -54,18 +54,26 @@ public class AttractionServiceImpl implements AttractionService {
 		return attractionMapper.viewHotplaces();
 	}
 
+	//searchDetailByKeyword함수를 위한 helper function
+	public void addDetails(List<Integer> content_ids, List<AttractionDetailDto> result) {
+		for(int content_id : content_ids)
+		{
+			AttractionDetailDto detail = new AttractionDetailDto();
+			detail.setAttraction(attractionMapper.searchByContentID(content_id));
+			detail.setPetAttraction(attractionMapper.searchPetByContentID(content_id));
+			result.add(detail);
+		}
+	}
+	
 	@Override
 	public List<AttractionDetailDto> searchDetailByKeyword(String keyword) { 
 		List<Integer> content_ids = attractionMapper.searchDetailByKeyword(keyword);
+		List<Integer> all_breeds_content_ids = attractionMapper.searchDetailByKeyword("모든 견종");
+		
 		List<AttractionDetailDto> result = new ArrayList<>();
 		
-		for(int i = 0, size = content_ids.size(); i < size; i++)
-		{
-			AttractionDetailDto detail = new AttractionDetailDto();
-			detail.setAttraction(attractionMapper.searchByContentID(content_ids.get(i)));
-			detail.setPetAttraction(attractionMapper.searchPetByContentID(content_ids.get(i)));
-			result.add(detail);
-		}
+		addDetails(content_ids, result);
+		addDetails(all_breeds_content_ids, result);
 		
 		return result;
 	}

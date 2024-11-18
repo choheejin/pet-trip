@@ -36,6 +36,8 @@ public interface AttractionService {
 	
 	//sido_code로 gugun_code 찾기
 	List<Integer> searchGugunCodeBySidoCode(int sido_code);
+	
+	void addDetails(List<Integer> contentIds, List<AttractionDetailDto> result);
 
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();
