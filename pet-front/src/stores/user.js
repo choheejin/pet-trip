@@ -7,7 +7,7 @@ import { useMenuStore } from "@/stores/menu";
 export const useAuthStore = defineStore(
   "auth",
   () => {
-    const token = ref(null);
+    const token = ref(localStorage.getItem('authToken') || null);
     const user = ref(null);
     const menuStore = useMenuStore();
 
@@ -22,6 +22,7 @@ export const useAuthStore = defineStore(
 
       //토큰 정보 및 유저 정보 세팅
       token.value = response.data["access-token"];
+      localStorage.setItem('authToken', token.value);
       user.value = jwtDecode(token.value);
       // console.log(token.value);
 
@@ -35,6 +36,7 @@ export const useAuthStore = defineStore(
       token.value = null;
       user.value = null;
 
+      localStorage.removeItem('authToken'); 
       menuStore.changeLoginState(false);
     };
 

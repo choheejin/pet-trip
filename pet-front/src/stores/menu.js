@@ -3,7 +3,7 @@ import { defineStore } from "pinia";
 
 export const useMenuStore = defineStore("menuStore", () => {
   // 사용자 로그인 상태 추적
-  const isLoggedIn = ref(false); // 로그인 여부
+  const isLoggedIn = ref(localStorage.getItem('authToken') ? true : false); // 로그인 여부
 
   const menuList = ref([
     { name: "회원가입", show: true, routeName: "user-join" },
