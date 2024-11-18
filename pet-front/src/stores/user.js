@@ -13,15 +13,11 @@ export const useAuthStore = defineStore(
 
     const join = async (joinInfo) => {
       console.log("user.js에서 회원가입 확인 : ", joinInfo);
-      const response = await userApi.post("/join", joinInfo);
-
-      //토큰 정보 및 유저 정보 세팅(회원 가입 후, 로그인 따로 할 필요 없음)
-      token.value = response.data;
-      user.value = jwtDecode(token.value);
+      const response = await userApi.post("/signup", joinInfo);
     };
 
     const login = async (loginInfo) => {
-      console.log("User.js에서 확인 ", loginInfo);
+      // console.log("User.js에서 확인 ", loginInfo);
       const response = await userApi.post("/login", loginInfo);
 
       //토큰 정보 및 유저 정보 세팅
@@ -34,7 +30,7 @@ export const useAuthStore = defineStore(
     };
 
     const logout = () => {
-      console.log("로그아웃하기~~");
+      // console.log("로그아웃하기~~");
       //토큰 정보 및 유저 정보 삭제
       token.value = null;
       user.value = null;
@@ -42,7 +38,13 @@ export const useAuthStore = defineStore(
       menuStore.changeLoginState(false);
     };
 
-    return { user, token, join, login, logout };
+    const checkId = async (user_id) => {
+      // console.log("유효성 검사 대상인 id : ", user_id);
+      const response = await userApi.get(`/${user_id}`);
+      return response.data;
+    };
+
+    return { user, token, join, login, logout, checkId };
   },
   {
     persist: true, // 로컬 스토리지와 연동

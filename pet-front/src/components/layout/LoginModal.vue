@@ -28,7 +28,6 @@ const login = async () => {
   <div class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="loginModalLabel">로그인</h1>
         <button
           type="button"
           class="btn-close"
@@ -36,6 +35,8 @@ const login = async () => {
           aria-label="Close"
           @click="$emit('close')"
         ></button>
+        <img class="icon" src="/icon.png" />
+        <h1 class="modal-title fs-5" id="loginModalLabel">로그인</h1>
       </div>
       <div class="modal-body">
         <form @submit.prevent="login">
@@ -80,14 +81,21 @@ const login = async () => {
   justify-content: center;
   align-items: center;
 }
-
 .modal-content {
   background-color: white;
   padding: 20px;
   border-radius: 15px;
   width: 50%;
 }
-
+.modal-header {
+  flex-direction: column;
+}
+.icon {
+  width: 80px;
+}
+.modal-title {
+  font-weight: bold;
+}
 .btn-login {
   background-color: #e0e5b6;
 }
