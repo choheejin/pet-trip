@@ -134,8 +134,8 @@ public class AttractionController {
 	
 	@GetMapping("/hotplace-ranking")
 	@ResponseBody
-	public ResponseEntity<List<HotplaceDto>> getHotplacePlanRanking(){
-		List<HotplaceDto> result = attractionService.getHotplaceRanking();
+	public ResponseEntity<List<AttractionsDto>> getHotplacePlanRanking(){
+		List<AttractionsDto> result = attractionService.getHotplaceRanking();
 		
 		if(result == null)
 		{

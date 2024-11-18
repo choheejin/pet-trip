@@ -95,7 +95,7 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 
 	@Override
-	public List<HotplaceDto> getHotplaceRanking() {
+	public List<AttractionsDto> getHotplaceRanking() {
 		return attractionMapper.getHotplaceRanking();
 	}
 }

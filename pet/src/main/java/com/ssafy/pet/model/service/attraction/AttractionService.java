@@ -42,7 +42,7 @@ public interface AttractionService {
 	List<TravelPlansDto> getPlanRanking();
 	
 	//가장 많이 좋아요 언급된 핫플레이스를 내림차순으로 정렬해서 가져오기
-	List<HotplaceDto> getHotplaceRanking();
+	List<AttractionsDto> getHotplaceRanking();
 
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();

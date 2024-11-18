@@ -72,7 +72,7 @@
 		order by pf_grouped.plan_count desc;
 	</select>
 	
-	<select id="getHotplaceRanking" resultType="HotplaceDto">
+	<select id="getHotplaceRanking" resultType="AttractionsDto">
 		select at.* 
 		from attractions at
 		join ( 
