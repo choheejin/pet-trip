@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { useAuthStore } from "@/stores/user";
 const userStore = useAuthStore();
 
+const emit = defineEmits(["close"]);
 const signupForm = ref({
   user_id: "",
   username: "",
@@ -10,18 +11,31 @@ const signupForm = ref({
   password: "",
 });
 
+const idErrorMessage = ref("");
+
+const idValid = async () => {
+  try {
+    await userStore.checkId(signupForm.value.user_id);
+    idErrorMessage.value = ""; // 중복된 아이디가 아닌 경우
+    return true;
+  } catch (error) {
+    idErrorMessage.value = error.response?.data?.message || "아이디 확인 오류";
+    return false;
+  }
+};
+
 const emailValid = computed(() => signupForm.value.email.includes("@"));
 const passwordValid = computed(() => signupForm.value.password.length >= 6);
 
 // 회원가입 함수
 const join = async () => {
-  if (emailValid.value && passwordValid.value) {
+  if (idValid.value && emailValid.value && passwordValid.value) {
     try {
       // user.js 스토어의 signup 호출
       await userStore.join(signupForm.value);
 
       // 회원가입 후 모달 닫기
-      $emit("close");
+      emit("close");
     } catch (error) {
       console.error("회원가입 실패:", error);
     }
@@ -35,7 +49,6 @@ const join = async () => {
   <div class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="signupModalLabel">회원가입</h1>
         <button
           type="button"
           class="btn-close"
@@ -43,6 +56,8 @@ const join = async () => {
           aria-label="Close"
           @click="$emit('close')"
         ></button>
+        <img class="icon" src="/icon.png" />
+        <h1 class="modal-title fs-5" id="signupModalLabel">회원가입</h1>
       </div>
       <div class="modal-body">
         <form @submit.prevent="join">
@@ -55,7 +70,11 @@ const join = async () => {
               id="user_id"
               placeholder="아이디"
               required
+              @blur="idValid"
             />
+            <div v-if="idErrorMessage" class="text-danger">
+              사용 불가능한 아이디입니다.
+            </div>
           </div>
           <div class="mb-3">
             <label for="username" class="form-label">이름</label>
@@ -100,7 +119,7 @@ const join = async () => {
             <button
               type="submit"
               class="btn w-100"
-              :disabled="!emailValid || !passwordValid"
+              :disabled="idErrorMessage || !emailValid || !passwordValid"
             >
               회원가입
             </button>
@@ -130,7 +149,12 @@ const join = async () => {
   border-radius: 15px;
   width: 50%;
 }
-
+.modal-header {
+  flex-direction: column;
+}
+.icon {
+  width: 80px;
+}
 .text-danger {
   font-size: 0.9rem;
 }

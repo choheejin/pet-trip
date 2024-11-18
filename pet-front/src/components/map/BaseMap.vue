@@ -1,6 +1,6 @@
 <script setup>
 import axios from "axios";
-import { ref, computed, watch, watchEffect, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import MapList from "@/components/map/MapList.vue";
 import MapDetail from "@/components/map/MapDetail.vue";
 import { useMainSelectStore } from "@/stores/mainselect.js";
@@ -14,6 +14,7 @@ const title = ref("");
 const attractions = ref([]); // 리스트의 값
 const selectAttraction = ref(null); // 상세 보기의 값
 const showDetail = ref(false);
+const dogsize = ref(""); // 강아지 크기
 
 const cartItems = ref([1]); // 여행경로 계획 예정 아이템들
 
@@ -35,6 +36,18 @@ const getAttractions = async () => {
   attractions.value = data;
 };
 
+// 반려견 사이즈로 검색하기
+const getAttractionsBySize = async () => {
+  console.log("사이즈 : ", dogsize.value);
+  setShowDetail(false);
+
+  const { data } = await axios.get(
+    `http://localhost:8080/pet/attraction/detail?keyword=${dogsize.value}`
+  );
+  console.log(data);
+  attractions.value = data.map((item) => item.attraction);
+};
+
 const selected = (attraction) => {
   console.log("체크!");
   console.log(attraction);
@@ -45,12 +58,28 @@ const selected = (attraction) => {
 // 메인화면에서 선택된거
 const mainSelectStore = useMainSelectStore();
 const selectedFileName = computed(() => mainSelectStore.selectedSidoCode);
+const selectedDogSize = computed(() => mainSelectStore.selectedDogSize);
 
 onMounted(() => {
+  // 초기 설정
   if (selectedFileName.value !== null) {
     sido_code.value = selectedFileName.value;
+  }
+
+  if (selectedDogSize.value !== null) {
+    dogsize.value = selectedDogSize.value;
+  }
+});
+
+// `sido_code` 또는 `dogsize`가 변경될 때마다 호출
+watch([sido_code, dogsize], () => {
+  // `sido_code`가 변경되었을 때는 getAttractions() 호출
+  if (sido_code.value) {
     getAttractions();
-    sido_code;
+  }
+  // `dogsize`가 변경되었을 때는 getAttractionsBySize() 호출
+  if (dogsize.value) {
+    getAttractionsBySize();
   }
 });
 </script>

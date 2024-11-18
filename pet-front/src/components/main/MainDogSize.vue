@@ -1,17 +1,20 @@
 <script setup>
 import { ref } from "vue";
-
+import router from "@/router/index";
+import { useMainSelectStore } from "@/stores/mainselect";
 const selectedSize = ref(""); // 선택된 강아지 크기를 추적
+const mainSelectStore = useMainSelectStore();
 
 const sizes = [
   { label: "소형견", iconSrc: "/src/assets/small.png", color: "white" },
   { label: "중형견", iconSrc: "/src/assets/medium.png", color: "white" },
   { label: "대형견", iconSrc: "/src/assets/large.png", color: "white" },
 ];
-
 function selectSize(size) {
   console.log("선택된 강아지 : ", size);
   selectedSize.value = size;
+  mainSelectStore.setDogSize(size);
+  router.push({ name: "BaseMap" });
 }
 </script>
 

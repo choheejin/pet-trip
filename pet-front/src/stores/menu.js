@@ -16,6 +16,7 @@ export const useMenuStore = defineStore("menuStore", () => {
   // 로그인 상태 변경 함수
   const changeLoginState = (state) => {
     isLoggedIn.value = state;
+
     changeMenuState(); // 로그인 상태 변경 후 메뉴 상태 업데이트
   };
 
