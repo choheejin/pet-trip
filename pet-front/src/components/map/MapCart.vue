@@ -44,7 +44,7 @@ const totalCnt = computed(() => {
   return cartStore.attraction.length;
 });
 
-const postPlan = () => {
+const postPlan = async () => {
   const items = cartStore.attraction.map((item, idx) => {
     return {
       note: "내용없음",
@@ -58,12 +58,19 @@ const postPlan = () => {
     items: items,
   };
 
-  mapApi.post("", data, { headers: { accessToken: authStore.token } });
+  await mapApi.post("", data, { headers: { accessToken: authStore.token } })
+  .then(() => {
+    alert("게시글 작성 완료");
+    window.location.reload(true);
+  }).catch((error) => {
+    console.log(error);
+    alert("에러 발생");
+  });
 };
 </script>
 
 <template>
-  <div class="cart-container">
+  <form class="cart-container" @submit.prevent="postPlan">
     <div class="title">게시글 작성</div>
     <div class="input-group">
       <label>제목 </label
@@ -128,8 +135,8 @@ const postPlan = () => {
       ></textarea>
     </div>
 
-    <div><button @click="postPlan">게시글 작성</button></div>
-  </div>
+    <div><button>게시글 작성</button></div>
+  </form>
 </template>
 
 <style scoped>
