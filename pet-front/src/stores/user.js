@@ -12,7 +12,7 @@ export const useAuthStore = defineStore(
     const menuStore = useMenuStore();
 
     const join = async (joinInfo) => {
-      console.log("user.js에서 회원가입 확인 : ", joinInfo);
+      // console.log("user.js에서 회원가입 확인 : ", joinInfo);
       const response = await userApi.post("/signup", joinInfo);
     };
 

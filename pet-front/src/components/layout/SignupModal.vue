@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useAuthStore } from "@/stores/user";
 const userStore = useAuthStore();
 
@@ -12,6 +12,8 @@ const signupForm = ref({
 });
 
 const idErrorMessage = ref("");
+const emailErrorMessage = ref("");
+const pwdErrorMessage = ref("");
 
 const idValid = async () => {
   try {
@@ -23,13 +25,34 @@ const idValid = async () => {
     return false;
   }
 };
+// 이메일 유효성 검사
+const emailValid = computed(() => {
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailPattern.test(signupForm.value.email);
+});
 
-const emailValid = computed(() => signupForm.value.email.includes("@"));
+watch(
+  () => signupForm.value.email,
+  (newVal) => {
+    emailErrorMessage.value = emailValid.value
+      ? ""
+      : "이메일에는 '@'를 포함해야 합니다.";
+  }
+);
+
+// 비밀번호 유효성 검사
 const passwordValid = computed(() => signupForm.value.password.length >= 6);
-
+watch(
+  () => signupForm.value.password,
+  (newVal) => {
+    pwdErrorMessage.value = passwordValid.value
+      ? ""
+      : "비밀번호는 최소 6자 이상이어야 합니다.";
+  }
+);
 // 회원가입 함수
 const join = async () => {
-  if (idValid.value && emailValid.value && passwordValid.value) {
+  if (emailValid.value && passwordValid.value) {
     try {
       // user.js 스토어의 signup 호출
       await userStore.join(signupForm.value);
@@ -73,7 +96,7 @@ const join = async () => {
               @blur="idValid"
             />
             <div v-if="idErrorMessage" class="text-danger">
-              사용 불가능한 아이디입니다.
+              {{ idErrorMessage }}
             </div>
           </div>
           <div class="mb-3">
@@ -97,8 +120,8 @@ const join = async () => {
               placeholder="이메일"
               required
             />
-            <div v-if="!emailValid" class="text-danger">
-              이메일에는 '@'를 포함해야 합니다.
+            <div v-if="emailErrorMessage" class="text-danger">
+              {{ emailErrorMessage }}
             </div>
           </div>
           <div class="mb-3">
@@ -111,8 +134,8 @@ const join = async () => {
               placeholder="비밀번호"
               required
             />
-            <div v-if="!passwordValid" class="text-danger">
-              비밀번호는 최소 6자 이상이어야 합니다.
+            <div v-if="pwdErrorMessage" class="text-danger">
+              {{ pwdErrorMessage }}
             </div>
           </div>
           <div class="modal-footer">
