@@ -70,5 +70,18 @@
 		) pf_grouped
 		on tp.id = pf_grouped.plan_id
 		order by pf_grouped.plan_count desc;
-	</select>	
+	</select>
+	
+	<select id="getHotplaceRanking" resultType="HotplaceDto">
+		select at.* 
+		from attractions at
+		join ( 
+			select content_id, COUNT(*) as hotplace_count
+			from hotplace
+			group by content_id
+		) hp_grouped
+		on at.content_id = hp_grouped.content_id
+		order by hp_grouped.hotplace_count desc;
+	</select>
+	
 </mapper>

@@ -131,4 +131,19 @@ public class AttractionController {
 		
 		return ResponseEntity.ok(result);
 	}
+	
+	@GetMapping("/hotplace-ranking")
+	@ResponseBody
+	public ResponseEntity<List<HotplaceDto>> getHotplacePlanRanking(){
+		List<HotplaceDto> result = attractionService.getHotplaceRanking();
+		
+		if(result == null)
+		{
+			throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND);
+		}
+		
+		System.out.println(result);
+		
+		return ResponseEntity.ok(result);
+	}
 }
