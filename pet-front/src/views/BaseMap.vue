@@ -2,7 +2,7 @@
 import axios from "axios";
 import MapList from "@/components/map/MapList.vue";
 import MapDetail from "@/components/map/MapDetail.vue";
-import MapCart from "./MapCart.vue";
+import MapCart from "@/components/map/MapCart.vue";
 import { ref, computed, watch, onMounted } from "vue";
 import { useMainSelectStore } from "@/stores/mainselect.js";
 
