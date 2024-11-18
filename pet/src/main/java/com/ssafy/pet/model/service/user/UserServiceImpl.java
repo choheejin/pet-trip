@@ -2,6 +2,7 @@ package com.ssafy.pet.model.service.user;
 
 import java.util.Optional;
 
+import org.apache.ibatis.binding.BindingException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,13 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Optional<Boolean> findIdByUserId(String user_id) {
-		int cnt = userMapper.findIdByUserId(user_id);
+		int cnt = 0;
+		
+		try {			
+			cnt = userMapper.findIdByUserId(user_id);
+		} catch(BindingException e) {
+			return Optional.of(true);
+		}
 		
 		return cnt == 0 ? Optional.of(true) : Optional.empty();
 	}

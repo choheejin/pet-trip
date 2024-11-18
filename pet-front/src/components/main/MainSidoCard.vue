@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from "vue";
-import {useMainSelectStore} from "@/stores/mainselect.js";
+import { useMainSelectStore } from "@/stores/mainselect.js";
+
 import router from "@/router/index.js";
 
 const images = [
@@ -51,19 +52,21 @@ function nextGroup() {
 
 function sendFileName(image) {
   mainSelectStore.setSidoCode(image.sido_code);
-  router.push({name:'BaseMap'})
+  router.push({ name: "BaseMap" });
 }
 </script>
 
 <template>
   <div class="main-sido-card">
     <div class="arrow left">
-      <button @click="prevGroup" :disabled="currentIndex.value === 0">&#9664;</button>
+      <button @click="prevGroup" :disabled="currentIndex.value === 0">
+        &#9664;
+      </button>
     </div>
 
     <div class="card-container">
       <div>
-        <h1>지역별 관광지</h1>
+        <h1 class="title">지역별 관광지</h1>
       </div>
       <transition-group name="slide" tag="div" class="cards">
         <div
@@ -184,5 +187,10 @@ function sendFileName(image) {
 
 .slide-leave-to {
   transform: translateX(-100%);
+}
+
+.title {
+  font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+  font-weight: bold;
 }
 </style>

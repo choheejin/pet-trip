@@ -10,7 +10,7 @@ const hotplaces = [
     content_id: "125408",
     name: "청송 자연휴양림 퇴적암층 (청송 국가지질공원)",
     cnt: "11",
-  }
+  },
 ];
 
 const hottravelplans = [

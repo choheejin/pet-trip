@@ -1,4 +1,4 @@
-import BaseMap from "@/components/map/BaseMap.vue";
+import BaseMap from "@/views/BaseMap.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import TheMainView from "@/views/TheMainView.vue";
 
