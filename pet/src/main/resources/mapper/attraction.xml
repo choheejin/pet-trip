@@ -69,7 +69,7 @@
 			group by plan_id
 		) pf_grouped
 		on tp.id = pf_grouped.plan_id
-		order by pf_grouped.plan_count desc;
+		order by pf_grouped.plan_count desc limit 5;
 	</select>
 	
 	<select id="getHotplaceRanking" resultType="AttractionsDto">
@@ -81,7 +81,7 @@
 			group by content_id
 		) hp_grouped
 		on at.content_id = hp_grouped.content_id
-		order by hp_grouped.hotplace_count desc;
+		order by hp_grouped.hotplace_count desc limit 5;
 	</select>
 	
 </mapper>
