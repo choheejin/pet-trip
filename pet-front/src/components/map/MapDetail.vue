@@ -2,8 +2,16 @@
 import { defineProps, ref } from "vue";
 
 const selectAttraction = ref(false);
+const props = defineProps(["attraction"]);
 
-defineProps(["attraction"]);
+const emit = defineEmits(["addCartItem"]);
+
+const emitHandler = () => {
+  console.log("work?");
+  emit("addCartItem", props.attraction);
+  // alert("장바구니에 추가 되었습니다.").then(() => {
+  // });
+};
 </script>
 
 <template>
@@ -35,10 +43,7 @@ defineProps(["attraction"]);
       <div class="text-addr">{{ attraction.addr1 }}</div>
 
       <div class="button-group">
-        <div
-          class="button-cart"
-          @click="$emit('selectAttraction', 'attraction.id')"
-        >
+        <div class="button-cart" @click="emitHandler">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -117,12 +122,23 @@ img {
   gap: 0.35rem;
   cursor: pointer;
   width: 50%;
-  border: 1px solid;
+  color: rgb(113 113 122);
+  border: 1px solid rgb(113 113 122);
   border-radius: 0.35rem;
   padding: 0.25rem 0.5rem;
 }
 
 .button-group > .button-cart > svg {
   width: 1.5rem;
+  stroke: rgb(113 113 122);
+}
+
+.button-group > .button-cart:hover {
+  background-color: rgb(113 113 122);
+  color: white;
+}
+
+.button-group > .button-cart:hover > svg {
+  stroke: white;
 }
 </style>
