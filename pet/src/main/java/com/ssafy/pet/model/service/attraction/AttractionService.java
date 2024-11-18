@@ -7,6 +7,7 @@ import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
 import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
+import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UsersDto;
 
 public interface AttractionService {
@@ -36,8 +37,9 @@ public interface AttractionService {
 	
 	//sido_code로 gugun_code 찾기
 	List<Integer> searchGugunCodeBySidoCode(int sido_code);
-	
-	void addDetails(List<Integer> contentIds, List<AttractionDetailDto> result);
+
+	//favorite cnt를 기준으로 내림차순으로 정렬된 여행계획 가져오기
+	List<TravelPlansDto> getPlanRanking();
 
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();

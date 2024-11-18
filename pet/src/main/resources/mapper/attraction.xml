@@ -59,5 +59,12 @@
 		select gugun_code from guguns
 		where sido_code = #{sido_code}
 	</select>	
-	
+
+	<select id="getPlanRanking" resultType="TravelPlansDto">
+		select tp.* 
+		from travel_plans tp 
+		join plans_favorites pf
+		on tp.id = pf.plan_id
+		order by pf.plans_favorite_cnt desc;
+	</select>	
 </mapper>

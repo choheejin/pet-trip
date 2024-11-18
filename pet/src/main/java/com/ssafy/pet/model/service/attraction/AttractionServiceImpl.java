@@ -10,6 +10,7 @@ import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
 import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
+import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.model.mapper.AttractionMapper;
 import lombok.RequiredArgsConstructor;
@@ -86,5 +87,10 @@ public class AttractionServiceImpl implements AttractionService {
 	@Override
 	public List<Integer> searchGugunCodeBySidoCode(int sido_code) {
 		return attractionMapper.searchGugunCodeBySidoCode(sido_code);
+	}
+
+	@Override
+	public List<TravelPlansDto> getPlanRanking() {
+		return attractionMapper.getPlanRanking();
 	}
 }

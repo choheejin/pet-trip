@@ -23,6 +23,7 @@ import com.ssafy.pet.dto.AttractionsDto;
 import com.ssafy.pet.dto.GugunsDto;
 import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
+import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
@@ -116,4 +117,18 @@ public class AttractionController {
 		return ResponseEntity.ok(gugun_code);
 	}
 	
+	@GetMapping("/plan-ranking")
+	@ResponseBody
+	public ResponseEntity<List<TravelPlansDto>> getPlanRanking(){
+		List<TravelPlansDto> result = attractionService.getPlanRanking();
+		
+		if(result == null)
+		{
+			throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND);
+		}
+		
+		System.out.println(result);
+		
+		return ResponseEntity.ok(result);
+	}
 }
