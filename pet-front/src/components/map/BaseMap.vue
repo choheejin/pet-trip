@@ -1,9 +1,9 @@
 <script setup>
 import axios from "axios";
-import {ref, computed, watch, watchEffect} from "vue";
+import { ref, computed, watch, watchEffect, onMounted } from "vue";
 import MapList from "@/components/map/MapList.vue";
 import MapDetail from "@/components/map/MapDetail.vue";
-import {useMainSelectStore} from "@/stores/mainselect.js";
+import { useMainSelectStore } from "@/stores/mainselect.js";
 
 // 검색관련
 const sido_code = ref("");
@@ -46,16 +46,13 @@ const selected = (attraction) => {
 const mainSelectStore = useMainSelectStore();
 const selectedFileName = computed(() => mainSelectStore.selectedSidoCode);
 
-/*watchEffect(() => {
-  const select = selectedFileName.value;
-  console.log("지역코드 선택 감지", select);
-  if (select) {
-    // sido_code를 업데이트하고, getAttractions 호출
-    sido_code.value = select;
+onMounted(() => {
+  if (selectedFileName.value !== null) {
+    sido_code.value = selectedFileName.value;
     getAttractions();
+    sido_code;
   }
-});*/
-
+});
 </script>
 
 <template>
