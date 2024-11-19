@@ -83,12 +83,17 @@ function sendFileName(image) {
           @click="sendFileName(image)"
           :class="{ 'empty-card': image.sido_name === '' }"
         >
-          <img v-if="image.sido_name" :src="getImagePath(image)" :alt="image.sido_name" />
-          <div v-if="image.sido_name" class="sido-name">{{ image.sido_name }}</div>
+          <img
+            v-if="image.sido_name"
+            :src="getImagePath(image)"
+            :alt="image.sido_name"
+          />
+          <div v-if="image.sido_name" class="sido-name">
+            {{ image.sido_name }}
+          </div>
+        </div>
+      </transition-group>
     </div>
-    </transition-group>
-
-  </div>
 
     <div class="arrow right">
       <button
@@ -207,5 +212,6 @@ function sendFileName(image) {
 .title {
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
   font-weight: bold;
+  font-size: 30px;
 }
 </style>

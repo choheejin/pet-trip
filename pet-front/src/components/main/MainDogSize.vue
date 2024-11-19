@@ -50,8 +50,8 @@ function selectSize(size) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 230px;
-  padding: 0 20px;
+  width: 200px;
+  padding: 5px 20px;
   background-color: white;
   cursor: pointer;
   transition: background-color 0.3s ease, opacity 0.3s ease;

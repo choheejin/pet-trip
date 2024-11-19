@@ -102,7 +102,7 @@ const closeModal = () => {
 }
 .navbar-collapse {
   font-weight: bold;
-  font-size: 1.25rem;
+  font-size: 3rem;
 }
 .navbar-nav .nav-link {
   margin: 0 10px; /* 메뉴 항목 사이 여백 */

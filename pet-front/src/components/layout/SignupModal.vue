@@ -174,6 +174,7 @@ const join = async () => {
 }
 .modal-header {
   flex-direction: column;
+  font-weight: bolder;
 }
 .icon {
   width: 80px;
