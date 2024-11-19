@@ -68,7 +68,7 @@ public class TravelPlanController {
 	}
 	
 	@GetMapping("/plans")
-	public ResponseEntity<List<TravelPlansDto>> getPlans(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
+	public ResponseEntity<List<TravelPlansDto>> getPlans(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value="sort", required = false, defaultValue="oldest") String sort){
 		
 		List<TravelPlansDto> res = new ArrayList<>();
