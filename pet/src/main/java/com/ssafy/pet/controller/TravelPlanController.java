@@ -73,6 +73,7 @@ public class TravelPlanController {
 		
 		List<TravelPlansDto> res = new ArrayList<>();
 		int page_start = UtilClass.caculateOffest(page);
+		System.out.println("검색 키워드!!!!!!!!!!!!!!"+sort);
 		
 		switch(sort) {
 			//오래된 순

@@ -2,6 +2,7 @@
 import { defineProps } from "vue";
 
 // 부모로부터 전달받을 prop 정의
+// props에 id에 해당하는 travelPlanitems의 첫 번째 관광지의 img 를 추가로 가지고 있게 만들기
 const props = defineProps({
   travelplans: {
     type: Array,

@@ -3,7 +3,7 @@ import { ref } from "vue";
 import mapApi from "@/api/mapApi";
 import travelplanApi from "@/api/travelplanApi";
 import BoardSide from "@/components/board/BoardSide.vue";
-import BoardTravelPlan from "@/components/board/BoardTravelPlan.vue"; // BoardTravelPlan 컴포넌트 import
+import BoardTravelPlan from "@/components/board/BoardTravelPlan.vue";
 
 // 검색 결과
 const travelplans = ref([]);
@@ -12,23 +12,23 @@ const sort = ref("");
 
 // 검색 하기 - 무작위로
 const getTravelPlans = async () => {
-  console.log("게시판?!", page.value);
+  // console.log("게시판?!", page.value);
   const { data } = await mapApi.get("", {
     params: {
       page: page.value,
     },
   });
   travelplans.value = data.list;
-  console.log(travelplans.value);
+  // console.log(travelplans.value);
 };
 
 // 검색 하기 - 정렬 조건
 const getTravelPlansBySorting = async () => {
-  page.value = 1;
-  console.log("게시판 정렬", page.value);
+  // console.log("게시판 정렬!!!", page.value);
   const { data } = await travelplanApi.get("", {
     params: {
       sort: sort.value,
+      page: page.value,
     },
   });
   travelplans.value = data;
@@ -41,6 +41,7 @@ const changePage = (newPage) => {
   if (sort.value === "") {
     getTravelPlans(); // 정렬 없이 가져오기
   } else {
+    // console.log("정렬 조건 주기:", sort.value);
     getTravelPlansBySorting(); // 정렬된 목록 가져오기
   }
 };
