@@ -60,14 +60,14 @@
 		where sido_code = #{sido_code}
 	</select>	
 
-	<select id="getPlanRanking" resultType="TravelPlansDto">
+	<select id="getPlanRanking" parameterType = "int" resultType="TravelPlansDto">
 		select *
 		from travel_plans
 		order by favorite_cnt desc
 		limit #{page}, 6;
 	</select>
 	
-	<select id="getHotplaceRanking" resultType="AttractionsDto">
+	<select id="getHotplaceRanking" parameterType="int" resultType="AttractionsDto">
 		select *
 		from attractions
 		order by favorite_cnt desc

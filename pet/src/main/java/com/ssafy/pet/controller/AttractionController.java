@@ -119,7 +119,7 @@ public class AttractionController {
 	
 	@GetMapping("/plan-ranking")
 	@ResponseBody
-	public ResponseEntity<List<TravelPlansDto>> getPlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
+	public ResponseEntity<List<TravelPlansDto>> getPlanRanking(@RequestParam(value = "page", required = false, defaultValue = "0") int page){
 		List<TravelPlansDto> result = attractionService.getPlanRanking(page);
 		
 		if(result == null)
@@ -134,7 +134,7 @@ public class AttractionController {
 	
 	@GetMapping("/hotplace-ranking")
 	@ResponseBody
-	public ResponseEntity<List<AttractionsDto>> getHotplacePlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
+	public ResponseEntity<List<AttractionsDto>> getHotplacePlanRanking(@RequestParam(value = "page", required = false, defaultValue = "0") int page){
 		List<AttractionsDto> result = attractionService.getHotplaceRanking(page);
 		
 		if(result == null)
