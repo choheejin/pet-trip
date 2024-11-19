@@ -75,21 +75,21 @@
 		select * 
 		from travel_plans
 		order by created_at asc
-		limit #{page_start}, #{page_size; 
+		limit #{page_start}, #{page_size}; 
 	</select>
 	
 	<select id="getNewestPlans" parameterType="int" resultType="TravelPlansDto">
 		select * 
 		from travel_plans
 		order by created_at desc
-		limit #{page_start}, #{page_size; 
+		limit #{page_start}, #{page_size}; 
 	</select>
 	
 	<select id="getPlansByMostViews" parameterType="int" resultType="TravelPlansDto">
 		select *
 		from travel_plans
 		order by view_cnt desc
-		limit #{page_start}, #{page_size;
+		limit #{page_start}, #{page_size};
 	</select>
 	
 	<select id="getComments" parameterType="int" resultType="String">
