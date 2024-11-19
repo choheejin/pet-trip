@@ -5,6 +5,7 @@ import MapDetail from "@/components/map/MapDetail.vue";
 import MapCart from "@/components/map/MapCart.vue";
 import { ref, computed, watch, onMounted } from "vue";
 import { useMainSelectStore } from "@/stores/mainselect.js";
+import attractionApi from "@/api/attractionApi";
 
 // 검색관련
 const sido_code = ref("");
@@ -31,8 +32,8 @@ const getAttractions = async () => {
 
   setShowDetail(false);
 
-  const { data } = await axios.get(
-    `http://localhost:8080/pet/attraction/search?sidoCode=${sido_code.value}&gugunCode=${gugun_code.value}&contentTypeId=${content_type_id.value}&title=${title.value}`
+  const { data } = await attractionApi.get(
+    `/search?sidoCode=${sido_code.value}&gugunCode=${gugun_code.value}&contentTypeId=${content_type_id.value}&title=${title.value}`
   );
   console.log(data);
   attractions.value = data;
@@ -102,6 +103,7 @@ const clickCart = () => {
 
 // 장바구니 추가
 const selectCartItem = (attraction) => {
+  alert("상품이 추가 되었습니다");
   cartItems.value.push(attraction);
 };
 </script>

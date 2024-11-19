@@ -58,14 +58,12 @@ const postPlan = async () => {
     items: items,
   };
 
-  await mapApi.post("", data, { headers: { accessToken: authStore.token } })
-  .then(() => {
-    alert("게시글 작성 완료");
-    window.location.reload(true);
-  }).catch((error) => {
-    console.log(error);
-    alert("에러 발생");
-  });
+  await mapApi
+    .post("", data, { headers: { accessToken: authStore.token } })
+    .then(() => {
+      alert("게시글 작성 완료");
+      window.location.reload(true);
+    });
 };
 </script>
 
