@@ -25,4 +25,5 @@ public class AttractionsDto {
 	private String overview;
 	private int sido_code;
 	private int content_type_id;
+	private int favorite_cnt;
 }

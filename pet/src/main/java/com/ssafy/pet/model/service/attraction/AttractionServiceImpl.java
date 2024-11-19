@@ -90,12 +90,12 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 
 	@Override
-	public List<TravelPlansDto> getPlanRanking() {
-		return attractionMapper.getPlanRanking();
+	public List<TravelPlansDto> getPlanRanking(int page) {
+		return attractionMapper.getPlanRanking(page);
 	}
 
 	@Override
-	public List<AttractionsDto> getHotplaceRanking() {
-		return attractionMapper.getHotplaceRanking();
+	public List<AttractionsDto> getHotplaceRanking(int page) {
+		return attractionMapper.getHotplaceRanking(page);
 	}
 }

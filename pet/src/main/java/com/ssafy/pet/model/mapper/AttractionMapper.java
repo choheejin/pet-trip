@@ -43,10 +43,10 @@ public interface AttractionMapper {
 	List<Integer> searchGugunCodeBySidoCode(int sido_code);
 	
 	//가장 많이 언급된 여행계획을 내림차순으로 정렬해서 가져오기
-	List<TravelPlansDto> getPlanRanking();
+	List<TravelPlansDto> getPlanRanking(int page);
 	
 	//가장 많이 좋아요 언급된 핫플레이스를 내림차순으로 정렬해서 가져오기
-	List<AttractionsDto> getHotplaceRanking();
+	List<AttractionsDto> getHotplaceRanking(int page);
 
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();

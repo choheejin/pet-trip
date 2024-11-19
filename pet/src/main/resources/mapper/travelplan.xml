@@ -59,7 +59,7 @@
 	<select id="selectWithLimit" parameterType="int"
 		resultType="travelPlansDto">
 		select * from travel_plans
-		limit #{page}, 10;
+		limit #{page}, 6;
 	</select>
 
 	<select id="findItemById" parameterType="int" resultType="java.util.Map">
