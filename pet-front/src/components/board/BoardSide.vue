@@ -43,12 +43,6 @@ const handleClick = (option) => {
 </template>
 
 <style scoped>
-.sidebar {
-  border: 1px solid whitesmoke;
-  height: calc(100vh - 66px);
-  padding: 20px 10px;
-  margin-right: 2px;
-}
 
 .sort-option {
   display: flex;

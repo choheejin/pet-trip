@@ -111,7 +111,7 @@ function sendFileName(image) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
+  width: 98%;
   height: 100%;
 }
 
@@ -140,7 +140,7 @@ function sendFileName(image) {
 .card-container {
   overflow: hidden;
   width: 880px; /* Adjust width based on itemsPerPage and card width */
-  padding: 0 40px; /* 화살표와 간격을 만들기 위한 여백 추가 */
+  padding: 0 10px; /* 화살표와 간격을 만들기 위한 여백 추가 */
 }
 
 .cards {

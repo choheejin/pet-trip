@@ -38,7 +38,7 @@ function selectSize(size) {
 .buttons {
   height: 100%;
   display: flex;
-  gap: 20px;
+  gap: 15px;
   justify-content: center;
 }
 
@@ -50,7 +50,7 @@ function selectSize(size) {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 200px;
+  width: 198px;
   padding: 5px 20px;
   background-color: white;
   cursor: pointer;

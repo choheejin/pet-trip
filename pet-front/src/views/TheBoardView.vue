@@ -19,7 +19,7 @@ const getTravelPlans = async () => {
     },
   });
   travelplans.value = data.list;
-  // console.log(travelplans.value);
+  console.log("기본 계획 : ",travelplans.value);
 };
 
 // 검색 하기 - 정렬 조건
@@ -32,6 +32,7 @@ const getTravelPlansBySorting = async () => {
     },
   });
   travelplans.value = data;
+  console.log("정렬된 계획 : ", travelplans.value)
 };
 
 // 페이지 네이션에서 페이지 변경 시 호출되는 함수
@@ -60,60 +61,85 @@ getTravelPlans();
 <template>
   <div style="height: calc(100vh - 66px); display: flex; align-items: center">
     <div style="width: 1000px; margin: 0 auto; height: 100%; display: flex">
-      <div style="width: 30%">
-        <BoardSide @update-sort="updateSort" />
+      <div class="left" style="width: 30%">
+        <BoardSide class="selectOption" @update-sort="updateSort" />
       </div>
-      <div style="width: 70%">
-        <h1>선택된 정렬 기준 : {{ sort }}</h1>
-        <!-- 페이지네이션 -->
-        <div class="pagination-group">
-          <nav aria-label="Page navigation example">
-            <ul class="pagination">
-              <li class="page-item" :class="{ disabled: page.value === 1 }">
-                <a
-                  class="page-link"
-                  href="#"
-                  aria-label="Previous"
-                  @click.prevent="changePage(page.value - 1)"
-                >
-                  <span aria-hidden="true">&laquo;</span>
-                  <span class="sr-only">Previous</span>
-                </a>
-              </li>
-              <li class="page-item" :class="{ active: page.value === 1 }">
-                <a class="page-link" href="#" @click.prevent="changePage(1)"
-                  >1</a
-                >
-              </li>
-              <li class="page-item" :class="{ active: page.value === 2 }">
-                <a class="page-link" href="#" @click.prevent="changePage(2)"
-                  >2</a
-                >
-              </li>
-              <li class="page-item" :class="{ active: page.value === 3 }">
-                <a class="page-link" href="#" @click.prevent="changePage(3)"
-                  >3</a
-                >
-              </li>
-              <li class="page-item" :class="{ disabled: page.value === 3 }">
-                <a
-                  class="page-link"
-                  href="#"
-                  aria-label="Next"
-                  @click.prevent="changePage(page.value + 1)"
-                >
-                  <span aria-hidden="true">&raquo;</span>
-                  <span class="sr-only">Next</span>
-                </a>
-              </li>
-            </ul>
-          </nav>
+      <div class="right"
+           style="width: 70%">
+        <div><h1>글 등록 버튼 만들어야즹</h1></div>
+        <div>
+  <!--        <h1>선택된 정렬 기준 : {{ sort }}</h1>-->
+          <BoardTravelPlan :travelplans="travelplans" />
+          <!-- 페이지네이션 -->
+          <div class="pagination-group">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination">
+                <li class="page-item" :class="{ disabled: page.value === 1 }">
+                  <a
+                    class="page-link"
+                    href="#"
+                    aria-label="Previous"
+                    @click.prevent="changePage(page.value - 1)"
+                  >
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                </li>
+                <li class="page-item" :class="{ active: page.value === 1 }">
+                  <a class="page-link" href="#" @click.prevent="changePage(1)"
+                    >1</a
+                  >
+                </li>
+                <li class="page-item" :class="{ active: page.value === 2 }">
+                  <a class="page-link" href="#" @click.prevent="changePage(2)"
+                    >2</a
+                  >
+                </li>
+                <li class="page-item" :class="{ active: page.value === 3 }">
+                  <a class="page-link" href="#" @click.prevent="changePage(3)"
+                    >3</a
+                  >
+                </li>
+                <li class="page-item" :class="{ disabled: page.value === 3 }">
+                  <a
+                    class="page-link"
+                    href="#"
+                    aria-label="Next"
+                    @click.prevent="changePage(page.value + 1)"
+                  >
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
-        <!-- BoardTravelPlan 컴포넌트에 travelplans 전달 -->
-        <BoardTravelPlan :travelplans="travelplans" />
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.left {
+  border: 1px solid whitesmoke;
+  height: calc(100vh - 82px);
+  padding: 20px 10px;
+  margin: 10px 5px;
+}
+.selectOption {
+  margin-top: 50px;
+}
+.right {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 66px);
+  align-items: center;
+}
+.pagination-group {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+}
+
+</style>
