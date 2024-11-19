@@ -70,5 +70,28 @@
 		on a.content_id = t.content_id
 		where plan_id = #{id};
 	</select>
+	
+	<select id="getOldestPlans" parameterType="int" resultType="TravelPlansDto">
+		select * 
+		from travel_plans
+		order by created_at desc
+		limit #{page}, 6; 
+	</select>
+	
+	<select id="getNewestPlans" parameterType="int" resultType="TravelPlansDto">
+		select * 
+		from travel_plans
+		order by created_at asc
+		limit #{page}, 6; 
+	</select>
+	
+	<select id="getPlansByMostViews" parameterType="int" resultType="TravelPlansDto">
+		select *
+		from travel_plans
+		order by view_cnt desc
+		limit #{page}, 6;
+	</select>
+	
+	
 </mapper>
 

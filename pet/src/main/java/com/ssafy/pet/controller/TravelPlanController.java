@@ -25,6 +25,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
+import com.ssafy.pet.exception.ApplicationException;
+import com.ssafy.pet.exception.errorcode.SearchErrorCode;
+import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.model.service.travelplan.TravelPlanService;
 import com.ssafy.pet.util.JWTUtil;
 
@@ -36,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class TravelPlanController {
 	private final JWTUtil jwtUtil;
 	private final TravelPlanService travelPlanService;
+	private final AttractionService attracionService;
 
 	@GetMapping
 	public ResponseEntity<?> getPlans(@RequestParam(required = false) Integer page) {
@@ -58,6 +62,37 @@ public class TravelPlanController {
 				.orElseThrow(() -> new RuntimeException());
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+	
+	@GetMapping("/plans")
+	public ResponseEntity<List<TravelPlansDto>> getOldestFirst(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
+			@RequestParam(value="sort", required = false, defaultValue="oldest")String sort){
+		
+		List<TravelPlansDto> res = new ArrayList<>();
+		
+		switch(sort) {
+			//오래된 순
+			case "oldest":
+				res = travelPlanService.getOldestPlans(page);
+				break;
+			//최신 순
+			case "newest":
+				res = travelPlanService.getNewestPlans(page);
+				break;
+			//조회 순
+			case "views":
+				res = travelPlanService.getPlansByMostViews(page);
+				break;
+			//좋아요 순
+			case "likes":
+				res = attracionService.getPlanRanking(page);
+				break;
+			default:
+				throw new ApplicationException(SearchErrorCode.KEYWORD_MISSING, "잘못된 ?sort 명령어");
+			
+		}
+		
+		return ResponseEntity.ok(res);
 	}
 
 	@PostMapping

@@ -164,4 +164,22 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		
 		return plan == null ? Optional.empty() : Optional.of(resultMap);
 	}
+
+
+	@Override
+	public List<TravelPlansDto> getOldestPlans(int page) {
+		return travelPlanMapper.getOldestPlans(page);
+	}
+
+
+	@Override
+	public List<TravelPlansDto> getNewestPlans(int page) {
+		return travelPlanMapper.getNewestPlans(page);
+	}
+
+
+	@Override
+	public List<TravelPlansDto> getPlansByMostViews(int page) {
+		return travelPlanMapper.getPlansByMostViews(page);
+	}
 }

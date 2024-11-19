@@ -24,4 +24,13 @@ public interface TravelPlanService {
 	Optional<List<TravelPlansDto>> selectWithLimit(Integer page);
 
 	Optional<Map<String, Object>> findPlanWithItemsById(int id); 
+	
+	//오래된 순으로 게시글 조회
+	List<TravelPlansDto> getOldestPlans(int page);
+	
+	//최신순으로 게시글 조회
+	List<TravelPlansDto> getNewestPlans(int page);
+	
+	//가장 많이 조회 된 순으로 게시글 조회
+	List<TravelPlansDto> getPlansByMostViews(int page);
 }

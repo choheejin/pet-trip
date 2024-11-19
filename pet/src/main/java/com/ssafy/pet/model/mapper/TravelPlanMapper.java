@@ -26,5 +26,14 @@ public interface TravelPlanMapper {
 	
 	List<TravelPlansDto> selectWithLimit(Integer page);
 	
+	//오래된 순으로 게시글 조회
+	List<TravelPlansDto> getOldestPlans(int page);
+	
+	//최신순으로 게시글 조회
+	List<TravelPlansDto> getNewestPlans(int page);
+	
+	//가장 많이 조회 된 순으로 게시글 조회
+	List<TravelPlansDto> getPlansByMostViews(int page);
+	
 	List<Map<String, Object>> findItemById(int id);
 }
