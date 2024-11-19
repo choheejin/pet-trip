@@ -1,20 +1,12 @@
 <script setup>
 import { ref } from "vue";
-// 필요한 아이콘들을 import
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import {
-  faClock,
-  faFire,
-  faEye,
-  faHeart,
-} from "@fortawesome/free-solid-svg-icons";
 
 // sortOptions 배열에서 아이콘을 FontAwesome 아이콘 객체로 바꿈
 const sortOptions = [
-  { id: 1, label: "오래된 순", value: "oldest", icon: faClock },
-  { id: 2, label: "최신 순", value: "newest", icon: faFire },
-  { id: 3, label: "조회 순", value: "views", icon: faEye },
-  { id: 4, label: "좋아요 순", value: "likes", icon: faHeart },
+  { id: 1, label: "오래된 순", value: "oldest", icon: "fa fa-clock" },
+  { id: 2, label: "최신 순", value: "newest", icon: "fa fa-fire" },
+  { id: 3, label: "조회 순", value: "views", icon: "fa fa-eye" },
+  { id: 4, label: "좋아요 순", value: "likes", icon: "fa fa-heart" },
 ];
 
 // emit 정의
@@ -44,7 +36,7 @@ const handleClick = (option) => {
       @click="handleClick(option)"
       class="sort-option"
     >
-      <FontAwesomeIcon :icon="option.icon" class="icon" />
+      <i :class="option.icon" class="icon"></i>
       {{ option.label }}
     </div>
   </div>
@@ -63,6 +55,10 @@ const handleClick = (option) => {
   align-items: center;
   padding: 10px;
   cursor: pointer;
+}
+.sort-option:hover {
+  background-color: rgba(226, 240, 182, 0.5);
+  border-radius: 15px;
 }
 
 .sort-option.selected {

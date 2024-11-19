@@ -23,10 +23,9 @@ const vuetify = createVuetify({
 app.use(createPinia());
 app.use(router);
 app.use(vuetify);
-app.use(createNaverMap, {
-  clientId: import.meta.env.VITE_APP_NAVER_MAP_CLIENT_ID, // Required
-  category: "ncp", // Optional
-  subModules: [], // Optional, "panorama" | "geocoder" | "drawing" | "visualization"
-});
-
+// app.use(createNaverMap, {
+//   clientId: import.meta.env.VITE_APP_NAVER_MAP_CLIENT_ID, // Required
+//   category: "ncp", // Optional
+//   subModules: [], // Optional, "panorama" | "geocoder" | "drawing" | "visualization"
+// });
 app.mount("#app");
