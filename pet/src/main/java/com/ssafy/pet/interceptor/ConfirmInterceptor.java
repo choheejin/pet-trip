@@ -19,14 +19,15 @@ public class ConfirmInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		if(request.getMethod().equals("GET")) return true;
+		if(request.getMethod().equals("GET") || request.getMethod().equalsIgnoreCase("OPTIONS")) return true;
 		
 		String header = request.getHeader("accessToken");
 		
 		System.out.println(header);
-		System.out.println(jwtUtil.checkToken(header));
-		
-		if(!jwtUtil.checkToken(header)) throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
+
+		if (header == null || !jwtUtil.checkToken(header)) {
+			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);			
+		}
 		return true;
 	}
 }

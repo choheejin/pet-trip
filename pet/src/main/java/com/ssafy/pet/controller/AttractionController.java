@@ -1,30 +1,23 @@
 package com.ssafy.pet.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
-import com.ssafy.pet.dto.GugunsDto;
-import com.ssafy.pet.dto.HotplaceDto;
-import com.ssafy.pet.dto.PetAttractionsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
-import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
@@ -32,7 +25,7 @@ import com.ssafy.pet.util.JWTUtil;
 
 import lombok.RequiredArgsConstructor;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/attraction")
 public class AttractionController {
