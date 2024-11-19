@@ -90,12 +90,17 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 
 	@Override
-	public List<TravelPlansDto> getPlanRanking(int page) {
-		return attractionMapper.getPlanRanking(page);
+	public List<TravelPlansDto> getPlanRanking(int page_start, int page_size) {
+		return attractionMapper.getPlanRanking(page_start, page_size);
 	}
 
 	@Override
-	public List<AttractionsDto> getHotplaceRanking(int page) {
-		return attractionMapper.getHotplaceRanking(page);
+	public List<AttractionsDto> getHotplaceRanking(int page_start, int page_size) {
+		return attractionMapper.getHotplaceRanking(page_start, page_size);
+	}
+
+	@Override
+	public String getImageById(int content_id) {
+		return attractionMapper.getImageById(content_id);
 	}
 }

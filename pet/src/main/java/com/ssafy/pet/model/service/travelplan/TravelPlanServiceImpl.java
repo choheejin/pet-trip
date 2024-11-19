@@ -167,20 +167,20 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
 
 	@Override
-	public List<TravelPlansDto> getOldestPlans(int page) {
-		return travelPlanMapper.getOldestPlans(page);
+	public List<TravelPlansDto> getOldestPlans(int page_start, int page_size) {
+		return travelPlanMapper.getOldestPlans(page_start, page_size);
 	}
 
 
 	@Override
-	public List<TravelPlansDto> getNewestPlans(int page) {
-		return travelPlanMapper.getNewestPlans(page);
+	public List<TravelPlansDto> getNewestPlans(int page_start, int page_size) {
+		return travelPlanMapper.getNewestPlans(page_start, page_size);
 	}
 
 
 	@Override
-	public List<TravelPlansDto> getPlansByMostViews(int page) {
-		return travelPlanMapper.getPlansByMostViews(page);
+	public List<TravelPlansDto> getPlansByMostViews(int page_start, int page_size) {
+		return travelPlanMapper.getPlansByMostViews(page_start, page_size);
 	}
 
 

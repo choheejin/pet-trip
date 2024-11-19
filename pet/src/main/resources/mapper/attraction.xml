@@ -60,18 +60,24 @@
 		where sido_code = #{sido_code}
 	</select>	
 
-	<select id="getPlanRanking" parameterType = "int" resultType="TravelPlansDto">
+	<select id="getPlanRanking" resultType="TravelPlansDto">
 		select *
 		from travel_plans
 		order by favorite_cnt desc
-		limit #{page}, 6;
+		limit #{page_start}, #{page_size};
 	</select>
 	
-	<select id="getHotplaceRanking" parameterType="int" resultType="AttractionsDto">
+	<select id="getHotplaceRanking" resultType="AttractionsDto">
 		select *
 		from attractions
 		order by favorite_cnt desc
-		limit #{page}, 6;
+		limit #{page_start}, #{page_size};
+	</select>
+	
+	<select id="getImageById" resultType="String">
+		select first_image1
+		from attractions
+		where content_id = #{content_id};
 	</select>
 	
 </mapper>

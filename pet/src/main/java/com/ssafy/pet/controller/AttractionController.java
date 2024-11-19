@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
@@ -22,6 +23,7 @@ import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.util.JWTUtil;
+import com.ssafy.pet.util.UtilClass;
 
 import lombok.RequiredArgsConstructor;
 
@@ -49,6 +51,15 @@ public class AttractionController {
 		
 		
 		return attractionService.searchAttractions(params);
+	}
+	
+	@GetMapping("/image/{content_id}")
+	@ResponseBody
+	public String getImageById(@PathVariable("content_id") int content_id)
+	{
+		String img = attractionService.getImageById(content_id);
+		
+		return img;
 	}
 	
 	// content_id로 상세 내용 조회
@@ -112,8 +123,10 @@ public class AttractionController {
 	
 	@GetMapping("/plan-ranking")
 	@ResponseBody
-	public ResponseEntity<List<TravelPlansDto>> getPlanRanking(@RequestParam(value = "page", required = false, defaultValue = "0") int page){
-		List<TravelPlansDto> result = attractionService.getPlanRanking(page);
+	public ResponseEntity<List<TravelPlansDto>> getPlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
+		
+		int start = UtilClass.caculateOffest(page);
+		List<TravelPlansDto> result = attractionService.getPlanRanking(start, PaginationConstants.PAGE_SIZE);
 		
 		if(result == null)
 		{
@@ -127,8 +140,10 @@ public class AttractionController {
 	
 	@GetMapping("/hotplace-ranking")
 	@ResponseBody
-	public ResponseEntity<List<AttractionsDto>> getHotplacePlanRanking(@RequestParam(value = "page", required = false, defaultValue = "0") int page){
-		List<AttractionsDto> result = attractionService.getHotplaceRanking(page);
+	public ResponseEntity<List<AttractionsDto>> getHotplacePlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
+		
+		int start = UtilClass.caculateOffest(page);
+		List<AttractionsDto> result = attractionService.getHotplaceRanking(start, PaginationConstants.PAGE_SIZE);
 		
 		if(result == null)
 		{

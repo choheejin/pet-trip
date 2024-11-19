@@ -3,6 +3,8 @@ package com.ssafy.pet.model.service.attraction;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Param;
+
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
 import com.ssafy.pet.dto.HotplaceDto;
@@ -39,11 +41,14 @@ public interface AttractionService {
 	List<Integer> searchGugunCodeBySidoCode(int sido_code);
 
 	//favorite cnt를 기준으로 내림차순으로 정렬된 여행계획 가져오기
-	List<TravelPlansDto> getPlanRanking(int page);
+	List<TravelPlansDto> getPlanRanking(int page_start, int page_size);
 	
 	//가장 많이 좋아요 언급된 핫플레이스를 내림차순으로 정렬해서 가져오기
-	List<AttractionsDto> getHotplaceRanking(int page);
+	List<AttractionsDto> getHotplaceRanking(int page_start, int page_size);
 
+	//content_id를 통해 first_image를 가져오기
+	String getImageById(int content_id);
+	
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();
 }

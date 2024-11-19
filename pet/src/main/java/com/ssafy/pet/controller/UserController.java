@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.pet.dto.UsersDto;
@@ -85,6 +86,29 @@ public class UserController {
 		status = HttpStatus.CREATED;
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);		
+	}
+	
+	@GetMapping("/")
+	public ResponseEntity<?> getUserData(@RequestHeader("accessToken") String header,
+			@RequestParam(value="type", required = false, defaultValue="info") String type)
+	{
+		String user_id = jwtUtil.getUserId(header);
+		
+		switch(type)
+		{
+			//사용자 정보 조회
+			case "info":
+				break;
+			//본인 게시글 조회
+			case "plan":
+				break;
+			//본인이 좋아요 누른 관광지 목록
+			case "likeAttr":
+				break;
+			//본인이 좋아요 누른 계획 목록
+			case "likePlan":
+				break;
+		}
 	}
 	
 	@PatchMapping("/delete")

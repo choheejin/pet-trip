@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.exception.ApplicationException;
@@ -74,23 +75,22 @@ public class TravelPlanController {
 		switch(sort) {
 			//오래된 순
 			case "oldest":
-				res = travelPlanService.getOldestPlans(page);
+				res = travelPlanService.getOldestPlans(page, PaginationConstants.PAGE_SIZE);
 				break;
 			//최신 순
 			case "newest":
-				res = travelPlanService.getNewestPlans(page);
+				res = travelPlanService.getNewestPlans(page, PaginationConstants.PAGE_SIZE);
 				break;
 			//조회 순
 			case "views":
-				res = travelPlanService.getPlansByMostViews(page);
+				res = travelPlanService.getPlansByMostViews(page, PaginationConstants.PAGE_SIZE);
 				break;
 			//좋아요 순
 			case "likes":
-				res = attracionService.getPlanRanking(page);
+				res = attracionService.getPlanRanking(page, PaginationConstants.PAGE_SIZE);
 				break;
 			default:
 				throw new ApplicationException(SearchErrorCode.KEYWORD_MISSING, "잘못된 ?sort 명령어");
-			
 		}
 		
 		return ResponseEntity.ok(res);
