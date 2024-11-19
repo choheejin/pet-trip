@@ -16,8 +16,8 @@ const plan = ref({
   description: "",
 });
 
-// 스토어 사용
-cartStore.setAttraction(props.attractions);
+// // 스토어 사용
+// cartStore.setAttraction(props.attractions);
 
 const draggedIdx = ref();
 const emitHandler = () => {

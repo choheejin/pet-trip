@@ -6,6 +6,7 @@ import MapCart from "@/components/map/MapCart.vue";
 import { ref, computed, watch, onMounted } from "vue";
 import { useMainSelectStore } from "@/stores/mainselect.js";
 import attractionApi from "@/api/attractionApi";
+import { useCartStore } from "@/stores/cart";
 
 // 검색관련
 const sido_code = ref("");
@@ -20,6 +21,8 @@ const dogsize = ref(""); // 강아지 크기
 
 const cartItems = ref([]); // 여행경로 계획 예정 아이템들
 const isCartShowed = ref(false); //  장바구니 보기
+
+const cartStore = useCartStore();
 
 const setShowDetail = (isShowed) => {
   showDetail.value = isShowed;
@@ -105,7 +108,92 @@ const clickCart = () => {
 const selectCartItem = (attraction) => {
   alert("상품이 추가 되었습니다");
   cartItems.value.push(attraction);
+  // 스토어 사용
+  cartStore.setAttraction(cartItems.value);
 };
+
+/*===============지도 START =================*/
+const mapDiv = ref(null);
+const map = ref(null);
+
+const polyline = ref(null);
+watch(
+  cartStore,
+  ({ attraction }) => {
+    console.log(attraction);
+
+    if (polyline.value != null) {
+      polyline.value.setMap(null);
+      // polyline.value.setPath([]);
+    }
+    polyline.value = new naver.maps.Polyline({
+      map: map.value,
+      path: attraction.map(
+        (item) => new naver.maps.LatLng(item.latitude, item.longitude)
+      ),
+    });
+
+    attraction.map(
+      (item, idx) =>
+        new naver.maps.Marker({
+          position: new naver.maps.LatLng(item.latitude, item.longitude),
+          map: map.value,
+          icon: {
+            content: [
+              `<svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="32" 
+                    height="32" 
+                    viewBox="0 0 64 64"
+                >
+                  <!-- 배경 마커 -->
+                  <linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#00bfff" />
+                    <stop offset="100%" stop-color="#00ff80" />
+                  </linearGradient>
+                  <path 
+                    d="M32 2c-13 0-22 9-22 22 0 15 22 38 22 38s22-23 22-38c0-13-9-22-22-22z" 
+                    fill="url(#gradient)" 
+                    stroke="#007f5f" 
+                    stroke-width="2"
+                  />
+                  <!-- 중심 원 -->
+                  <circle cx="32" cy="24" r="11" fill="white" stroke="#007f5f" stroke-width="2" />
+                  <!-- 숫자 텍스트 -->
+                  <text 
+                    x="31" 
+                    y="28" 
+                    text-anchor="middle" 
+                    font-size="1.5rem" 
+                    fill="black" 
+                    font-family="Arial, sans-serif"
+                    font-weight="bolder"
+                    dominant-baseline="middle"
+                  >
+                ${idx + 1}
+                  </text>
+                </svg>
+                `,
+            ].join(""),
+            size: new naver.maps.Size(22, 35),
+            anchor: new naver.maps.Point(17, 32),
+          },
+        })
+    );
+
+    map.value.setCenter(new naver.maps.LatLng(36.8057, 128.6243));
+    map.value.setZoom(7);
+  },
+  {
+    deep: true,
+  }
+);
+
+onMounted(() => {
+  map.value = new naver.maps.Map(mapDiv.value);
+});
+
+/*===============지도 END ================== */
 </script>
 
 <template>
@@ -197,8 +285,6 @@ const selectCartItem = (attraction) => {
           @set-show-detail="setShowDetail"
           @add-cart-item="selectCartItem"
         />
-
-        <!-- 지도 -->
       </div>
 
       <!-- 게시글 작성버튼 -->
@@ -206,7 +292,8 @@ const selectCartItem = (attraction) => {
         <MapCart :attractions="cartItems" @click-handler="setShowCart" />
       </div>
 
-      지도 화면
+      <!-- 지도 -->
+      <div ref="mapDiv" id="map" style="width: 100%; height: 100%"></div>
     </div>
 
     <div
@@ -287,6 +374,7 @@ const selectCartItem = (attraction) => {
 }
 
 .detail-side {
+  background-color: white;
   position: absolute;
   margin: 20px 15px;
   width: 400px;
@@ -354,7 +442,7 @@ const selectCartItem = (attraction) => {
   height: 17px;
   min-width: fit-content;
   min-height: fit-content;
-  background-color: red;
+  background-color: #ff0000;
   font-size: smaller;
   color: white;
   font-weight: bold;
@@ -370,5 +458,6 @@ const selectCartItem = (attraction) => {
   border-radius: 0.375rem;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   border: 1px solid rgba(209, 213, 219, 0.418);
+  background-color: white;
 }
 </style>
