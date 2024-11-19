@@ -18,9 +18,9 @@ public class WebConfig implements WebMvcConfigurer {
 
 	
 	private final List<String> patterns = Arrays.asList(
-			"/plan/*",
-			"/user/protected/*",
-			"/attractions/hotplace/*"
+			"/plan/**",
+			"/user/protected/**",
+			"/attractions/hotplace/**"
 	);
 	
 	private final ConfirmInterceptor confirmInterceptor;
