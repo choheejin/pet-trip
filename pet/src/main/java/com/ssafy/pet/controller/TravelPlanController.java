@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -65,8 +66,8 @@ public class TravelPlanController {
 	}
 	
 	@GetMapping("/plans")
-	public ResponseEntity<List<TravelPlansDto>> getOldestFirst(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
-			@RequestParam(value="sort", required = false, defaultValue="oldest")String sort){
+	public ResponseEntity<List<TravelPlansDto>> getPlans(@RequestParam(value = "page", required = false, defaultValue = "0") int page,
+			@RequestParam(value="sort", required = false, defaultValue="oldest") String sort){
 		
 		List<TravelPlansDto> res = new ArrayList<>();
 		
@@ -93,6 +94,21 @@ public class TravelPlanController {
 		}
 		
 		return ResponseEntity.ok(res);
+	}
+	
+	@GetMapping("/comments")
+	@ResponseBody
+	public ResponseEntity<List<String>> getComments(@RequestParam(value = "plan_id") int plan_id)
+	{
+		List<String> comments = new ArrayList<>();
+		
+		System.out.println("이전");
+		comments = travelPlanService.getComments(plan_id);
+		
+		System.out.println(comments);
+		System.out.println("이후");
+		
+		return ResponseEntity.ok(comments);
 	}
 
 	@PostMapping

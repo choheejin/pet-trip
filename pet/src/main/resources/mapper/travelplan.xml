@@ -92,6 +92,42 @@
 		limit #{page}, 6;
 	</select>
 	
+	<select id="getComments" parameterType="int" resultType="String">
+		WITH RECURSIVE CommentHierarchy AS (
+	    SELECT 
+	        id AS comment_id,
+	        plan_id,
+	        user_id,
+	        comment,
+	        created_at,
+	        updated_at,
+	        parent_comment_id,
+	        id AS top_comment_id
+	    FROM travel_plan_comments
+	    WHERE parent_comment_id IS NULL
+	
+	    UNION ALL
+	
+	    SELECT 
+	        c.id AS comment_id,
+	        c.plan_id,
+	        c.user_id,
+	        c.comment,
+	        c.created_at,
+	        c.updated_at,
+	        c.parent_comment_id,
+	        h.top_comment_id
+	    FROM travel_plan_comments c
+	    INNER JOIN CommentHierarchy h
+	        ON c.parent_comment_id = h.comment_id
+		)
+		
+		SELECT comment
+		FROM CommentHierarchy
+		WHERE plan_id = #{plan_id}
+		ORDER BY top_comment_id, created_at;
+	</select>
+	
 	
 </mapper>
 

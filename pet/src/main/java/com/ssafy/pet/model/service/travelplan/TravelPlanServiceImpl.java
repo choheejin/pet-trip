@@ -182,4 +182,10 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	public List<TravelPlansDto> getPlansByMostViews(int page) {
 		return travelPlanMapper.getPlansByMostViews(page);
 	}
+
+
+	@Override
+	public List<String> getComments(int plan_id) {
+		return travelPlanMapper.getComments(plan_id);
+	}
 }
