@@ -1,15 +1,25 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { defineStore } from "pinia";
 import userApi from "@/api/userApi.js";
 import { jwtDecode } from "jwt-decode";
-import { useMenuStore } from "@/stores/menu";
+// import { useMenuStore } from "@/stores/menu";
 
 export const useAuthStore = defineStore(
   "auth",
   () => {
-    const token = ref(localStorage.getItem('authToken') || null);
+    const token = ref(null);
     const user = ref(null);
-    const menuStore = useMenuStore();
+    // const menuStore = useMenuStore();
+
+    const initailizeInfo = () => {
+      if (localStorage.getItem("authToken") == null) return;
+
+      const decode = jwtDecode(localStorage.getItem("authToken"));
+      token.value = localStorage.getItem("authToken");
+      user.value = decode.user_id;
+    };
+
+    initailizeInfo();
 
     const join = async (joinInfo) => {
       // console.log("user.js에서 회원가입 확인 : ", joinInfo);
@@ -22,22 +32,24 @@ export const useAuthStore = defineStore(
 
       //토큰 정보 및 유저 정보 세팅
       token.value = response.data["access-token"];
-      localStorage.setItem('authToken', token.value);
-      user.value = jwtDecode(token.value);
+      user.value = jwtDecode(token.value).user_id;
+
+      localStorage.setItem("authToken", token.value);
       // console.log(token.value);
 
-      // 로그인 성공 후 메뉴 상태 변경
-      menuStore.changeLoginState(true);
+      // // 로그인 성공 후 메뉴 상태 변경
+      // menuStore.changeLoginState(true);
     };
 
     const logout = () => {
       // console.log("로그아웃하기~~");
       //토큰 정보 및 유저 정보 삭제
+      localStorage.removeItem("authToken");
+
       token.value = null;
       user.value = null;
 
-      localStorage.removeItem('authToken'); 
-      menuStore.changeLoginState(false);
+      // menuStore.changeLoginState(false);
     };
 
     const checkId = async (user_id) => {

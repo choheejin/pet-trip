@@ -1,14 +1,10 @@
 <script setup>
 import { ref } from "vue";
-import { useMenuStore } from "@/stores/menu";
 import { useAuthStore } from "@/stores/user";
-import { storeToRefs } from "pinia";
 import LoginModal from "@/components/layout/LoginModal.vue";
 import SignupModal from "@/components/layout/SignupModal.vue";
 
 const userStore = useAuthStore();
-const menuStore = useMenuStore();
-const { isLoggedIn } = storeToRefs(menuStore);
 
 const logout = () => {
   userStore.logout();
@@ -65,7 +61,7 @@ const closeModal = () => {
 
         <!-- 오른쪽 메뉴 -->
         <ul class="navbar-nav">
-          <template v-if="isLoggedIn">
+          <template v-if="userStore.token">
             <li class="nav-item">
               <a class="nav-link" href="/mypage">마이페이지</a>
             </li>
@@ -106,7 +102,7 @@ const closeModal = () => {
 }
 .navbar-collapse {
   font-weight: bold;
-  font-size: 1.25rem;
+  font-size: 3rem;
 }
 .navbar-nav .nav-link {
   margin: 0 10px; /* 메뉴 항목 사이 여백 */
