@@ -32,6 +32,7 @@ import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.model.service.travelplan.TravelPlanService;
 import com.ssafy.pet.util.JWTUtil;
+import com.ssafy.pet.util.UtilClass;
 
 import lombok.RequiredArgsConstructor;
 
@@ -71,23 +72,24 @@ public class TravelPlanController {
 			@RequestParam(value="sort", required = false, defaultValue="oldest") String sort){
 		
 		List<TravelPlansDto> res = new ArrayList<>();
+		int page_start = UtilClass.caculateOffest(page);
 		
 		switch(sort) {
 			//오래된 순
 			case "oldest":
-				res = travelPlanService.getOldestPlans(page, PaginationConstants.PAGE_SIZE);
+				res = travelPlanService.getOldestPlans(page_start, PaginationConstants.PAGE_SIZE);
 				break;
 			//최신 순
 			case "newest":
-				res = travelPlanService.getNewestPlans(page, PaginationConstants.PAGE_SIZE);
+				res = travelPlanService.getNewestPlans(page_start, PaginationConstants.PAGE_SIZE);
 				break;
 			//조회 순
 			case "views":
-				res = travelPlanService.getPlansByMostViews(page, PaginationConstants.PAGE_SIZE);
+				res = travelPlanService.getPlansByMostViews(page_start, PaginationConstants.PAGE_SIZE);
 				break;
 			//좋아요 순
 			case "likes":
-				res = attracionService.getPlanRanking(page, PaginationConstants.PAGE_SIZE);
+				res = attracionService.getPlanRanking(page_start, PaginationConstants.PAGE_SIZE);
 				break;
 			default:
 				throw new ApplicationException(SearchErrorCode.KEYWORD_MISSING, "잘못된 ?sort 명령어");
