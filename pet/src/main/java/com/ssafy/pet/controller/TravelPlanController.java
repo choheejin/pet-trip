@@ -102,11 +102,7 @@ public class TravelPlanController {
 	{
 		List<String> comments = new ArrayList<>();
 		
-		System.out.println("이전");
 		comments = travelPlanService.getComments(plan_id);
-		
-		System.out.println(comments);
-		System.out.println("이후");
 		
 		return ResponseEntity.ok(comments);
 	}
