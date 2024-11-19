@@ -141,7 +141,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	@Override
 	public Optional<List<TravelPlansDto>> selectWithLimit(Integer page) {
 		
-		int limit = (page - 1) * 10;
+		int limit = (page - 1) * 6;
 		
 		List<TravelPlansDto> list = travelPlanMapper.selectWithLimit(limit);
 		
