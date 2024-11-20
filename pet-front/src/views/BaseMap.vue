@@ -119,9 +119,9 @@ const getAttractions = async () => {
     title: title.value,
   };
 
-  const { data } = await attractionApi.get("/search", { params });
+  const { data, totalPage } = await attractionApi.get("/search", { params });
 
-  attractions.value = data;
+  attractions.value = data.data;
 };
 
 // 반려견 사이즈로 검색하기
