@@ -121,4 +121,9 @@ public class AttractionServiceImpl implements AttractionService {
 	public int getContentIdByPlanId(int plan_id) {
 		return attractionMapper.getContentIdByPlanId(plan_id);
 	}
+
+	@Override
+	public List<Integer> getContentIdByUserID(int user_id) {
+		return attractionMapper.getContentIdByUserID(user_id);
+	}
 }

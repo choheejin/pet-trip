@@ -1,5 +1,6 @@
 package com.ssafy.pet.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,5 +174,23 @@ public class AttractionController {
 		return ResponseEntity.ok(result);
 	}
 	
-	//@GetMapping("/hotplace-ranking")
+	@GetMapping("/user-likes")
+	@ResponseBody
+	public ResponseEntity<List<AttractionsDto>> getUserFavorites(@RequestHeader("accessToken") String header)
+	{
+		List<AttractionsDto> result = new ArrayList<>();
+		
+		String user_id = jwtUtil.getUserId(header);
+		int id = attractionService.searchUserByUserId(user_id);
+		System.out.println("유저 아이디: " + id);
+		
+		List<Integer> content_ids = attractionService.getContentIdByUserID(id);
+		
+		for(var content_id : content_ids)
+		{
+			result.add(attractionService.searchByContentID(content_id));
+		}
+		
+		return ResponseEntity.ok(result);
+	}
 }
