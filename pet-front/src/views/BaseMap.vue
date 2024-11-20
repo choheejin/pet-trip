@@ -7,51 +7,17 @@ import { ref, computed, watch, onMounted } from "vue";
 import { useMainSelectStore } from "@/stores/mainselect.js";
 import attractionApi from "@/api/attractionApi";
 import { useCartStore } from "@/stores/cart";
+import { useSidoStore } from "@/stores/sido";
 
-// 검색관련
-const sido_code = ref("");
-const gugun_code = ref("");
-const content_type_id = ref("");
-const title = ref("");
-
+/* 전체적으로 자주 쓰이는 값 */
 const attractions = ref([]); // 리스트의 값
 const selectAttraction = ref(null); // 상세 보기의 값
+
+/* ================상세보기START================ */
 const showDetail = ref(false);
-const dogsize = ref(""); // 강아지 크기
-
-const cartItems = ref([]); // 여행경로 계획 예정 아이템들
-const isCartShowed = ref(false); //  장바구니 보기
-
-const cartStore = useCartStore();
 
 const setShowDetail = (isShowed) => {
   showDetail.value = isShowed;
-};
-
-// 검색하기
-const getAttractions = async () => {
-  console.log("?");
-  console.log(title.value);
-
-  setShowDetail(false);
-
-  const { data } = await attractionApi.get(
-    `/search?sidoCode=${sido_code.value}&gugunCode=${gugun_code.value}&contentTypeId=${content_type_id.value}&title=${title.value}`
-  );
-  console.log(data);
-  attractions.value = data;
-};
-
-// 반려견 사이즈로 검색하기
-const getAttractionsBySize = async () => {
-  console.log("사이즈 : ", dogsize.value);
-  setShowDetail(false);
-
-  const { data } = await axios.get(
-    `http://localhost:8080/pet/attraction/detail?keyword=${dogsize.value}`
-  );
-  console.log(data);
-  attractions.value = data.map((item) => item.attraction);
 };
 
 // 특정 여행장소 클릭
@@ -61,33 +27,12 @@ const selected = (attraction) => {
   selectAttraction.value = attraction;
 };
 
-// 메인화면에서 선택된거
-const mainSelectStore = useMainSelectStore();
-const selectedFileName = computed(() => mainSelectStore.selectedSidoCode);
-const selectedDogSize = computed(() => mainSelectStore.selectedDogSize);
+/* ================상세보기END================*/
 
-onMounted(() => {
-  // 초기 설정
-  if (selectedFileName.value !== null) {
-    sido_code.value = selectedFileName.value;
-  }
-
-  if (selectedDogSize.value !== null) {
-    dogsize.value = selectedDogSize.value;
-  }
-});
-
-// `sido_code` 또는 `dogsize`가 변경될 때마다 호출
-watch([sido_code, dogsize], () => {
-  // `sido_code`가 변경되었을 때는 getAttractions() 호출
-  if (sido_code.value) {
-    getAttractions();
-  }
-  // `dogsize`가 변경되었을 때는 getAttractionsBySize() 호출
-  if (dogsize.value) {
-    getAttractionsBySize();
-  }
-});
+/* ==============여행경로관련START============== */
+const cartStore = useCartStore();
+const cartItems = ref([]); // 여행경로 계획 예정 아이템들
+const isCartShowed = ref(false); //  장바구니 보기
 
 const setShowCart = (isShowed) => {
   isCartShowed.value = isShowed;
@@ -112,11 +57,130 @@ const selectCartItem = (attraction) => {
   cartStore.setAttraction(cartItems.value);
 };
 
+/* ==============여행경로관련END============== */
+
+/*==============검색관련START=============== */
+const sidoStore = useSidoStore();
+const gugunStore = ref([]);
+
+const sido_code = ref("");
+const gugun_code = ref("");
+const content_type_id = ref("");
+const title = ref("");
+
+const dogsize = ref(""); // 강아지 크기
+
+// 메인화면에서 선택된거
+const mainSelectStore = useMainSelectStore();
+const selectedFileName = computed(() => mainSelectStore.selectedSidoCode);
+const selectedDogSize = computed(() => mainSelectStore.selectedDogSize);
+
+onMounted(() => {
+  // 초기 설정
+  if (selectedFileName.value !== null) {
+    sido_code.value = selectedFileName.value;
+  }
+
+  if (selectedDogSize.value !== null) {
+    dogsize.value = selectedDogSize.value;
+  }
+});
+
+// `sido_code` 또는 `dogsize`가 변경될 때마다 호출
+watch([sido_code, dogsize], () => {
+  // `sido_code`가 변경되었을 때는 getAttractions() 호출
+  if (sido_code.value) {
+    getAttractions();
+    getGugunCode();
+  }
+  // `dogsize`가 변경되었을 때는 getAttractionsBySize() 호출
+  if (dogsize.value) {
+    getAttractionsBySize();
+  }
+});
+
+// 검색하기
+const getAttractions = async () => {
+  setShowDetail(false);
+
+  const params = {
+    sidoCode: sido_code.value,
+    gugunCode: gugun_code.value,
+    contentTypeId: content_type_id.value,
+    title: title.value,
+  };
+
+  const { data } = await attractionApi.get("/search", { params });
+
+  attractions.value = data;
+};
+
+// 반려견 사이즈로 검색하기
+const getAttractionsBySize = async () => {
+  console.log("사이즈 : ", dogsize.value);
+  setShowDetail(false);
+
+  const { data } = await axios.get(
+    `http://localhost:8080/pet/attraction/detail?keyword=${dogsize.value}`
+  );
+  console.log(data);
+  attractions.value = data.map((item) => item.attraction);
+};
+
+const getGugunCode = async () => {
+  const { data } = await attractionApi.get(`/search/${sido_code.value}`);
+
+  gugunStore.value = data;
+  console.log(data);
+};
+
+/*===============검색관련END=============== */
+
 /*===============지도 START =================*/
 const mapDiv = ref(null);
 const map = ref(null);
-
 const polyline = ref(null);
+
+// 평균값 계산
+function getMean(values) {
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+// 표준편차 계산
+function getStandardDeviation(values) {
+  const mean = getMean(values);
+  const variance =
+    values.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) /
+    values.length;
+  return Math.sqrt(variance);
+}
+
+// 위도 및 경도 표준편차 계산
+function calculateDeviation(latitudes, longitudes) {
+  const latDeviation = getStandardDeviation(latitudes);
+  const lngDeviation = getStandardDeviation(longitudes);
+
+  return { latDeviation, lngDeviation };
+}
+
+// 줌 레벨 조정 기준
+function shouldZoom(latitudes, longitudes) {
+  const { latDeviation, lngDeviation } = calculateDeviation(
+    latitudes,
+    longitudes
+  );
+  console.log(
+    "latDeviation:: " + latDeviation + ", lngDeviation:: " + lngDeviation
+  );
+  if (latDeviation < 0.03 || lngDeviation < 0.04) {
+    return 13;
+  }
+  if (latDeviation < 0.1 || lngDeviation < 0.01) {
+    return 10;
+  }
+  return 7;
+}
+
 watch(
   cartStore,
   ({ attraction }) => {
@@ -126,6 +190,7 @@ watch(
       polyline.value.setMap(null);
       // polyline.value.setPath([]);
     }
+
     polyline.value = new naver.maps.Polyline({
       map: map.value,
       path: attraction.map(
@@ -181,8 +246,21 @@ watch(
         })
     );
 
-    map.value.setCenter(new naver.maps.LatLng(36.8057, 128.6243));
-    map.value.setZoom(7);
+    if (attraction.length == 0) {
+      map.value.setCenter(new naver.maps.LatLng(36.8057, 128.6243));
+      map.value.setZoom(7);
+    } else {
+      const latitudes = attraction.map((coord) => coord.latitude);
+      const longitudes = attraction.map((coord) => coord.longitude);
+
+      const center_lat = getMean(latitudes);
+      const center_lng = getMean(longitudes);
+
+      const zoom = shouldZoom(latitudes, longitudes);
+
+      map.value.setCenter(new naver.maps.LatLng(center_lat, center_lng));
+      map.value.setZoom(zoom);
+    }
   },
   {
     deep: true,
@@ -228,9 +306,20 @@ onMounted(() => {
         <div class="select-tag">
           <select name="" id="" v-model="sido_code">
             <option value="">전체</option>
+            <option
+              v-for="sido in sidoStore.sido"
+              :id="sido.sido_code"
+              :value="sido.sido_code"
+            >
+              {{ sido.sido_name }}
+            </option>
           </select>
+          <!-- TODO: 구군 이름 추가 -->
           <select name="" id="" v-model="gugun_code">
             <option value="">전체</option>
+            <option v-for="gugun in gugunStore" :value="gugun" :id="gugu">
+              {{ gugun }}
+            </option>
           </select>
         </div>
       </div>
