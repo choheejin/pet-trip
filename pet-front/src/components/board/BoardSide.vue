@@ -13,7 +13,7 @@ const sortOptions = [
 const emit = defineEmits(["update-sort"]);
 
 // 선택된 정렬 옵션
-const selectedSort = ref("");
+const selectedSort = ref("oldest");
 
 // 클릭 시 동작
 const handleClick = (option) => {
@@ -43,7 +43,6 @@ const handleClick = (option) => {
 </template>
 
 <style scoped>
-
 .sort-option {
   display: flex;
   align-items: center;

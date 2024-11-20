@@ -1,6 +1,5 @@
 <script setup>
-import { ref } from "vue";
-import mapApi from "@/api/mapApi";
+import { onMounted, ref } from "vue";
 import travelplanApi from "@/api/travelplanApi";
 import BoardSide from "@/components/board/BoardSide.vue";
 import BoardTravelPlan from "@/components/board/BoardTravelPlan.vue";
@@ -10,41 +9,32 @@ const travelplans = ref([]);
 const page = ref(1);
 const sort = ref("");
 
-// 검색 하기 - 무작위로
-const getTravelPlans = async () => {
-  // console.log("게시판?!", page.value);
-  const { data } = await mapApi.get("", {
-    params: {
-      page: page.value,
-    },
-  });
-  travelplans.value = data.list;
-  console.log("기본 계획 : ",travelplans.value);
-};
-
 // 검색 하기 - 정렬 조건
 const getTravelPlansBySorting = async () => {
   // console.log("게시판 정렬!!!", page.value);
-  const { data } = await travelplanApi.get("", {
-    params: {
-      sort: sort.value,
-      page: page.value,
-    },
-  });
-  travelplans.value = data;
-  console.log("정렬된 계획 : ", travelplans.value)
+  try {
+    const { data } = await travelplanApi.get("", {
+      params: {
+        sort: sort.value,
+        page: page.value,
+      },
+    });
+    travelplans.value = data.data;
+    // console.log(sort.value, "조건으로 정렬된 계획 : ", travelplans.value);
+  } catch (error) {
+    console.error("Error fetching travel plans:", error);
+  }
 };
 
 // 페이지 네이션에서 페이지 변경 시 호출되는 함수
 const changePage = (newPage) => {
   page.value = newPage;
-  // sort가 빈 값이면 getTravelPlans() 호출, 아니면 getTravelPlansBySorting() 호출
+  // sort가 빈 값이면 오래된 순으로 getTravelPlansBySorting() 호출
   if (sort.value === "") {
-    getTravelPlans(); // 정렬 없이 가져오기
-  } else {
-    // console.log("정렬 조건 주기:", sort.value);
-    getTravelPlansBySorting(); // 정렬된 목록 가져오기
+    sort.value = "oldest";
   }
+  // console.log("정렬 조건 주기:", sort.value);
+  getTravelPlansBySorting(); // 정렬된 목록 가져오기
 };
 
 // update-sort 이벤트를 받을 때 처리
@@ -55,7 +45,9 @@ const updateSort = (newSort) => {
 };
 
 // 처음 데이터 불러오기
-getTravelPlans();
+onMounted(async () => {
+  await getTravelPlansBySorting();
+});
 </script>
 
 <template>
@@ -64,12 +56,24 @@ getTravelPlans();
       <div class="left" style="width: 30%">
         <BoardSide class="selectOption" @update-sort="updateSort" />
       </div>
-      <div class="right"
-           style="width: 70%">
-        <div><h1>글 등록 버튼 만들어야즹</h1></div>
-        <div>
-  <!--        <h1>선택된 정렬 기준 : {{ sort }}</h1>-->
-          <BoardTravelPlan :travelplans="travelplans" />
+      <div class="right" style="width: 70%">
+        <div style="height: 100%; display: flex; flex-direction: column">
+          <div class="button">
+            <v-btn
+              href="/map"
+              rounded="l"
+              size="large"
+              color="#ccd5ae"
+              class="font-weight-bold"
+            >
+              <i class="fa-solid fa-calendar-check"></i>여행 계획 세우기</v-btn
+            >
+          </div>
+          <div class="CardTravelPlan">
+            <!--        <h1>선택된 정렬 기준 : {{ sort }}</h1>-->
+            <BoardTravelPlan :travelplans="travelplans" />
+          </div>
+
           <!-- 페이지네이션 -->
           <div class="pagination-group">
             <nav aria-label="Page navigation example">
@@ -121,6 +125,12 @@ getTravelPlans();
 </template>
 
 <style scoped>
+.button {
+  display: flex;
+  justify-content: end;
+  margin-top: 81px;
+  padding: 0px 8px 8px 50px;
+}
 .left {
   border: 1px solid whitesmoke;
   height: calc(100vh - 82px);
@@ -133,13 +143,23 @@ getTravelPlans();
 .right {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 66px);
-  align-items: center;
-}
-.pagination-group {
-  display: flex;
-  justify-content: center;
-  margin-top: auto;
+  height: calc(100vh - 66px); /* 부모 컨테이너의 높이 */
+  justify-content: flex-start; /* 위에서부터 순서대로 배치 */
 }
 
+.CardTravelPlan {
+  height: fit-content;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center; /* 가로 중심 */
+  align-items: center; /* 세로 중심 */
+}
+
+.pagination-group {
+  height: fit-content;
+  margin-top: 25px; /* 아래로 고정 */
+  padding-bottom: 20px; /* 하단에 여백 */
+  display: flex;
+  justify-content: center;
+}
 </style>

@@ -1,7 +1,6 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createVuetify } from "vuetify";
-import { createNaverMap } from "vue3-naver-maps";
 
 import "vuetify/styles";
 
@@ -19,13 +18,8 @@ const vuetify = createVuetify({
   components,
   directives,
 });
-
 app.use(createPinia());
 app.use(router);
 app.use(vuetify);
-// app.use(createNaverMap, {
-//   clientId: import.meta.env.VITE_APP_NAVER_MAP_CLIENT_ID, // Required
-//   category: "ncp", // Optional
-//   subModules: [], // Optional, "panorama" | "geocoder" | "drawing" | "visualization"
-// });
+
 app.mount("#app");

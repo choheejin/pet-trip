@@ -19,7 +19,7 @@ public class ConfirmInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		if(request.getMethod().equals("GET") || request.getMethod().equalsIgnoreCase("OPTIONS")) return true;
+		if(request.getMethod().equalsIgnoreCase("OPTIONS")) return true;
 		
 		String header = request.getHeader("accessToken");
 		

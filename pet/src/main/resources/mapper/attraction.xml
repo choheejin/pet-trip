@@ -58,7 +58,7 @@
 	</select>
 
 	<insert id="addHotplace">
-		insert into hotplace (content_id, user_id)
+		insert into hotplace (content_id,user_id)
 		values(#{content_id}, #{user_id});
 	</insert>
 

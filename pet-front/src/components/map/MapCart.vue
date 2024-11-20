@@ -226,7 +226,7 @@ textarea {
 .cart-detail > .title {
   text-align: center;
   font-weight: bold;
-  min-width: 20rem;
+  min-width: 15rem;
 }
 .cart-detail > .addr1 {
   text-align: center;

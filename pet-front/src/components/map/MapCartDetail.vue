@@ -80,7 +80,7 @@ defineEmits(["onDragStart", "onDrop"]);
 }
 
 .drag-item > .title {
-  min-width: 20rem;
+  min-width: 15rem;
 }
 .drag-item > .addr1 {
   width: 100%;
