@@ -31,7 +31,6 @@ const selected = (attraction) => {
 
 /* ==============여행경로관련START============== */
 const cartStore = useCartStore();
-const cartItems = ref([]); // 여행경로 계획 예정 아이템들
 const isCartShowed = ref(false); //  장바구니 보기
 
 const setShowCart = (isShowed) => {
@@ -52,9 +51,15 @@ const clickCart = () => {
 // 장바구니 추가
 const selectCartItem = (attraction) => {
   alert("상품이 추가 되었습니다");
-  cartItems.value.push(attraction);
-  // 스토어 사용
-  cartStore.setAttraction(cartItems.value);
+
+  cartStore.attraction.push(attraction);
+
+  const value = cartStore.attraction.map((value, idx) => ({
+    ...value,
+    idx: idx,
+  }));
+
+  cartStore.setAttraction(value);
 };
 
 /* ==============여행경로관련END============== */
@@ -86,8 +91,12 @@ onMounted(() => {
   }
 });
 
+const resetGugun = () => {
+  gugun_code.value = "";
+};
+
 // `sido_code` 또는 `dogsize`가 변경될 때마다 호출
-watch([sido_code, dogsize], () => {
+watch([sido_code, dogsize, gugun_code], () => {
   // `sido_code`가 변경되었을 때는 getAttractions() 호출
   if (sido_code.value) {
     getAttractions();
@@ -140,6 +149,7 @@ const getGugunCode = async () => {
 const mapDiv = ref(null);
 const map = ref(null);
 const polyline = ref(null);
+const marker = ref([]);
 
 // 평균값 계산
 function getMean(values) {
@@ -175,9 +185,16 @@ function shouldZoom(latitudes, longitudes) {
   if (latDeviation < 0.03 || lngDeviation < 0.04) {
     return 13;
   }
-  if (latDeviation < 0.1 || lngDeviation < 0.01) {
+  if (latDeviation < 0.1 || lngDeviation < 0.05) {
     return 10;
   }
+  if (latDeviation < 0.3 || lngDeviation < 0.06) {
+    return 9;
+  }
+  if (latDeviation < 0.4 || lngDeviation < 0.07) {
+    return 8;
+  }
+
   return 7;
 }
 
@@ -191,6 +208,11 @@ watch(
       // polyline.value.setPath([]);
     }
 
+    if (marker.value.length > 0) {
+      marker.value.forEach((item) => item.setMap(null));
+      marker.value = [];
+    }
+
     polyline.value = new naver.maps.Polyline({
       map: map.value,
       path: attraction.map(
@@ -198,8 +220,8 @@ watch(
       ),
     });
 
-    attraction.map(
-      (item, idx) =>
+    attraction.map((item, idx) =>
+      marker.value.push(
         new naver.maps.Marker({
           position: new naver.maps.LatLng(item.latitude, item.longitude),
           map: map.value,
@@ -244,6 +266,7 @@ watch(
             anchor: new naver.maps.Point(17, 32),
           },
         })
+      )
     );
 
     if (attraction.length == 0) {
@@ -304,7 +327,7 @@ onMounted(() => {
 
         <!-- 시군구 고르기 -->
         <div class="select-tag">
-          <select name="" id="" v-model="sido_code">
+          <select name="" id="" v-model="sido_code" @change="resetGugun">
             <option value="">전체</option>
             <option
               v-for="sido in sidoStore.sido"
@@ -317,7 +340,7 @@ onMounted(() => {
           <!-- TODO: 구군 이름 추가 -->
           <select name="" id="" v-model="gugun_code">
             <option value="">전체</option>
-            <option v-for="gugun in gugunStore" :value="gugun" :id="gugu">
+            <option v-for="gugun in gugunStore" :value="gugun" :id="gugun">
               {{ gugun }}
             </option>
           </select>
@@ -378,7 +401,7 @@ onMounted(() => {
 
       <!-- 게시글 작성버튼 -->
       <div class="cart-div" v-if="isCartShowed == true">
-        <MapCart :attractions="cartItems" @click-handler="setShowCart" />
+        <MapCart @click-handler="setShowCart" />
       </div>
 
       <!-- 지도 -->
@@ -391,8 +414,8 @@ onMounted(() => {
       v-if="isCartShowed != true"
     >
       <div class="cart-button">
-        <div v-if="cartItems.length != 0">
-          <span>{{ cartItems.length }}</span>
+        <div v-if="cartStore.attraction.length != 0">
+          <span>{{ cartStore.attraction.length }}</span>
         </div>
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -447,7 +470,6 @@ onMounted(() => {
 
 .list-group {
   box-sizing: border-box;
-  padding-bottom: 66px;
 }
 
 .outer {
