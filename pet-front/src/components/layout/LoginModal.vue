@@ -4,7 +4,7 @@ import { useAuthStore } from "@/stores/user.js";
 const userStore = useAuthStore();
 import { defineEmits } from "vue";
 
-const emit = defineEmits(["close"]); // 이벤트를 부모 컴포넌트에 전달하기 위한 설정
+const emit = defineEmits(["close", "login-success"]); // 이벤트를 부모 컴포넌트에 전달하기 위한 설정
 
 const loginForm = ref({
   user_id: "",
@@ -13,9 +13,10 @@ const loginForm = ref({
 
 const login = async () => {
   try {
-    console.log("로그인 시도");
+    // console.log("로그인 시도");
     // console.log("로그인 폼 데이터:", loginForm.value); // 로그인 폼 데이터 콘솔 출력
     await userStore.login(loginForm.value); // 로그인 처리
+    emit("login-success") // 로그인 성공 이벤트 전달
     emit("close"); // 로그인 성공 후 모달 닫기
   } catch (error) {
     console.error("에러:", error);

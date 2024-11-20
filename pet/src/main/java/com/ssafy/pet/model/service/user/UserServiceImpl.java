@@ -1,10 +1,14 @@
 package com.ssafy.pet.model.service.user;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 import org.apache.ibatis.binding.BindingException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
@@ -71,6 +75,34 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		return cnt == 0 ? Optional.of(true) : Optional.empty();
+	}
+
+	private String uploadPath = "../uploadimg";
+	
+	@Override
+	public Optional<Integer> updateImage(UsersDto user, MultipartFile image) {
+		String imgString = saveImage(image);
+		
+		user.setImage(imgString);
+		int cnt = userMapper.updateImage(user);
+
+		return cnt != 0 ? Optional.of(cnt) : Optional.empty();
+	}
+	private String saveImage(MultipartFile image) {
+	    try {
+	    	// 절대경로??? 
+	        String imgName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+	        String imgPath = uploadPath + "/" + imgName;
+	        
+	        // 파일 저장
+	        File file = new File(imgPath);
+	        image.transferTo(file);
+	        return imgPath;
+	    } catch (IOException e) {
+	        // 예외 처리 로직 (로깅, 사용자에게 알림 등)
+	        e.printStackTrace();
+	        return null;  // 예외 발생 시 null 반환 (혹은 다른 방식으로 처리)
+	    }
 	}
 
 
