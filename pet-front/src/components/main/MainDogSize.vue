@@ -51,7 +51,7 @@ function selectSize(size) {
   align-items: center;
   justify-content: center;
   width: 198px;
-  padding: 5px 20px;
+  padding: 0.3rem 0.5rem;
   background-color: white;
   cursor: pointer;
   transition: background-color 0.3s ease, opacity 0.3s ease;

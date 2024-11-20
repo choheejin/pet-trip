@@ -100,12 +100,17 @@
 		where content_id = #{content_id};
 	</select>
 
-	<select id="getContentIdByPlanId" parameterType="int"
-		resultType="int">
+	<select id="getContentIdByPlanId" parameterType="int" resultType="int">
 		select content_id
 		from travel_plan_items
-		where plan_id =#{id}
+		where plan_id = #{id}
 		limit 1;
+	</select>
+	
+	<select id="getContentIdByUserID" parameterType="int" resultType="int">
+		select content_id
+		from hotplace
+		where user_id = #{user_id};
 	</select>
 
 </mapper>

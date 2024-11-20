@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.UserErrorCode;
+import com.ssafy.pet.model.service.user.UserHelperService;
 import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
 
@@ -28,8 +29,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
-	private final UserService userService;
 	private final JWTUtil jwtUtil;
+	private final UserService userService;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> userRegister(@RequestBody UsersDto userDto) {

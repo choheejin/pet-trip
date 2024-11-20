@@ -1,5 +1,17 @@
 <script setup>
-const props = defineProps(["attraction", "idx"]);
+import { useCartStore } from "@/stores/cart";
+
+const props = defineProps(["attraction"]);
+
+const cartStore = useCartStore();
+
+const dropItem = () => {
+  const value = cartStore.attraction.filter(
+    (item) => item.idx !== props.attraction.idx
+  );
+  console.log(value);
+  cartStore.setAttraction(value);
+};
 
 defineEmits(["onDragStart", "onDrop"]);
 </script>
@@ -7,9 +19,9 @@ defineEmits(["onDragStart", "onDrop"]);
 <template>
   <div
     draggable="true"
-    @dragstart="$emit('onDragStart', idx)"
+    @dragstart="$emit('onDragStart', attraction.idx)"
     @dragover.prevent
-    @drop="$emit('onDrop', idx)"
+    @drop="$emit('onDrop', attraction.idx)"
     class="drag-item"
   >
     <svg
@@ -29,6 +41,22 @@ defineEmits(["onDragStart", "onDrop"]);
 
     <div class="title">{{ attraction.title }}</div>
     <div class="addr1">{{ attraction.addr1 }}</div>
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="drop-svg"
+      @click="dropItem"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M6 18 18 6M6 6l12 12"
+      />
+    </svg>
   </div>
 </template>
 
@@ -43,10 +71,16 @@ defineEmits(["onDragStart", "onDrop"]);
 }
 .drag-item > .drag-bar {
   width: 2rem;
+  cursor: grab;
+}
+
+.drag-item > .drop-svg {
+  width: 2rem;
+  cursor: pointer;
 }
 
 .drag-item > .title {
-  min-width: 20rem;
+  min-width: 15rem;
 }
 .drag-item > .addr1 {
   width: 100%;

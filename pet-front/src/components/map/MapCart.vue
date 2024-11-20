@@ -7,7 +7,7 @@ import mapApi from "@/api/mapApi";
 
 const cartStore = useCartStore();
 const authStore = useAuthStore();
-const props = defineProps(["attractions"]);
+
 const emit = defineEmits(["clickHandler"]);
 
 const plan = ref({
@@ -113,12 +113,11 @@ const postPlan = async () => {
       </div>
       <div class="cart-detail-item">
         <MapCartDetail
-          v-for="(attraction, idx) in cartStore.attraction"
-          @on-drop="onDrop(idx)"
-          @on-drag-start="onDragStart(idx)"
-          :key="attraction.id"
+          v-for="attraction in cartStore.attraction"
+          @on-drop="onDrop(attraction.idx)"
+          @on-drag-start="onDragStart(attraction.idx)"
+          :key="attraction.idx"
           :attraction="attraction"
-          :idx="idx"
         />
       </div>
       <div class="cart-compute">
@@ -227,7 +226,7 @@ textarea {
 .cart-detail > .title {
   text-align: center;
   font-weight: bold;
-  min-width: 20rem;
+  min-width: 15rem;
 }
 .cart-detail > .addr1 {
   text-align: center;

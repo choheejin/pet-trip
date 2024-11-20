@@ -54,6 +54,9 @@ public interface AttractionMapper {
 	//travel plans dto의 id를 통해서 travel_plan_items의 첫번째 content_id찾기
 	int getContentIdByPlanId(int plan_id);
 	
+	//user_id를 통해서 hotplace의 content_id 찾기
+	List<Integer> getContentIdByUserID(int user_id);
+	
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();
 }

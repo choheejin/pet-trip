@@ -188,4 +188,10 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	public List<String> getComments(int plan_id) {
 		return travelPlanMapper.getComments(plan_id);
 	}
+
+
+	@Override
+	public List<TravelPlansDto> getUserPlans(int user_id) {
+		return travelPlanMapper.getUserPlans(user_id);
+	}
 }

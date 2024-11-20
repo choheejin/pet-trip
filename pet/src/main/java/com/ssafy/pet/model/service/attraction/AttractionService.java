@@ -55,6 +55,9 @@ public interface AttractionService {
 	//travel_plan dto의 first_image를 지정해주는 함수
 	void setPlanImage(List<TravelPlansDto> plans);
 	
+	//user_id를 통해서 hotplace의 content_id 찾기
+	List<Integer> getContentIdByUserID(int user_id);
+	
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();
 }
