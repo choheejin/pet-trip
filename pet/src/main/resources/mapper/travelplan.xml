@@ -149,6 +149,13 @@
 		from travel_plans
 		where user_id = #{user_id};
 	</select>
+	
+	<select id="getUserFavoritePlanIds" parameterType="int" resultType="int">
+		select plan_id
+		from plans_favorites
+		where user_id = #{user_id};
+	</select>
+	
 
 </mapper>
 
