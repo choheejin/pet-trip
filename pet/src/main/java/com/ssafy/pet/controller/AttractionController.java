@@ -24,6 +24,7 @@ import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
+import com.ssafy.pet.model.service.user.UserHelperService;
 import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.UtilClass;
 
@@ -35,7 +36,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/attraction")
 public class AttractionController {
 	private final AttractionService attractionService;
-	private final JWTUtil jwtUtil;
+	private final UserHelperService userHelperService;
+	//private final JWTUtil jwtUtil;
 	
 	// (시도, 구군, 이름, 관광지 타입) 선택적 조회
 	@GetMapping("/search")
@@ -116,8 +118,7 @@ public class AttractionController {
 	public ResponseEntity<?> updateHotplace(@RequestHeader("accessToken") String header, @PathVariable("content_id") int content_id)
 	{
 		//유저 아이디 테이블의 아이디 받기
-		String user_id = jwtUtil.getUserId(header);
-		int id = attractionService.searchUserByUserId(user_id);
+		int id = userHelperService.getUserIdFromHeader(header);
 		
 		//핫플레이스 테이블에 데이터 추가하기
 		int result = attractionService.addHotplace(content_id, id);
@@ -180,9 +181,7 @@ public class AttractionController {
 	{
 		List<AttractionsDto> result = new ArrayList<>();
 		
-		String user_id = jwtUtil.getUserId(header);
-		int id = attractionService.searchUserByUserId(user_id);
-		System.out.println("유저 아이디: " + id);
+		int id = userHelperService.getUserIdFromHeader(header);
 		
 		List<Integer> content_ids = attractionService.getContentIdByUserID(id);
 		
