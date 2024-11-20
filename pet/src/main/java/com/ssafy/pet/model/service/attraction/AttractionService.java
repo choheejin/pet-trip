@@ -49,6 +49,12 @@ public interface AttractionService {
 	//content_id를 통해 first_image를 가져오기
 	String getImageById(int content_id);
 	
+	//travel plans dto의 id를 통해서 travel_plan_items의 첫번째 content_id찾기
+	int getContentIdByPlanId(int plan_id);
+	
+	//travel_plan dto의 first_image를 지정해주는 함수
+	void setPlanImage(List<TravelPlansDto> plans);
+	
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();
 }

@@ -13,4 +13,5 @@ public class TravelPlansDto {
 	private int user_id;
 	private int view_cnt;
 	private int favorite_cnt;
+	private String image;
 }

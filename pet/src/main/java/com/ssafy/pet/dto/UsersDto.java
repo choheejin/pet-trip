@@ -11,4 +11,5 @@ public class UsersDto {
 	private String password;
 	private String create_at;
 	private short is_activate;
+	private String image;
 }

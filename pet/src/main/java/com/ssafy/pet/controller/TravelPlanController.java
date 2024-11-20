@@ -73,7 +73,6 @@ public class TravelPlanController {
 		
 		List<TravelPlansDto> res = new ArrayList<>();
 		int page_start = UtilClass.caculateOffest(page);
-		System.out.println("검색 키워드!!!!!!!!!!!!!!"+sort);
 		
 		switch(sort) {
 			//오래된 순
@@ -95,6 +94,10 @@ public class TravelPlanController {
 			default:
 				throw new ApplicationException(SearchErrorCode.KEYWORD_MISSING, "잘못된 ?sort 명령어");
 		}
+		
+		System.out.println(res);
+		attracionService.setPlanImage(res);
+		System.out.println(res);
 		
 		return ResponseEntity.ok(res);
 	}
