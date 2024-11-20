@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
+import com.ssafy.pet.dto.PaginatedResponseDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
@@ -38,7 +39,7 @@ public class AttractionController {
 	// (시도, 구군, 이름, 관광지 타입) 선택적 조회
 	@GetMapping("/search")
 	@ResponseBody
-	public List<AttractionsDto> searchAttractions(
+	public ResponseEntity<PaginatedResponseDto<AttractionsDto>> searchAttractions(
 			@RequestParam(required = false) Integer sidoCode,
 	        @RequestParam(required = false) Integer gugunCode,
 	        @RequestParam(required = false) String title,
@@ -55,7 +56,16 @@ public class AttractionController {
 		params.put("page_start", page_start);
 		params.put("page_size", PaginationConstants.ATTRACTION_PAGE_SIZE);
 		
-		return attractionService.searchAttractions(params);
+		List<AttractionsDto> attractions = attractionService.searchAttractions(params);
+		
+		params.put("page_start", -1);
+		params.put("page_size", -1);
+		
+		List<AttractionsDto> allAttractions = attractionService.searchAttractions(params);
+				
+		int total_page = UtilClass.calculateTotalPages(allAttractions.size());
+		
+		return ResponseEntity.ok(new PaginatedResponseDto<>(attractions, total_page));
 	}
 	
 	@GetMapping("/image/{content_id}")
@@ -83,17 +93,21 @@ public class AttractionController {
 	
 	@GetMapping("/detail")
 	@ResponseBody
-	public List<AttractionDetailDto> searchDetailByKeyword(@RequestParam(value = "page", required = false, defaultValue = "1") int page, 
+	public ResponseEntity<PaginatedResponseDto<AttractionDetailDto>> searchDetailByKeyword(@RequestParam(value = "page", required = false, defaultValue = "1") int page, 
 			@RequestParam(value = "keyword", required = false) String keyword) {
 	    if (keyword == null) {
 	    	throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND, keyword);
 	    } else {
 	    	
 	    	int page_start = UtilClass.caculateOffest(page);
-	        System.out.println(page_start);
-	        List<AttractionDetailDto> result = attractionService.searchDetailByKeyword(keyword, page_start, PaginationConstants.PAGE_SIZE);
+	       
+	        List<AttractionDetailDto> attrDetail = attractionService.searchDetailByKeyword(keyword, page_start, PaginationConstants.PAGE_SIZE);
 	        
-	        return result;
+	        List<AttractionDetailDto> allAttrDetail = attractionService.searchDetailByKeyword(keyword, -1, -1);
+		    
+	        int total_pages = UtilClass.calculateTotalPages(allAttrDetail.size());
+		    
+		    return ResponseEntity.ok(new PaginatedResponseDto<>(attrDetail, total_pages));
 	    }
 	}
 	
@@ -131,7 +145,7 @@ public class AttractionController {
 	
 	@GetMapping("/plan-ranking")
 	@ResponseBody
-	public ResponseEntity<List<TravelPlansDto>> getPlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
+	public ResponseEntity<PaginatedResponseDto<TravelPlansDto>> getPlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
 		
 		int start = UtilClass.caculateOffest(page);
 		List<TravelPlansDto> result = attractionService.getPlanRanking(start, PaginationConstants.PAGE_SIZE);
@@ -141,14 +155,15 @@ public class AttractionController {
 			throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND);
 		}
 		
-		System.out.println(result);
+		List<TravelPlansDto> allRes = attractionService.getPlanRanking(-1, -1);
+		int total_pages = UtilClass.calculateTotalPages(allRes.size());
 		
-		return ResponseEntity.ok(result);
+		return ResponseEntity.ok(new PaginatedResponseDto<>(result, total_pages));
 	}
 	
 	@GetMapping("/hotplace-ranking")
 	@ResponseBody
-	public ResponseEntity<List<AttractionsDto>> getHotplacePlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
+	public ResponseEntity<PaginatedResponseDto<AttractionsDto>> getHotplacePlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
 		
 		int start = UtilClass.caculateOffest(page);
 		List<AttractionsDto> result = attractionService.getHotplaceRanking(start, PaginationConstants.PAGE_SIZE);
@@ -158,8 +173,9 @@ public class AttractionController {
 			throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND);
 		}
 		
-		System.out.println(result);
+		List<AttractionsDto> allRes = attractionService.getHotplaceRanking(-1, -1);
+		int total_pages = UtilClass.calculateTotalPages(allRes.size());
 		
-		return ResponseEntity.ok(result);
+		return ResponseEntity.ok(new PaginatedResponseDto<>(result, total_pages));
 	}
 }

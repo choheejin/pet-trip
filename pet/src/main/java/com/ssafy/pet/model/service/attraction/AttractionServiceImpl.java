@@ -82,7 +82,7 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 	
 	@Override
-	public List<AttractionDetailDto> searchDetailByKeyword(String keyword, int page_start, int page_size) { 
+	public List<AttractionDetailDto> searchDetailByKeyword(String keyword, Integer page_start, Integer page_size) { 
 		List<Integer> content_ids = attractionMapper.searchDetailByKeyword(keyword, page_start, page_size);
 
 		List<AttractionDetailDto> result = new ArrayList<>();
@@ -103,12 +103,12 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 
 	@Override
-	public List<TravelPlansDto> getPlanRanking(int page_start, int page_size) {
+	public List<TravelPlansDto> getPlanRanking(Integer page_start, Integer page_size) {
 		return attractionMapper.getPlanRanking(page_start, page_size);
 	}
 
 	@Override
-	public List<AttractionsDto> getHotplaceRanking(int page_start, int page_size) {
+	public List<AttractionsDto> getHotplaceRanking(Integer page_start, Integer page_size) {
 		return attractionMapper.getHotplaceRanking(page_start, page_size);
 	}
 

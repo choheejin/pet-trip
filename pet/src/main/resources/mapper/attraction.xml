@@ -3,7 +3,8 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ssafy.pet.model.mapper.AttractionMapper">
-	<select id="searchAttractions" parameterType="map" resultType="AttractionsDto">
+	<select id="searchAttractions" parameterType="map"
+		resultType="AttractionsDto">
 		select *
 		from attractions
 		<where>
@@ -16,77 +17,96 @@
 			<if test="contentTypeId != null and contentTypeId !=''">
 				and content_type_id = #{contentTypeId}
 			</if>
-			<if test="title != null and title != ''" >
-				and title like concat('%', #{title}, '%')
+			<if test="title != null and title != ''">
+				and title like
+				concat('%', #{title}, '%')
 			</if>
 		</where>
-		limit #{page_start}, #{page_size}
+		<if test="page_start != -1 and page_size != -1">
+			limit #{page_start}, #{page_size}
+		</if>
 	</select>
-	
-	<select id="searchByContentID" parameterType="int" resultType="AttractionsDto">
+
+	<select id="searchByContentID" parameterType="int"
+		resultType="AttractionsDto">
 		select * from attractions
 		where content_id = #{content_id}
 	</select>
-	
-	<select id="searchPetByContentID" parameterType="int" resultType="PetAttractionsDto">
-		select * 
-		from pet_attractions 
+
+	<select id="searchPetByContentID" parameterType="int"
+		resultType="PetAttractionsDto">
+		select *
+		from pet_attractions
 		where content_id=#{content_id}
 	</select>
-	
+
 	<select id="searchDetailByKeyword" resultType="int">
 		select content_id
 		from pet_attractions
-		where acmpyPsblCpam = #{keyword} or acmpyPsblCpam = "모든 견종"
-		limit #{page_start}, #{page_size}
+		where acmpyPsblCpam = #{keyword}
+		or acmpyPsblCpam = "모든 견종"
+		<if test="page_start != -1 and page_size != -1">
+			limit #{page_start}, #{page_size}
+		</if>
 	</select>
-	
-	<select id="searchHotplaceById" parameterType="int" resultType="HotplaceDto">
+
+	<select id="searchHotplaceById" parameterType="int"
+		resultType="HotplaceDto">
 		select *
 		from hotplace
 		where content_id = #{content_id}
 	</select>
-	
+
 	<insert id="addHotplace">
-		insert into hotplace (content_id, favorite_cnt, user_id)
+		insert into hotplace (content_id, favorite_cnt,
+		user_id)
 		values(#{content_id}, 1, #{user_id});
 	</insert>
-	
-	<select id="searchUserByUserId" parameterType="String" resultType="int">
+
+	<select id="searchUserByUserId" parameterType="String"
+		resultType="int">
 		select id from users
 		where user_id = #{user_id}
 	</select>
-	
-	<select id="searchGugunCodeBySidoCode" parameterType="int" resultType="int">
+
+	<select id="searchGugunCodeBySidoCode" parameterType="int"
+		resultType="int">
 		select gugun_code from guguns
 		where sido_code = #{sido_code}
-	</select>	
+	</select>
 
 	<select id="getPlanRanking" resultType="TravelPlansDto">
 		select *
 		from travel_plans
 		order by favorite_cnt desc
-		limit #{page_start}, #{page_size};
+		<if test="page_start != -1 and page_size != -1">
+			limit #{page_start}, #{page_size};
+		</if>
 	</select>
-	
+
 	<select id="getHotplaceRanking" resultType="AttractionsDto">
 		select *
-		from attractions
+		from
+		attractions
 		order by favorite_cnt desc
-		limit #{page_start}, #{page_size};
+		<if test="page_start != -1 and page_size != -1">
+			limit #{page_start}, #{page_size};
+		</if>
 	</select>
-	
+
 	<select id="getImageById" resultType="String">
 		select first_image1
-		from attractions
+		from
+		attractions
 		where content_id = #{content_id};
 	</select>
-	
-	<select id="getContentIdByPlanId" parameterType="int" resultType="int">
+
+	<select id="getContentIdByPlanId" parameterType="int"
+		resultType="int">
 		select content_id
 		from travel_plan_items
-		where plan_id = #{id}
+		where plan_id =#{id}
 		limit 1;
 	</select>
-	
+
 </mapper>

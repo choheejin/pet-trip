@@ -26,7 +26,7 @@ public interface AttractionService {
 	PetAttractionsDto searchPetByContentID(int content_id);
 	
 	//반려견 타입으로 검색
-	List<AttractionDetailDto> searchDetailByKeyword(String keyword, int page_start, int page_size);
+	List<AttractionDetailDto> searchDetailByKeyword(String keyword, Integer page_start, Integer page_size);
 
 	//content_id로 hotplace 찾기
 	HotplaceDto searchHotplaceById(int content_id);
@@ -41,10 +41,10 @@ public interface AttractionService {
 	List<Integer> searchGugunCodeBySidoCode(int sido_code);
 
 	//favorite cnt를 기준으로 내림차순으로 정렬된 여행계획 가져오기
-	List<TravelPlansDto> getPlanRanking(int page_start, int page_size);
+	List<TravelPlansDto> getPlanRanking(Integer page_start, Integer page_size);
 	
 	//가장 많이 좋아요 언급된 핫플레이스를 내림차순으로 정렬해서 가져오기
-	List<AttractionsDto> getHotplaceRanking(int page_start, int page_size);
+	List<AttractionsDto> getHotplaceRanking(Integer page_start, Integer page_size);
 
 	//content_id를 통해 first_image를 가져오기
 	String getImageById(int content_id);

@@ -62,72 +62,88 @@
 		limit #{page}, 6;
 	</select>
 
-	<select id="findItemById" parameterType="int" resultType="java.util.Map">
-		select t.id, t.note, a.content_id, a.title, a.gugun_code, a.sido_code,
-		a.content_type_id, a.latitude, a.longitude, a.addr1, t.`order` from
+	<select id="findItemById" parameterType="int"
+		resultType="java.util.Map">
+		select t.id, t.note, a.content_id, a.title, a.gugun_code,
+		a.sido_code,
+		a.content_type_id, a.latitude, a.longitude, a.addr1,
+		t.`order` from
 		travel_plan_items as t
 		left join attractions as a
-		on a.content_id = t.content_id
+		on
+		a.content_id = t.content_id
 		where plan_id = #{id};
 	</select>
-	
-	<select id="getOldestPlans" parameterType="int" resultType="TravelPlansDto">
-		select * 
+
+	<select id="getOldestPlans" parameterType="int"
+		resultType="TravelPlansDto">
+		select *
 		from travel_plans
 		order by created_at asc
-		limit #{page_start}, #{page_size}; 
+		<if test="page_start != -1 and page_size != -1">
+			limit #{page_start}, #{page_size};
+		</if>
+
 	</select>
-	
-	<select id="getNewestPlans" parameterType="int" resultType="TravelPlansDto">
-		select * 
+
+	<select id="getNewestPlans" parameterType="int"
+		resultType="TravelPlansDto">
+		select *
 		from travel_plans
 		order by created_at desc
-		limit #{page_start}, #{page_size}; 
+		<if test="page_start != -1 and page_size != -1">
+			limit #{page_start}, #{page_size};
+		</if>
 	</select>
-	
-	<select id="getPlansByMostViews" parameterType="int" resultType="TravelPlansDto">
+
+	<select id="getPlansByMostViews" parameterType="int"
+		resultType="TravelPlansDto">
 		select *
 		from travel_plans
 		order by view_cnt desc
-		limit #{page_start}, #{page_size};
+		<if test="page_start != -1 and page_size != -1">
+			limit #{page_start}, #{page_size};
+		</if>
 	</select>
-	
+
 	<select id="getComments" parameterType="int" resultType="String">
-		WITH RECURSIVE CommentHierarchy AS (
-	    SELECT 
-	        id AS comment_id,
-	        plan_id,
-	        user_id,
-	        comment,
-	        created_at,
-	        updated_at,
-	        parent_comment_id,
-	        id AS top_comment_id
-	    FROM travel_plan_comments
-	    WHERE parent_comment_id IS NULL
-	
-	    UNION ALL
-	
-	    SELECT 
-	        c.id AS comment_id,
-	        c.plan_id,
-	        c.user_id,
-	        c.comment,
-	        c.created_at,
-	        c.updated_at,
-	        c.parent_comment_id,
-	        h.top_comment_id
-	    FROM travel_plan_comments c
-	    INNER JOIN CommentHierarchy h
-	        ON c.parent_comment_id = h.comment_id
+		WITH
+		RECURSIVE CommentHierarchy AS (
+		SELECT
+		id AS comment_id,
+		plan_id,
+		user_id,
+		comment,
+		created_at,
+		updated_at,
+		parent_comment_id,
+		id AS top_comment_id
+		FROM travel_plan_comments
+		WHERE parent_comment_id IS NULL
+
+		UNION ALL
+
+		SELECT
+		c.id AS comment_id,
+		c.plan_id,
+		c.user_id,
+		c.comment,
+		c.created_at,
+		c.updated_at,
+		c.parent_comment_id,
+		h.top_comment_id
+		FROM travel_plan_comments c
+		INNER JOIN CommentHierarchy h
+		ON c.parent_comment_id = h.comment_id
 		)
-		
+
 		SELECT comment
 		FROM CommentHierarchy
 		WHERE plan_id = #{plan_id}
-		ORDER BY top_comment_id, created_at;
+		ORDER BY
+		top_comment_id, created_at;
 	</select>
-	
-	
+
+
 </mapper>
 
