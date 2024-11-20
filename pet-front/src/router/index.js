@@ -2,6 +2,7 @@ import BaseMap from "@/views/BaseMap.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import TheMainView from "@/views/TheMainView.vue";
 import TheBoardView from "@/views/TheBoardView.vue";
+import TheMyPageView from "@/views/TheMyPageView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,11 +20,17 @@ const router = createRouter({
       meta: { requiresAuth: false },
     },
     {
-      path:"/board",
+      path: "/board",
       name: "Board",
       component: TheBoardView,
-      meta : {requiresAuth: false}
-    }
+      meta: { requiresAuth: false },
+    },
+    {
+      path: "/mypage",
+      name: "MyPage",
+      component: TheMyPageView,
+      meta: { requiresAuth: true },
+    },
   ],
 });
 

@@ -19,7 +19,7 @@ public class WebConfig implements WebMvcConfigurer {
 	
 	private final List<String> patterns = Arrays.asList(
 			"/plan/**",
-			"/user/protected/**",
+			"/user/info/**",
 			"/attractions/hotplace/**"
 	);
 	

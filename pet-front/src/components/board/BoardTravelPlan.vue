@@ -1,8 +1,10 @@
 <script setup>
-import { ref, onMounted, defineProps, computed } from "vue";
-import attractionApi from "@/api/attractionApi.js";
+import { defineProps } from "vue";
+import { useAuthStore } from "@/stores/user";
 
-const plans = ref([]);
+const authStore = useAuthStore();
+// console.log("로그인 ??? : ", authStore);
+
 // 부모로부터 전달받을 prop 정의
 // props에 id에 해당하는 travelPlanitems의 첫 번째 관광지의 img 를 추가로 가지고 있게 만들기
 const props = defineProps({
@@ -11,103 +13,146 @@ const props = defineProps({
     required: true,
   },
 });
-
-// 이미지 데이터를 받아오는 함수
-const getImage = async () => {
-  const{data} = await attractionApi.get("/image", {
-    params:{
-    }
-  });
-  return data.imageUrl; // 예시로 imageUrl 반환한다고 가정하기
-}
-
-// travelplans를 처리하고 이미지 url 추가하는 함수
-const loadPlans = async () => {
-  const updatePlans = await Promise.all(
-    props.travelplans.map(async (plan) => {
-      const imageUrl = await getImage(plan.id);
-      return {...plan, img: imageUrl}
-    })
-  );
-  plans.value = updatePlans;
-}
-
-// 페이지가 마운트 될 때 실행
-onMounted(() => {
-  loadPlans();
-})
-
-// 카드뷰가 6의 배수가 아닐 경우 - 더미 데이터 추가하기
-const paddedPlans = computed(() => {
-  const padded = [...plans.value];
-  while (padded.length < 6) {
-    padded.push({ img: '', title: '', description: '', view_cnt: 0, favorite_cnt: 0, liked: false });
-  }
-  return padded;
-});
-
+const isSolidHeart = () => {};
 // 상세보기 메서드
 const TravelDetail = (id) => {
   console.log("상세보기 클릭 : ", id);
-}
+};
 // 좋아요 누르는 메서드
 const travelPlanLike = (id) => {
-  console.log("좋아요 클릭함! : ", id)
-}
-// travelplans 콘솔 출력
-console.log(props.travelplans);
+  console.log("좋아요 클릭함! : ", id);
+};
+
+// 기본 이미지
+const defaultImg =
+  "https://st3.depositphotos.com/8687452/13536/i/450/depositphotos_135362258-stock-photo-seoul-south-korea-nov-1.jpg";
 </script>
 
 <template>
-  <div>
-<!--    <h2>Travel Plans:</h2>-->
-    <v-row>
-      <!-- plans 배열을 2행 3열로 카드뷰 형태로 출력 -->
-      <v-col v-for="(plan, index) in paddedPlans" :key="index" cols="12" sm="4">
-        <v-card :style="{ backgroundImage: `url(${plan.img})`, backgroundSize: 'cover', height: '300px' }">
-          <v-card-actions>
-            <v-btn @click="TravelDetail(plan.id)">상세보기</v-btn>
-            <!-- if 문으로 하트 누르기 전 후-->
-            <i class="fa-regular fa-heart"></i>
-            <i class="fa-solid fa-heart"></i>
-          </v-card-actions>
-          <v-card-title>{{ plan.title }}</v-card-title>
-          <v-card-text>{{ plan.description }}</v-card-text>
-          <v-card-subtitle>
-            <i class="fa fa-eye"></i> {{ plan.view_cnt }}
-            <i class="fa fa-heart"></i> {{ plan.favorite_cnt }}
-          </v-card-subtitle>
-        </v-card>
-      </v-col>
-    </v-row>
+  <div class="card-container">
+    <div v-for="plan in travelplans" :key="plan.id" class="card">
+      <div class="card-top">
+        <div
+          class="card-img"
+          :style="{
+            backgroundImage: `url(${plan.image ? plan.image : defaultImg})`,
+          }"
+        ></div>
+        <div class="heart">
+          <!-- 좋아요 아이콘 -->
+          <i class="fa-regular fa-heart" v-if="!authStore.token"></i>
+          <!-- 로그인 안된 상태 -->
+          <i class="fa-solid fa-heart" v-else></i>
+          <!-- 로그인 된 상태 -->
+        </div>
+        <div class="card-title">
+          <div>{{ plan.title }}</div>
+        </div>
+      </div>
+      <div class="card-bottom">
+        <div class="content">
+          <v-btn class="detail-btn" @click="TravelDetail(plan.id)"
+            >상세보기</v-btn
+          >
+          <div class="stats">
+            <div>
+              <i class="fa fa-eye eye-icon"></i> {{ plan.view_cnt }}
+              <i class="fa fa-heart heart-icon"></i> {{ plan.favorite_cnt }}
+            </div>
+          </div>
+        </div>
+        <div class="description">{{ plan.description }}</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.v-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+.card-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
 }
 
-.v-card-title {
+.card {
+  border: 1px solid #ccd5aeca;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.card-top {
+  position: relative;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  overflow: hidden;
+}
+
+.card-img {
+  background-size: cover;
+  height: 182px;
+  position: relative;
+  filter: brightness(50%);
+}
+
+.heart {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  color: rgb(247, 67, 97);
+  font-size: 30px;
+}
+
+.card-title {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  color: white;
   font-weight: bold;
   font-size: 18px;
 }
 
-.v-card-subtitle {
-  display: flex;
-  justify-content: space-between;
-}
-
-.v-card-actions {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.5); /* 투명 배경 */
+.card-bottom {
   padding: 10px;
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.stats {
+  text-align: right;
+  font-size: 10px;
+  padding-top: 10px;
+}
+
+.detail-btn {
+  font-size: 12px;
+  background-color: #ccd5aeca;
+  color: white;
+  padding: 5px 10px;
+  font-weight: 600;
+  border-radius: 5px;
+}
+
+.description {
+  font-size: 12px;
+  color: #555;
+  margin-top: 5px;
+}
+
+.eye-icon {
+  color: rgb(135, 135, 253);
+}
+
+.heart-icon {
+  color: rgb(255, 143, 143);
 }
 </style>
