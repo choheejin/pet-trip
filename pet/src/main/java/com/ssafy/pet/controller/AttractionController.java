@@ -145,7 +145,7 @@ public class AttractionController {
 	
 	@GetMapping("/plan-ranking")
 	@ResponseBody
-	public ResponseEntity<PaginatedResponseDto<TravelPlansDto>> getPlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
+	public ResponseEntity<List<TravelPlansDto>> getPlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
 		
 		int start = UtilClass.caculateOffest(page);
 		List<TravelPlansDto> result = attractionService.getPlanRanking(start, PaginationConstants.PAGE_SIZE);
@@ -155,15 +155,12 @@ public class AttractionController {
 			throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND);
 		}
 		
-		List<TravelPlansDto> allRes = attractionService.getPlanRanking(-1, -1);
-		int total_pages = UtilClass.calculateTotalPages(allRes.size());
-		
-		return ResponseEntity.ok(new PaginatedResponseDto<>(result, total_pages));
+		return ResponseEntity.ok(result);
 	}
 	
 	@GetMapping("/hotplace-ranking")
 	@ResponseBody
-	public ResponseEntity<PaginatedResponseDto<AttractionsDto>> getHotplacePlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
+	public ResponseEntity<List<AttractionsDto>> getHotplacePlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
 		
 		int start = UtilClass.caculateOffest(page);
 		List<AttractionsDto> result = attractionService.getHotplaceRanking(start, PaginationConstants.PAGE_SIZE);
@@ -173,9 +170,8 @@ public class AttractionController {
 			throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND);
 		}
 		
-		List<AttractionsDto> allRes = attractionService.getHotplaceRanking(-1, -1);
-		int total_pages = UtilClass.calculateTotalPages(allRes.size());
-		
-		return ResponseEntity.ok(new PaginatedResponseDto<>(result, total_pages));
+		return ResponseEntity.ok(result);
 	}
+	
+	//@GetMapping("/hotplace-ranking")
 }
