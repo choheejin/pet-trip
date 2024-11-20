@@ -28,7 +28,7 @@ public interface AttractionMapper {
 	PetAttractionsDto searchPetByContentID(int content_id);
 	
 	//반려견 타입으로 검색
-	List<Integer> searchDetailByKeyword(String keyword);
+	List<Integer> searchDetailByKeyword(@Param("keyword") String keyword, @Param("page_start") int page_start, @Param("page_size") int page_size);
 
 	//content_id로 hotplace 찾기
 	HotplaceDto searchHotplaceById(int content_id);

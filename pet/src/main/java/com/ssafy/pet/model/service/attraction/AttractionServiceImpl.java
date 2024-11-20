@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
+import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
 import com.ssafy.pet.dto.HotplaceDto;
@@ -81,14 +82,12 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 	
 	@Override
-	public List<AttractionDetailDto> searchDetailByKeyword(String keyword) { 
-		List<Integer> content_ids = attractionMapper.searchDetailByKeyword(keyword);
-		List<Integer> all_breeds_content_ids = attractionMapper.searchDetailByKeyword("모든 견종");
-		
+	public List<AttractionDetailDto> searchDetailByKeyword(String keyword, int page_start, int page_size) { 
+		List<Integer> content_ids = attractionMapper.searchDetailByKeyword(keyword, page_start, page_size);
+
 		List<AttractionDetailDto> result = new ArrayList<>();
 		
 		addDetails(content_ids, result);
-		addDetails(all_breeds_content_ids, result);
 		
 		return result;
 	}

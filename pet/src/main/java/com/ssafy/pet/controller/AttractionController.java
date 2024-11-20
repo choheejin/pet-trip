@@ -78,12 +78,15 @@ public class AttractionController {
 	
 	@GetMapping("/detail")
 	@ResponseBody
-	public List<AttractionDetailDto> searchDetailByKeyword(@RequestParam(value = "keyword", required = false) String keyword) {
+	public List<AttractionDetailDto> searchDetailByKeyword(@RequestParam(value = "page", required = false, defaultValue = "1") int page, 
+			@RequestParam(value = "keyword", required = false) String keyword) {
 	    if (keyword == null) {
 	    	throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND, keyword);
 	    } else {
-	        
-	        List<AttractionDetailDto> result = attractionService.searchDetailByKeyword(keyword);
+	    	
+	    	int page_start = UtilClass.caculateOffest(page);
+	        System.out.println(page_start);
+	        List<AttractionDetailDto> result = attractionService.searchDetailByKeyword(keyword, page_start, PaginationConstants.PAGE_SIZE);
 	        
 	        return result;
 	    }

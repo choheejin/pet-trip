@@ -26,7 +26,7 @@ public interface AttractionService {
 	PetAttractionsDto searchPetByContentID(int content_id);
 	
 	//반려견 타입으로 검색
-	List<AttractionDetailDto> searchDetailByKeyword(String keyword);
+	List<AttractionDetailDto> searchDetailByKeyword(String keyword, int page_start, int page_size);
 
 	//content_id로 hotplace 찾기
 	HotplaceDto searchHotplaceById(int content_id);
