@@ -53,7 +53,7 @@ public class AttractionController {
 		
 		int page_start = UtilClass.caculateOffest(page);
 		params.put("page_start", page_start);
-		params.put("page_size", PaginationConstants.PAGE_SIZE);
+		params.put("page_size", PaginationConstants.ATTRACTION_PAGE_SIZE);
 		
 		return attractionService.searchAttractions(params);
 	}
