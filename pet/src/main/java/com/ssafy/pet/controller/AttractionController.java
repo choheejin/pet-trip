@@ -25,6 +25,7 @@ import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.UtilClass;
 
+import ch.qos.logback.classic.pattern.Util;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -41,7 +42,8 @@ public class AttractionController {
 			@RequestParam(required = false) Integer sidoCode,
 	        @RequestParam(required = false) Integer gugunCode,
 	        @RequestParam(required = false) String title,
-	        @RequestParam(required = false) Integer contentTypeId
+	        @RequestParam(required = false) Integer contentTypeId,
+	        @RequestParam(value = "page", required = false, defaultValue = "1") int page
 	){
 		Map<String, Object> params = new HashMap<>();
 		params.put("sidoCode", sidoCode);
@@ -49,6 +51,9 @@ public class AttractionController {
 		params.put("title", title);
 		params.put("contentTypeId", contentTypeId);
 		
+		int page_start = UtilClass.caculateOffest(page);
+		params.put("page_start", page_start);
+		params.put("page_size", PaginationConstants.PAGE_SIZE);
 		
 		return attractionService.searchAttractions(params);
 	}

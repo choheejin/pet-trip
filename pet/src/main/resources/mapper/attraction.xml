@@ -20,6 +20,7 @@
 				and title like concat('%', #{title}, '%')
 			</if>
 		</where>
+		limit #{page_start}, #{page_size}
 	</select>
 	
 	<select id="searchByContentID" parameterType="int" resultType="AttractionsDto">
@@ -36,7 +37,7 @@
 	<select id="searchDetailByKeyword" resultType="int">
 		select content_id
 		from pet_attractions
-		where acmpyPsblCpam = #{keyword}
+		where acmpyPsblCpam = #{keyword} or acmpyPsblCpam = "모든 견종"
 		limit #{page_start}, #{page_size}
 	</select>
 	
