@@ -42,5 +42,8 @@ public interface TravelPlanMapper {
 	//유저가 게시한 게시글 조회
 	List<TravelPlansDto> getUserPlans(int user_id);
 	
+	//유저가 좋아요한 게시글 아이디 조회
+	List<Integer> getUserFavoritePlanIds(int user_id);
+	
 	List<Map<String, Object>> findItemById(int id);
 }

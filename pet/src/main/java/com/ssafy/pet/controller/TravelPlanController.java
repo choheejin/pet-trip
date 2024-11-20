@@ -155,6 +155,7 @@ public class TravelPlanController {
 	}
 	
 	@GetMapping("/user-plan")
+	@ResponseBody
 	public ResponseEntity<List<TravelPlansDto>> userPlan(@RequestHeader("accessToken") String header) {
 		
 		int id = userHelperService.getUserIdFromHeader(header);
@@ -163,6 +164,17 @@ public class TravelPlanController {
 		
 		return ResponseEntity.ok(result);
 	}
+	
+	@GetMapping("/user-favorite-plans")
+	@ResponseBody
+	public ResponseEntity<List<TravelPlansDto>> userFavoritePlans(@RequestHeader("accessToken") String header) {
+		
+		int id = userHelperService.getUserIdFromHeader(header);
+		
+		List<TravelPlansDto> result = travelPlanService.getUserFavoritePlans(id);
+		
+		return ResponseEntity.ok(result);
+	} 
 
 	@PutMapping("/{plan_id}")
 	public ResponseEntity<?> updatePlans(@PathVariable("plan_id") String plan_id,

@@ -1,5 +1,6 @@
 package com.ssafy.pet.model.service.travelplan;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,15 +184,25 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		return travelPlanMapper.getPlansByMostViews(page_start, page_size);
 	}
 
-
 	@Override
 	public List<String> getComments(int plan_id) {
 		return travelPlanMapper.getComments(plan_id);
 	}
 
-
 	@Override
 	public List<TravelPlansDto> getUserPlans(int user_id) {
 		return travelPlanMapper.getUserPlans(user_id);
+	}
+
+	@Override
+	public List<TravelPlansDto> getUserFavoritePlans(int user_id) {
+		List<Integer> plan_ids = travelPlanMapper.getUserFavoritePlanIds(user_id);
+		List<TravelPlansDto> favoritePlans = new ArrayList<>();
+		
+		for(var plan_id : plan_ids) {
+			favoritePlans.add(travelPlanMapper.findPlanById(plan_id));
+		}
+		
+		return favoritePlans;
 	}
 }
