@@ -32,6 +32,7 @@ import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.model.service.travelplan.TravelPlanService;
+import com.ssafy.pet.model.service.user.UserHelperService;
 import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.UtilClass;
 
@@ -44,6 +45,7 @@ public class TravelPlanController {
 	private final JWTUtil jwtUtil;
 	private final TravelPlanService travelPlanService;
 	private final AttractionService attracionService;
+	private final UserHelperService userHelperService;
 
 	@GetMapping
 	public ResponseEntity<?> getPlans(@RequestParam(required = false) Integer page) {
@@ -150,6 +152,16 @@ public class TravelPlanController {
 		status = HttpStatus.CREATED;
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+	
+	@GetMapping("/user-plan")
+	public ResponseEntity<List<TravelPlansDto>> userPlan(@RequestHeader("accessToken") String header) {
+		
+		int id = userHelperService.getUserIdFromHeader(header);
+		
+		List<TravelPlansDto> result = travelPlanService.getUserPlans(id);
+		
+		return ResponseEntity.ok(result);
 	}
 
 	@PutMapping("/{plan_id}")

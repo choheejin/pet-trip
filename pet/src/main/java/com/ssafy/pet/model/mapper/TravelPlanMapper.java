@@ -39,5 +39,8 @@ public interface TravelPlanMapper {
 	//게시글의 댓글 조회
 	List<String> getComments(int plan_id);
 	
+	//유저가 게시한 게시글 조회
+	List<TravelPlansDto> getUserPlans(int user_id);
+	
 	List<Map<String, Object>> findItemById(int id);
 }

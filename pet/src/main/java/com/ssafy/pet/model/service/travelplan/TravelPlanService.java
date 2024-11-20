@@ -34,6 +34,9 @@ public interface TravelPlanService {
 	//가장 많이 조회 된 순으로 게시글 조회
 	List<TravelPlansDto> getPlansByMostViews(int page_start, int page_size);
 	
+	//유저가 게시한 게시글 조회
+	List<TravelPlansDto> getUserPlans(int user_id);
+	
 	//게시글의 댓글 조회
 	List<String> getComments(int plan_id);
 }

@@ -2,9 +2,9 @@ package com.ssafy.pet.model.service.user;
 
 import org.springframework.stereotype.Service;
 
+import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.UserErrorCode;
-import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.util.JWTUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserHelperService {
 	private final JWTUtil jwtUtil;
-	private final AttractionService attractionService;
+	private final UserService userService;
 	
 	public int getUserIdFromHeader(String header)
 	{
@@ -24,6 +24,8 @@ public class UserHelperService {
 			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
 		}
 		
-		return attractionService.searchUserByUserId(user_id);
+		UsersDto user = userService.userInfo(user_id).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
+	
+		return user.getId();
 	}
 }

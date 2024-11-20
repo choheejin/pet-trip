@@ -144,6 +144,11 @@
 		top_comment_id, created_at;
 	</select>
 
+	<select id="getUserPlans" parameterType="int" resultType="TravelPlansDto">
+		select *
+		from travel_plans
+		where user_id = #{user_id};
+	</select>
 
 </mapper>
 
