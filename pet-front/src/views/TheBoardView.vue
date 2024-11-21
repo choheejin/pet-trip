@@ -20,7 +20,7 @@ const getTravelPlansBySorting = async () => {
       },
     });
     travelplans.value = data.data;
-    // console.log(sort.value, "조건으로 정렬된 계획 : ", travelplans.value);
+    console.log(sort.value, "조건으로 정렬된 계획 : ", travelplans.value);
   } catch (error) {
     console.error("Error fetching travel plans:", error);
   }
