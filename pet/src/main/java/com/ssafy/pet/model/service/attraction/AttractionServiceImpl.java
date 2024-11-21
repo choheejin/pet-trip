@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
+import com.ssafy.pet.dto.GugunsDto;
 import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
@@ -98,7 +99,7 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 
 	@Override
-	public List<Integer> searchGugunCodeBySidoCode(int sido_code) {
+	public List<GugunsDto> searchGugunCodeBySidoCode(int sido_code) {
 		return attractionMapper.searchGugunCodeBySidoCode(sido_code);
 	}
 

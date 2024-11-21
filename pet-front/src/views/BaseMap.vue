@@ -8,6 +8,8 @@ import { useMainSelectStore } from "@/stores/mainselect.js";
 import attractionApi from "@/api/attractionApi";
 import { useCartStore } from "@/stores/cart";
 import { useSidoStore } from "@/stores/sido";
+import MapContentIdList from "@/components/map/MapContentIdList.vue";
+import { faL } from "@fortawesome/free-solid-svg-icons";
 
 /* 전체적으로 자주 쓰이는 값 */
 const attractions = ref([]); // 리스트의 값
@@ -74,11 +76,24 @@ const content_type_id = ref("");
 const title = ref("");
 
 const dogsize = ref(""); // 강아지 크기
+const dogSizes = ["모든 견종", "대형견", "중형견", "소형견"];
+
+const isAnimate = ref(true);
+
+const page = ref(1);
+const totalPageNum = ref(0);
+const setPage = (n) => {
+  page.value = n;
+};
 
 // 메인화면에서 선택된거
 const mainSelectStore = useMainSelectStore();
 const selectedFileName = computed(() => mainSelectStore.selectedSidoCode);
 const selectedDogSize = computed(() => mainSelectStore.selectedDogSize);
+
+const setContentId = (type) => {
+  content_type_id.value = type;
+};
 
 onMounted(() => {
   // 초기 설정
@@ -89,6 +104,8 @@ onMounted(() => {
   if (selectedDogSize.value !== null) {
     dogsize.value = selectedDogSize.value;
   }
+
+  getAttractions();
 });
 
 const resetGugun = () => {
@@ -96,17 +113,34 @@ const resetGugun = () => {
 };
 
 // `sido_code` 또는 `dogsize`가 변경될 때마다 호출
-watch([sido_code, dogsize, gugun_code], () => {
-  // `sido_code`가 변경되었을 때는 getAttractions() 호출
-  if (sido_code.value) {
+watch(
+  [sido_code, dogsize, gugun_code, content_type_id, page],
+  (
+    [newSido, newDogsize, newGugun, newContentType, newPage],
+    [oldSido, oldDogsize, oldGugun, oldContentType, oldPage]
+  ) => {
+    isAnimate.value = true;
+    attractions.value = [];
+    // page가 변경된 경우 처리
+    const isOtherValueChanged =
+      newSido !== oldSido ||
+      newDogsize !== oldDogsize ||
+      newGugun !== oldGugun ||
+      newContentType !== oldContentType;
+
+    if (isOtherValueChanged) {
+      page.value = 1;
+    }
+
+    // sido_code가 변경된 경우 처리
+    if (newSido !== oldSido && newSido) {
+      getGugunCode();
+    }
+
+    // 항상 호출되는 로직
     getAttractions();
-    getGugunCode();
   }
-  // `dogsize`가 변경되었을 때는 getAttractionsBySize() 호출
-  if (dogsize.value) {
-    getAttractionsBySize();
-  }
-});
+);
 
 // 검색하기
 const getAttractions = async () => {
@@ -117,23 +151,19 @@ const getAttractions = async () => {
     gugunCode: gugun_code.value,
     contentTypeId: content_type_id.value,
     title: title.value,
+    keyword: dogsize.value,
+    page: page.value,
   };
 
-  const { data, totalPage } = await attractionApi.get("/search", { params });
+  const { data } = await attractionApi
+    .get("/search", { params })
+    .then((response) => {
+      isAnimate.value = false;
+      return response;
+    });
 
   attractions.value = data.data;
-};
-
-// 반려견 사이즈로 검색하기
-const getAttractionsBySize = async () => {
-  console.log("사이즈 : ", dogsize.value);
-  setShowDetail(false);
-
-  const { data } = await axios.get(
-    `http://localhost:8080/pet/attraction/detail?keyword=${dogsize.value}`
-  );
-  console.log(data);
-  attractions.value = data.map((item) => item.attraction);
+  totalPageNum.value = data.totalPage;
 };
 
 const getGugunCode = async () => {
@@ -227,10 +257,10 @@ watch(
           map: map.value,
           icon: {
             content: [
-              `<svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="32" 
-                    height="32" 
+              `<svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
                     viewBox="0 0 64 64"
                 >
                   <!-- 배경 마커 -->
@@ -238,21 +268,21 @@ watch(
                     <stop offset="0%" stop-color="#00bfff" />
                     <stop offset="100%" stop-color="#00ff80" />
                   </linearGradient>
-                  <path 
-                    d="M32 2c-13 0-22 9-22 22 0 15 22 38 22 38s22-23 22-38c0-13-9-22-22-22z" 
-                    fill="url(#gradient)" 
-                    stroke="#007f5f" 
+                  <path
+                    d="M32 2c-13 0-22 9-22 22 0 15 22 38 22 38s22-23 22-38c0-13-9-22-22-22z"
+                    fill="url(#gradient)"
+                    stroke="#007f5f"
                     stroke-width="2"
                   />
                   <!-- 중심 원 -->
                   <circle cx="32" cy="24" r="11" fill="white" stroke="#007f5f" stroke-width="2" />
                   <!-- 숫자 텍스트 -->
-                  <text 
-                    x="31" 
-                    y="28" 
-                    text-anchor="middle" 
-                    font-size="1.5rem" 
-                    fill="black" 
+                  <text
+                    x="31"
+                    y="28"
+                    text-anchor="middle"
+                    font-size="1.5rem"
+                    fill="black"
                     font-family="Arial, sans-serif"
                     font-weight="bolder"
                     dominant-baseline="middle"
@@ -328,10 +358,10 @@ onMounted(() => {
         <!-- 시군구 고르기 -->
         <div class="select-tag">
           <select name="" id="" v-model="sido_code" @change="resetGugun">
-            <option value="">전체</option>
+            <option value="">시 전체</option>
             <option
               v-for="sido in sidoStore.sido"
-              :id="sido.sido_code"
+              :key="sido.sido_code"
               :value="sido.sido_code"
             >
               {{ sido.sido_name }}
@@ -339,9 +369,21 @@ onMounted(() => {
           </select>
           <!-- TODO: 구군 이름 추가 -->
           <select name="" id="" v-model="gugun_code">
-            <option value="">전체</option>
-            <option v-for="gugun in gugunStore" :value="gugun" :id="gugun">
-              {{ gugun }}
+            <option value="">구군 전체</option>
+            <option
+              v-for="gugun in gugunStore"
+              :value="gugun.gugun_code"
+              :key="gugun.id"
+            >
+              {{ gugun.gugun_name }}
+            </option>
+          </select>
+
+          <!--견종선택-->
+          <select name="" id="" v-model="dogsize">
+            <option value="">견종 미선택</option>
+            <option v-for="size in dogSizes" :value="size" :key="size">
+              {{ size }}
             </option>
           </select>
         </div>
@@ -349,8 +391,20 @@ onMounted(() => {
 
       <!-- 리스트 -->
       <div class="outer">
+        <div
+          v-if="isAnimate"
+          style="
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <i class="fa-solid fa-circle-notch animate-spin"></i>
+        </div>
         <div class="list-group">
-          <div v-if="attractions.length <= 0" class="no-items">
+          <div v-if="attractions.length <= 0 && !isAnimate" class="no-items">
             검색 결과가 존재하지 않습니다.
           </div>
           <div v-else>
@@ -368,17 +422,37 @@ onMounted(() => {
       <div class="pagination-group">
         <nav aria-label="Page navigation example">
           <ul class="pagination">
-            <li class="page-item">
+            <li class="page-item" @click="setPage(1)">
               <a class="page-link" href="#" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
                 <span class="sr-only">Previous</span>
               </a>
             </li>
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item"><a class="page-link" href="#">2</a></li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
+
+            <li class="page-item" @click="setPage(page)">
+              <a class="page-link" href="#">{{ page }}</a>
+            </li>
+            <li
+              v-if="page + 1 < totalPageNum"
+              class="page-item"
+              @click="setPage(page + 1)"
+            >
+              <a class="page-link" href="#">{{ page + 1 }}</a>
+            </li>
+            <li
+              v-if="page + 2 < totalPageNum"
+              class="page-item"
+              @click="setPage(page + 2)"
+            >
+              <a class="page-link" href="#">{{ page + 2 }}</a>
+            </li>
             <li class="page-item">
-              <a class="page-link" href="#" aria-label="Next">
+              <a
+                class="page-link"
+                href="#"
+                aria-label="Next"
+                @click="setPage(totalPageNum)"
+              >
                 <span aria-hidden="true">&raquo;</span>
                 <span class="sr-only">Next</span>
               </a>
@@ -390,6 +464,11 @@ onMounted(() => {
 
     <!-- 오른쪽 화면 -->
     <div class="right-side">
+      <!-- content_id로 검색 -->
+      <div v-if="!showDetail && !isCartShowed">
+        <MapContentIdList @handle-type="setContentId" />
+      </div>
+
       <!-- 상세조회 -->
       <div class="detail-side" v-if="showDetail">
         <MapDetail
@@ -505,7 +584,7 @@ onMounted(() => {
 .select-tag {
   padding: 10px 0px 8px 0px;
   display: flex;
-  gap: 5px;
+  gap: 0.8rem;
 }
 
 .cart-group {
@@ -570,5 +649,27 @@ onMounted(() => {
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   border: 1px solid rgba(209, 213, 219, 0.418);
   background-color: white;
+}
+
+.select-tag > select {
+  padding: 0.25rem 0.3rem;
+  border: 1px solid rgb(209 213 219);
+  border-radius: 0.325rem;
+}
+
+.animate-spin {
+  text-align: center;
+  font-size: 30px;
+  color: rgb(115 115 115);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>

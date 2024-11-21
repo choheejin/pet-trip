@@ -19,10 +19,8 @@ public interface UserService {
 	// 사용자 아이디 이미 사용중인지 확인하기
 	Optional<Boolean> findIdByUserId(String user_id);
 	
-	// 정보 수정
+	// 정보 수정: username, email, pwd 한꺼번에 수정
 	Optional<Integer> update(UsersDto user);
-	
-	//TODO:: 비밀번호 수정도 만들면 좋을듯
 	
 	// 탈퇴
 	Optional<Integer> deactivate(String user_id);

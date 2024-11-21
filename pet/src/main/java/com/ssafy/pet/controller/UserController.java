@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final JWTUtil jwtUtil;
 	private final UserService userService;
+	private final UserHelperService userHelperService;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> userRegister(@RequestBody UsersDto userDto) {
@@ -105,6 +107,7 @@ public class UserController {
 		return new ResponseEntity<>(status);	
 	}
 	
+
 	@PatchMapping("/updateimage")
 	public ResponseEntity<?> updateImage(@RequestBody UsersDto user, @RequestParam("image") MultipartFile image){
 		HttpStatus status = HttpStatus.ACCEPTED;
@@ -113,5 +116,6 @@ public class UserController {
 		status = HttpStatus.NO_CONTENT;
 		
 		return new ResponseEntity<>(status);
+
 	}
 }

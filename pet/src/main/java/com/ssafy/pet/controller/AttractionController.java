@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
+import com.ssafy.pet.dto.GugunsDto;
 import com.ssafy.pet.dto.PaginatedResponseDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.exception.ApplicationException;
@@ -37,7 +38,6 @@ import lombok.RequiredArgsConstructor;
 public class AttractionController {
 	private final AttractionService attractionService;
 	private final UserHelperService userHelperService;
-	//private final JWTUtil jwtUtil;
 	
 	// (시도, 구군, 이름, 관광지 타입) 선택적 조회
 	@GetMapping("/search")
@@ -47,6 +47,7 @@ public class AttractionController {
 	        @RequestParam(required = false) Integer gugunCode,
 	        @RequestParam(required = false) String title,
 	        @RequestParam(required = false) Integer contentTypeId,
+	        @RequestParam(required = false) String keyword,
 	        @RequestParam(value = "page", required = false, defaultValue = "1") int page
 	){
 		Map<String, Object> params = new HashMap<>();
@@ -54,6 +55,7 @@ public class AttractionController {
 		params.put("gugunCode", gugunCode);
 		params.put("title", title);
 		params.put("contentTypeId", contentTypeId);
+		params.put("keyword", keyword);
 		
 		int page_start = UtilClass.caculateOffest(page);
 		params.put("page_start", page_start);
@@ -134,15 +136,15 @@ public class AttractionController {
 	
 	@GetMapping("/search/{sido_code}")
 	@ResponseBody
-	public ResponseEntity<List<Integer>> searchGugunCode(@PathVariable("sido_code") int sido_code){
-		List<Integer> gugun_code = attractionService.searchGugunCodeBySidoCode(sido_code);
+	public ResponseEntity<List<GugunsDto>> searchGugunCode(@PathVariable("sido_code") int sido_code){
+		List<GugunsDto> gugun = attractionService.searchGugunCodeBySidoCode(sido_code);
 		
-		if(gugun_code == null)
+		if(gugun == null)
 		{
 			throw new ApplicationException(SearchErrorCode.KEYWORD_MISSING, (Integer.toString(sido_code)));
 		}
 		
-		return ResponseEntity.ok(gugun_code);
+		return ResponseEntity.ok(gugun);
 	}
 	
 	@GetMapping("/plan-ranking")

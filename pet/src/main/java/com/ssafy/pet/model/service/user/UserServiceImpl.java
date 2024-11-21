@@ -54,7 +54,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Optional<Integer> update(UsersDto user) {
-		return Optional.empty();
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		int cnt = userMapper.update(user);
+		return cnt > 0 ? Optional.of(cnt) : Optional.empty();
 	}
 
 	@Override
