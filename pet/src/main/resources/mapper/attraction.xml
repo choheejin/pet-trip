@@ -109,10 +109,11 @@
 		where content_id = #{content_id};
 	</select>
 
-	<select id="getContentIdByPlanId" parameterType="int" resultType="int">
-		select content_id
-		from travel_plan_items
-		where plan_id = #{id}
+	<select id="getFirstImageByPlanId" parameterType="int" resultType="String">
+		select a.first_image1
+		from travel_plan_items tpi
+		join attractions a on tpi.content_id = a.content_id
+		where tpi.plan_id = 2 and a.first_image1 != ''
 		limit 1;
 	</select>
 	
@@ -121,5 +122,6 @@
 		from hotplace
 		where user_id = #{user_id};
 	</select>
+	
 
 </mapper>

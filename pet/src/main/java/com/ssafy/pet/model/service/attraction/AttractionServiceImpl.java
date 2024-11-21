@@ -3,6 +3,7 @@ package com.ssafy.pet.model.service.attraction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -70,15 +71,19 @@ public class AttractionServiceImpl implements AttractionService {
 	
 	//travel_plan dto의 first_image를 지정해주는 함수
 	public void setPlanImage(List<TravelPlansDto> plans)
-	{
+	{	
 		for(var plan : plans)
 		{
-			System.out.println("plan id: " + plan.getId());
-			int content_id = attractionMapper.getContentIdByPlanId(plan.getId());
-			//System.out.println("content_id: " + content_id);
-			String image = attractionMapper.getImageById(content_id);
-			//System.out.println("image: " + image);
-			plan.setImage(image);
+			String image = attractionMapper.getFirstImageByPlanId(plan.getId());
+			
+			if(image == null)
+			{
+				plan.setImage("https://st3.depositphotos.com/8687452/13536/i/450/depositphotos_135362258-stock-photo-seoul-south-korea-nov-1.jpg");
+			}
+			else
+			{
+				plan.setImage(image);
+			}
 		}
 	}
 	
@@ -114,17 +119,15 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 
 	@Override
-	public String getImageById(int content_id) {
-		return attractionMapper.getImageById(content_id);
-	}
-
-	@Override
-	public int getContentIdByPlanId(int plan_id) {
-		return attractionMapper.getContentIdByPlanId(plan_id);
+	public String getFirstImageByPlanId(int plan_id) {
+		return attractionMapper.getFirstImageByPlanId(plan_id);
 	}
 
 	@Override
 	public List<Integer> getContentIdByUserID(int user_id) {
+		// TODO Auto-generated method stub
 		return attractionMapper.getContentIdByUserID(user_id);
 	}
+
+
 }

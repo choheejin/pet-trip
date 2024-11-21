@@ -47,11 +47,8 @@ public interface AttractionService {
 	//가장 많이 좋아요 언급된 핫플레이스를 내림차순으로 정렬해서 가져오기
 	List<AttractionsDto> getHotplaceRanking(Integer page_start, Integer page_size);
 
-	//content_id를 통해 first_image를 가져오기
-	String getImageById(int content_id);
-	
-	//travel plans dto의 id를 통해서 travel_plan_items의 첫번째 content_id찾기
-	int getContentIdByPlanId(int plan_id);
+	//travel plan items를 plan_id로 조회해서 attractions의 이미지 가져오기
+	String getFirstImageByPlanId(int plan_id);
 	
 	//travel_plan dto의 first_image를 지정해주는 함수
 	void setPlanImage(List<TravelPlansDto> plans);

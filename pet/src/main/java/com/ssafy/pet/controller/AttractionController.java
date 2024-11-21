@@ -73,15 +73,6 @@ public class AttractionController {
 		return ResponseEntity.ok(new PaginatedResponseDto<>(attractions, total_page));
 	}
 	
-	@GetMapping("/image/{content_id}")
-	@ResponseBody
-	public String getImageById(@PathVariable("content_id") int content_id)
-	{
-		String img = attractionService.getImageById(content_id);
-		
-		return img;
-	}
-	
 	// content_id로 상세 내용 조회
 	@GetMapping("/detail/{content_id}")
 	@ResponseBody

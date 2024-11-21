@@ -38,8 +38,10 @@ public class UserServiceImpl implements UserService {
 	public Optional<UsersDto> login(UsersDto user) {
 		// 아이디가 존재하지 않는다면 바로 return
 		String encodePw = this.userInfo(user.getUser_id()).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED)).getPassword();
+		
 		UsersDto loginUser = null;
 		
+		System.out.println(user.getPassword());
 		if(passwordEncoder.matches(user.getPassword(), encodePw)) {
 			user.setPassword(encodePw);
 			loginUser = userMapper.login(user);

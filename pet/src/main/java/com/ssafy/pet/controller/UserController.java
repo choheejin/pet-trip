@@ -51,7 +51,7 @@ public class UserController {
 	public ResponseEntity<?> userLogin(@RequestBody UsersDto user) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
-		
+		System.out.println(user);
 		UsersDto loginUser = userService.login(user).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
 		
 		String accessToken = jwtUtil.createAccessToken(loginUser.getId(), loginUser.getUser_id());
