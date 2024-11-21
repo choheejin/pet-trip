@@ -11,8 +11,8 @@ myPageApi.interceptors.request.use((config) => {
   if (token != null) {
     config.headers.accessToken = token;
   }
-  console.log("인터셉터 작동");
-  console.log(config.headers);
+  // console.log("인터셉터 작동");
+  // console.log(config.headers);
   return config;
 });
 

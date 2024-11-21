@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import myPageApi from "@/api/mypageApi";
+import myPageApi from "@/api/myPageApi";
 
 const img = ref("/icon.png");
 const fileInput = ref(null);
@@ -10,13 +10,14 @@ const userInfo = ref([]);
 const getUserInfo = async () => {
   const { data } = await myPageApi.get("/info", {});
   userInfo.value = data;
-  console.log("사용자 정보 출력하기 : ", userInfo);
+  // console.log("사용자 정보 출력하기 : ", userInfo);
 };
 
 const openFilePicker = () => {
   fileInput.value.click();
 };
 
+// 프로필 이미지 변경
 const changeProfile = () => {
   const file = fileInput.value.files[0];
   if (file) {
@@ -24,10 +25,34 @@ const changeProfile = () => {
     reader.onload = (e) => {
       img.value = e.target.result; // 새로운 이미지 설정
       console.log("프로필 이미지 변경! : ", img.value);
+
+      // 이미지 변경 API 호출
+      updateImage(file);
     };
     reader.readAsDataURL(file);
   }
 };
+// 이미지 업데이트하는 api 호출
+const updateImage = async (file) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("user", JSON.stringify(userInfo.value));
+
+  try {
+
+
+    const {data} = await myPageApi.patch("/updateimage", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data" // 파일 전송에 필요한 헤더
+      },
+    });
+
+    console.log("이미지 업데이트 성공!!!");
+    getUserInfo();
+  } catch (error) {
+    console.log("이미지 업데이트 실패 : ", error);
+  }
+}
 
 getUserInfo();
 </script>

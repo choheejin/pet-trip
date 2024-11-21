@@ -2,6 +2,8 @@ package com.ssafy.pet.model.service.user;
 
 import java.util.Optional;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.ssafy.pet.dto.UsersDto;
 
 public interface UserService {
@@ -22,4 +24,7 @@ public interface UserService {
 	
 	// 탈퇴
 	Optional<Integer> deactivate(String user_id);
+	
+	// 프로필 이미지 수정
+	Optional<Integer> updateImage(UsersDto user, MultipartFile image);
 }

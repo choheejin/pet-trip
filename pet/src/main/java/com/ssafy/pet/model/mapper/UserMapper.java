@@ -1,6 +1,5 @@
 package com.ssafy.pet.model.mapper;
 
-import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -27,4 +26,7 @@ public interface UserMapper {
 	int deactivate(String user_id);
 	
 	String findUserIdById(int id);
+	
+	// 프로필 이미지 수정
+	int updateImage(UsersDto user);
 }

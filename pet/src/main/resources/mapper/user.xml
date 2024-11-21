@@ -44,5 +44,10 @@
 		where id=#{id}
 	</select>
 	
+	<update id="updateImage" parameterType="usersDto">
+		update users
+		set image = #{image}
+		where user_id = #{user_id}
+	</update>
 </mapper>
 

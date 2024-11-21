@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
@@ -85,6 +86,8 @@ public class UserController {
 		resultMap.put("user_id", userInfo.getUser_id());
 		resultMap.put("username", userInfo.getUsername());
 		resultMap.put("email", userInfo.getEmail());
+		resultMap.put("image", userInfo.getImage());
+		
 		
 		status = HttpStatus.CREATED;
 
@@ -104,15 +107,15 @@ public class UserController {
 		return new ResponseEntity<>(status);	
 	}
 	
-	@PatchMapping("/update-info")
-	@ResponseBody
-	public ResponseEntity<?> updateUserInfo(@RequestHeader("accessToken") String header, @RequestBody UsersDto user) {
+
+	@PatchMapping("/updateimage")
+	public ResponseEntity<?> updateImage(@RequestBody UsersDto user, @RequestParam("image") MultipartFile image){
 		HttpStatus status = HttpStatus.ACCEPTED;
-		
-		userService.update(user).orElseThrow(() -> new RuntimeException());
+		userService.updateImage(user, image);
 		
 		status = HttpStatus.NO_CONTENT;
 		
-		return ResponseEntity.ok(status);
+		return new ResponseEntity<>(status);
+
 	}
 }

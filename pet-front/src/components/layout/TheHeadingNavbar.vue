@@ -1,13 +1,24 @@
 <script setup>
-import { ref } from "vue";
+import {onMounted, ref} from "vue";
 import { useAuthStore } from "@/stores/user";
 import LoginModal from "@/components/layout/LoginModal.vue";
 import SignupModal from "@/components/layout/SignupModal.vue";
+import myPageApi from "@/api/myPageApi.js";
 
 const userStore = useAuthStore();
+const img = ref("/icon.png");
+const userImg = ref(null);
 
 const logout = () => {
   userStore.logout();
+  userImg.value = img.value;
+};
+
+// 사용자 프로필 이미지
+const getUserImage = async () => {
+  const {data} = await myPageApi.get("/info", {});
+  // console.log("로그인 감지!! : ", data)
+  userImg.value = (data.image != null) ? data.image : img.value;
 };
 
 // 모달 상태 관리
@@ -26,6 +37,19 @@ const closeModal = () => {
   isLoginModalVisible.value = false; // 로그인 성공 후 모달 닫기
   isSignupModalVisible.value = false;
 };
+
+// 로그인 했을 때 다시 프로필 이미지 로드
+const handleLogin = async () => {
+  // 로그인된 이후에 프로필 이미지 업데이트
+  await getUserImage();
+}
+
+// 초기 이미지 로드
+onMounted(() => {
+  if (userStore.token) {
+    getUserImage();
+  }
+})
 </script>
 <template>
   <nav class="navbar navbar-expand-lg">
@@ -68,10 +92,13 @@ const closeModal = () => {
             <li class="nav-item">
               <a class="nav-link" href="#" @click.prevent="logout">로그아웃</a>
             </li>
+<!--            <li class="nav-item">-->
+<!--              <img :src="userImg" alt="Profile" class="profile-image" />-->
+<!--            </li>-->
           </template>
           <template v-else>
             <li class="nav-item">
-              <a class="nav-link" href="#" @click.prevent="showSignUpModal"
+              <a class="nav-link"  href="#" @click.prevent="showSignUpModal"
                 >회원가입</a
               >
             </li>
@@ -87,7 +114,7 @@ const closeModal = () => {
   </nav>
 
   <!-- 모달 컴포넌트 삽입 -->
-  <LoginModal v-if="isLoginModalVisible" @close="closeModal" />
+  <LoginModal v-if="isLoginModalVisible" @close="closeModal" @loginSuccess="handleLogin"/>
   <SignupModal v-if="isSignupModalVisible" @close="closeModal" />
 </template>
 
@@ -105,7 +132,7 @@ const closeModal = () => {
   font-size: 3rem;
 }
 .navbar-nav .nav-link {
-  margin: 0 10px; /* 메뉴 항목 사이 여백 */
+  margin: 0 10px;
   font-size: 1rem;
   color: #333;
 }
@@ -114,10 +141,18 @@ const closeModal = () => {
   color: #0056b3;
 }
 .navbar-nav.me-auto .nav-link:hover {
-  color: #000000; /* 초록색으로 변경 */
-  background-color: rgb(254, 250, 224); /* 배경 색상 추가 */
-  border-radius: 5px; /* 약간 둥근 효과 */
-  transition: background-color 0.3s ease; /* 부드러운 전환 */
+  color: #000000;
+  background-color: rgb(254, 250, 224);
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.profile-image {
+  border: 1px solid black;
+  height: 30px;
+  width: auto;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .container-fluid {
@@ -125,9 +160,5 @@ const closeModal = () => {
   padding-right: 15px;
   max-width: 1000px;
   margin: 0 auto;
-}
-
-.navbar-toggler {
-  border: none; /* 토글 버튼 테두리 제거 */
 }
 </style>
