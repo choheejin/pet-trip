@@ -9,12 +9,16 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.exception.ApplicationException;
+import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.exception.errorcode.TravelPlanErrorCode;
+import com.ssafy.pet.model.mapper.AttractionMapper;
 import com.ssafy.pet.model.mapper.TravelPlanMapper;
 import com.ssafy.pet.model.mapper.UserMapper;
+import com.ssafy.pet.model.service.attraction.AttractionService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class TravelPlanServiceImpl implements TravelPlanService {
 	private final TravelPlanMapper travelPlanMapper;
 	private final UserMapper userMapper;
+	private final AttractionMapper attractionMapper;
 
 	@Override
 	@Transactional
@@ -94,7 +99,6 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		return Optional.of(1);
 	}
 
-
 	@Override
 	public Optional<Integer> updatePlan(Map<String, Object> params) {
 		int user_id = (Integer) params.get("user_id");
@@ -112,7 +116,6 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		
 		return cnt == 0 ? Optional.empty() : Optional.of(cnt);
 	}
-
 
 	@Override
 	public Optional<Integer> updateItem(Map<String, Object> params) {		
@@ -138,7 +141,6 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		return plan;
 	}
 
-
 	@Override
 	public Optional<List<TravelPlansDto>> selectWithLimit(Integer page) {
 		
@@ -148,7 +150,6 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		
 		return list == null ? Optional.empty() : Optional.of(list);
 	}
-
 
 	@Override
 	public Optional<Map<String, Object>> findPlanWithItemsById(int id) {
@@ -166,12 +167,10 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		return plan == null ? Optional.empty() : Optional.of(resultMap);
 	}
 
-
 	@Override
 	public List<TravelPlansDto> getOldestPlans(int page_start, int page_size) {
 		return travelPlanMapper.getOldestPlans(page_start, page_size);
 	}
-
 
 	@Override
 	public List<TravelPlansDto> getNewestPlans(int page_start, int page_size) {
@@ -201,6 +200,47 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		
 		for(var plan_id : plan_ids) {
 			favoritePlans.add(travelPlanMapper.findPlanById(plan_id));
+		}
+		
+		return favoritePlans;
+	}
+
+	@Override
+	public List<TravelPlansDto> getPlansBySort(String sort, int page_start, int page_size) {
+		switch(sort) {
+			//오래된 순
+			case "oldest":
+				return travelPlanMapper.getOldestPlans(page_start, page_size);
+			//최신 순
+			case "newest":
+				return travelPlanMapper.getNewestPlans(page_start, page_size);
+			//조회 순
+			case "views":
+				return travelPlanMapper.getPlansByMostViews(page_start, page_size);
+			//좋아요 순
+			case "likes":
+				return attractionMapper.getPlanRanking(page_start, page_size);				
+			default:
+				throw new ApplicationException(SearchErrorCode.KEYWORD_MISSING, "잘못된 ?sort 명령어");
+		}
+	}
+
+	@Override
+	public List<TravelPlansDto> getAllPlansBySort(String sort) {
+		// TODO Auto-generated method stub
+		return getPlansBySort(sort, -1, -1);
+	}
+
+	@Override
+	public boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, int user_id) {
+		boolean[] favoritePlans = new boolean[PaginationConstants.PAGE_SIZE];
+		
+		for(int i = 0; i < plans.size(); i++)
+		{
+			if(plans.get(i).getUser_id() == user_id)
+			{
+				favoritePlans[i] = true;
+			}
 		}
 		
 		return favoritePlans;

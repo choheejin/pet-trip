@@ -28,6 +28,7 @@ import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.PaginatedResponseDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
+import com.ssafy.pet.dto.UserPlansResponseDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
@@ -71,42 +72,26 @@ public class TravelPlanController {
 	}
 	
 	@GetMapping("/plans")
-	public ResponseEntity<PaginatedResponseDto<TravelPlansDto>> getPlans(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
-			@RequestParam(value="sort", required = false, defaultValue="oldest") String sort){
+	public ResponseEntity<UserPlansResponseDto> getPlans(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+			@RequestParam(value="sort", required = false, defaultValue="oldest") String sort, @RequestHeader("accessToken") String header){
 		
-		List<TravelPlansDto> res = new ArrayList<>();
-		List<TravelPlansDto> allRes = new ArrayList<>();
+		int id = userHelperService.getUserIdFromHeader(header);
+		
 		int page_start = UtilClass.caculateOffest(page);
+		List<TravelPlansDto> sortedPlan = travelPlanService.getPlansBySort(sort, page_start, PaginationConstants.PAGE_SIZE);
+		List<TravelPlansDto> allRes = travelPlanService.getAllPlansBySort(sort);
 		
-		switch(sort) {
-			//오래된 순
-			case "oldest":
-				res = travelPlanService.getOldestPlans(page_start, PaginationConstants.PAGE_SIZE);
-				allRes = travelPlanService.getOldestPlans(-1, -1);
-				break;
-			//최신 순
-			case "newest":
-				res = travelPlanService.getNewestPlans(page_start, PaginationConstants.PAGE_SIZE);
-				allRes = travelPlanService.getNewestPlans(-1, -1);
-				break;
-			//조회 순
-			case "views":
-				res = travelPlanService.getPlansByMostViews(page_start, PaginationConstants.PAGE_SIZE);
-				allRes = travelPlanService.getPlansByMostViews(-1, -1);
-				break;
-			//좋아요 순
-			case "likes":
-				res = attracionService.getPlanRanking(page_start, PaginationConstants.PAGE_SIZE);
-				allRes = attracionService.getPlanRanking(-1, -1);
-				break;
-			default:
-				throw new ApplicationException(SearchErrorCode.KEYWORD_MISSING, "잘못된 ?sort 명령어");
-		}
-		
-		attracionService.setPlanImage(res);
+		attracionService.setPlanImage(sortedPlan);
 		int total_pages = UtilClass.calculateTotalPages(allRes.size());
 		
-		return ResponseEntity.ok(new PaginatedResponseDto<>(res, total_pages));
+		UserPlansResponseDto res = new UserPlansResponseDto();
+		
+		boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, id);
+		res.setPlans(sortedPlan);
+		res.setFavoritePlans(userFavoriteStatus);
+		res.setTotal_pages(total_pages);
+		
+		return ResponseEntity.ok(res);
 	}
 	
 	@GetMapping("/comments")
@@ -167,7 +152,7 @@ public class TravelPlanController {
 	
 	@GetMapping("/user-favorite-plans")
 	@ResponseBody
-	public ResponseEntity<List<TravelPlansDto>> userFavoritePlans(@RequestHeader("accessToken") String header) {
+	public ResponseEntity<List<TravelPlansDto>> userFavoritePlans(@RequestHeader("accessToken") String header, @RequestBody List<TravelPlansDto> plans) {
 		
 		int id = userHelperService.getUserIdFromHeader(header);
 		
