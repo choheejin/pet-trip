@@ -21,6 +21,14 @@
 				and title like
 				concat('%', #{title}, '%')
 			</if>
+			 <if test="keyword != null and keyword != ''">
+            		and content_id in (
+	                select content_id
+	                from pet_attractions
+	                where acmpyPsblCpam = #{keyword}
+	                   or acmpyPsblCpam = '모든 견종'
+	            )
+	        </if>
 		</where>
 		<if test="page_start != -1 and page_size != -1">
 			limit #{page_start}, #{page_size}

@@ -38,7 +38,6 @@ import lombok.RequiredArgsConstructor;
 public class AttractionController {
 	private final AttractionService attractionService;
 	private final UserHelperService userHelperService;
-	//private final JWTUtil jwtUtil;
 	
 	// (시도, 구군, 이름, 관광지 타입) 선택적 조회
 	@GetMapping("/search")
@@ -48,6 +47,7 @@ public class AttractionController {
 	        @RequestParam(required = false) Integer gugunCode,
 	        @RequestParam(required = false) String title,
 	        @RequestParam(required = false) Integer contentTypeId,
+	        @RequestParam(required = false) String keyword,
 	        @RequestParam(value = "page", required = false, defaultValue = "1") int page
 	){
 		Map<String, Object> params = new HashMap<>();
@@ -55,6 +55,7 @@ public class AttractionController {
 		params.put("gugunCode", gugunCode);
 		params.put("title", title);
 		params.put("contentTypeId", contentTypeId);
+		params.put("keyword", keyword);
 		
 		int page_start = UtilClass.caculateOffest(page);
 		params.put("page_start", page_start);
