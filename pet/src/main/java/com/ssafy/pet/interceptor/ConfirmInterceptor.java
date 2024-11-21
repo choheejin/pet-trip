@@ -40,6 +40,7 @@ public class ConfirmInterceptor implements HandlerInterceptor {
 		if (header == null || !jwtUtil.checkToken(header)) {
 			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
 		}
+		
 		return true;
 	}
 }
