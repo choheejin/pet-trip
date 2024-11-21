@@ -69,8 +69,9 @@
 	</select>
 
 	<select id="searchGugunCodeBySidoCode" parameterType="int"
-		resultType="int">
-		select gugun_code from guguns
+		resultType="GugunsDto">
+		select *
+		from guguns
 		where sido_code = #{sido_code}
 	</select>
 

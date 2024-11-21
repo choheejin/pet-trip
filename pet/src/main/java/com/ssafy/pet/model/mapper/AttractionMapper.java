@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
+import com.ssafy.pet.dto.GugunsDto;
 import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
@@ -40,7 +41,7 @@ public interface AttractionMapper {
 	int searchUserByUserId(String user_id);
 	
 	//sido_code로 gugun_code 찾기
-	List<Integer> searchGugunCodeBySidoCode(int sido_code);
+	List<GugunsDto> searchGugunCodeBySidoCode(int sido_code);
 	
 	//가장 많이 언급된 여행계획을 내림차순으로 정렬해서 가져오기
 	List<TravelPlansDto> getPlanRanking(@Param("page_start") int page_start, @Param("page_size") int page_size);
