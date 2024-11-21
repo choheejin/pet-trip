@@ -6,21 +6,24 @@ import BoardTravelPlan from "@/components/board/BoardTravelPlan.vue";
 
 // 검색 결과
 const travelplans = ref([]);
+const favorites = ref([]);
 const page = ref(1);
 const sort = ref("");
 
 // 검색 하기 - 정렬 조건
 const getTravelPlansBySorting = async () => {
-  // console.log("게시판 정렬!!!", page.value);
+
   try {
-    const { data } = await travelplanApi.get("", {
+    const { data } = await travelplanApi.get("/plans", {
       params: {
         sort: sort.value,
         page: page.value,
       },
     });
-    travelplans.value = data.data;
-    console.log(sort.value, "조건으로 정렬된 계획 : ", travelplans.value);
+    console.log("정렬!!!", data);
+    travelplans.value = data.plans;
+    favorites.value = data.favoritePlans;
+    // console.log(sort.value, "조건으로 정렬된 계획 : ", travelplans.value);
   } catch (error) {
     console.error("Error fetching travel plans:", error);
   }
@@ -71,7 +74,7 @@ onMounted(async () => {
           </div>
           <div class="CardTravelPlan">
             <!--        <h1>선택된 정렬 기준 : {{ sort }}</h1>-->
-            <BoardTravelPlan :travelplans="travelplans" />
+            <BoardTravelPlan :travelplans="travelplans" :favorites="favorites"/>
           </div>
 
           <!-- 페이지네이션 -->

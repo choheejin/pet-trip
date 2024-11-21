@@ -2,7 +2,7 @@ import { useAuthStore } from "@/stores/user";
 import axios from "axios";
 
 const myPageApi = axios.create({
-  baseURL: "http://localhost:8080/pet/user",
+  baseURL: "http://localhost:8080/pet",
 });
 
 myPageApi.interceptors.request.use((config) => {

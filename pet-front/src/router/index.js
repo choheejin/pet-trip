@@ -6,6 +6,7 @@ import TheMyPageView from "@/views/TheMyPageView.vue";
 import PostTravelPlan from "@/components/mypage/mypages/PostTravelPlan.vue";
 import LikeAttractions from "@/components/mypage/mypages/LikeAttractions.vue";
 import LikeTravelPlan from "@/components/mypage/mypages/LikeTravelPlan.vue";
+import BoardTravelPlanDetail from "@/components/board/BoardTravelPlanDetail.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -29,8 +30,15 @@ const router = createRouter({
       meta: { requiresAuth: false },
     },
     {
+      path: "/planDetail",
+      name: "PlanDetail",
+      component: BoardTravelPlanDetail,
+      meta: {requiresAuth: false}
+    },
+    {
       path: "/mypage",
       name: "MyPage",
+      redirect: "/post-travel-plan", // 기본 active router
       component: TheMyPageView,
       meta: { requiresAuth: true },
       children: [

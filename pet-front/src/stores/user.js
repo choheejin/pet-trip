@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { defineStore } from "pinia";
 import userApi from "@/api/userApi.js";
 import { jwtDecode } from "jwt-decode";

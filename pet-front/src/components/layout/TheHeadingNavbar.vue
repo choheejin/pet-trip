@@ -17,15 +17,15 @@ const logout = () => {
 
 // 사용자 프로필 이미지
 const getUserImage = async () => {
-  const { data } = await myPageApi.get("/info", {});
+  const { data } = await myPageApi.get("/user/info", {});
   userInfo.value = data;
   if (userInfo.value.image !== null) {
     // userInfo.value.image 경로가 "profile/ssafy1.png" 형태라면
-    img.value =
+    userImg.value =
       "http://localhost:8080/pet/profile/" +
       userInfo.value.image.split("/").pop();
   }
-  console.log("사용자 정보 출력하기 : ", userInfo.value);
+  // console.log("사용자 정보 출력하기 : ", userInfo.value);
 };
 
 // 모달 상태 관리
@@ -100,7 +100,7 @@ onMounted(() => {
               <a class="nav-link" href="#" @click.prevent="logout">로그아웃</a>
             </li>
             <li class="nav-item">
-              <img :src="img" alt="Profile" class="profile-image" />
+              <img :src="userImg" alt="Profile" class="profile-image" />
             </li>
           </template>
           <template v-else>

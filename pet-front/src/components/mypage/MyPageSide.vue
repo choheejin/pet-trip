@@ -3,21 +3,24 @@ import { ref } from "vue";
 import myPageApi from "@/api/myPageApi";
 
 const img = ref("/icon.png");
+const userImg = ref("");
 const fileInput = ref(null);
 const userInfo = ref([]);
 
 // 사용자 정보 조회 /info
 const getUserInfo = async () => {
-  const { data } = await myPageApi.get("/info", {});
+  const { data } = await myPageApi.get("/user/info", {});
   userInfo.value = data;
   console.log("사용자 정보 출력하기 : ", userInfo.value);
   if (userInfo.value.image !== null) {
     // userInfo.value.image 경로가 "profile/ssafy1.png" 형태라면
-    img.value =
+    userImg.value =
       "http://localhost:8080/pet/profile/" +
       userInfo.value.image.split("/").pop();
+  } else {
+    userImg.value = img.value;
   }
-  console.log("사용자 이미지 정보 : ", img.value);
+  // console.log("사용자 이미지 정보 : ", img.value);
 };
 
 const openFilePicker = () => {
@@ -32,7 +35,7 @@ const changeProfile = () => {
 
     // 파일 읽기가 완료되면
     reader.onload = async (e) => {
-      img.value = e.target.result; // 새로운 이미지 미리보기
+      userImg.value = e.target.result; // 새로운 이미지 미리보기
 
       // 이미지 변경 API 호출
       updateImage(file);
@@ -56,8 +59,8 @@ const updateImage = async (file) => {
     });
 
     // 서버에서 반환된 이미지 URL을 img에 할당하여 미리보기 업데이트
-    img.value = `http://localhost:8080/pet/profile/${data.newImageName}`;
-    console.log("이미지 업데이트 성공!!!", img.value);
+    userImg.value = `http://localhost:8080/pet/profile/${data.newImageName}`;
+    console.log("이미지 업데이트 성공!!!", userImg.value);
 
     // 사용자 정보 재조회
     getUserInfo();
@@ -73,11 +76,11 @@ getUserInfo();
   <div class="sidebar">
     <div class="profile-image">
       <div>
-        <img :src="img" alt="Profile Image" />
+        <img :src="userImg" alt="Profile Image" />
       </div>
       <div class="edit-button">
         <button @click="openFilePicker">
-          <i class="fa-solid fa-pen"></i>
+          <i class="fa-solid fa-gear"></i>
         </button>
         <input
           type="file"

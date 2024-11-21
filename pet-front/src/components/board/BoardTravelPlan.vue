@@ -1,8 +1,11 @@
 <script setup>
 import { defineProps } from "vue";
+import {useRouter} from "vue-router";
 import { useAuthStore } from "@/stores/user";
+import BoardTravelPlanDetail from "@/components/board/BoardTravelPlanDetail.vue";
 
 const authStore = useAuthStore();
+const router = useRouter();
 // console.log("로그인 ??? : ", authStore);
 
 // 부모로부터 전달받을 prop 정의
@@ -12,16 +15,25 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  favorites:{
+    type:Array,
+    required:true,
+  }
 });
-const isSolidHeart = () => {};
+
 // 상세보기 메서드
 const TravelDetail = (id) => {
   console.log("상세보기 클릭 : ", id);
+  router.push({name:"PlanDetail", query: {id}});
 };
 // 좋아요 누르는 메서드
 const travelPlanLike = (id) => {
   console.log("좋아요 클릭함! : ", id);
 };
+// 좋아요 취소하는 메서드
+const travelPlanDisLike = (id) => {
+  console.log("좋아요 취소함! : ", id);
+}
 
 // 기본 이미지
 const defaultImg =
@@ -40,10 +52,20 @@ const defaultImg =
         ></div>
         <div class="heart">
           <!-- 좋아요 아이콘 -->
-          <i class="fa-regular fa-heart" v-if="!authStore.token"></i>
           <!-- 로그인 안된 상태 -->
-          <i class="fa-solid fa-heart" v-else></i>
-          <!-- 로그인 된 상태 -->
+          <i class="fa-regular fa-heart" v-if="!authStore.token"></i>
+          <!-- 로그인 된 상태이고, 좋아요가 false인 경우 -->
+          <i
+            class="fa-regular fa-heart"
+            v-else-if="authStore.token && !favorites[travelplans.indexOf(plan)]"
+            @click="travelPlanLike(plan.id)"
+          ></i>
+          <!-- 로그인 된 상태이고, 좋아요가 true인 경우 -->
+          <i
+            class="fa-solid fa-heart"
+            v-else
+            @click="travelPlanDisLike(plan.id)"
+          ></i>
         </div>
         <div class="card-title">
           <div>{{ plan.title }}</div>
@@ -65,6 +87,8 @@ const defaultImg =
       </div>
     </div>
   </div>
+
+
 </template>
 
 <style scoped>
@@ -101,6 +125,7 @@ const defaultImg =
   right: 10px;
   color: rgb(247, 67, 97);
   font-size: 30px;
+  cursor: pointer;
 }
 
 .card-title {

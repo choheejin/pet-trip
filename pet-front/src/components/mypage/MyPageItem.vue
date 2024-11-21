@@ -1,8 +1,5 @@
-<script setup></script>
-
 <template>
   <div class="sidebar">
-    <!-- <h1>오른쪽입니다!~~</h1> -->
     <!-- 탭 버튼들 -->
     <div class="tab-group">
       <router-link
@@ -52,29 +49,42 @@
 }
 
 .tab-button {
-  border: 1px solid whitesmoke;
+  border: 1px solid transparent; /* 기본 테두리는 투명 */
   display: block;
   width: 33.33%;
   text-align: center;
   padding: 10px;
-  background-color: #dbdbdb;
+  background-color: rgba(154, 154, 154, 0.3); /* 흐린 배경 */
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   color: #333;
   font-size: 20px;
   text-decoration: none;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .tab-button:hover {
-  background-color: #e7eed1;
+  background-color: #efefef;
 }
 
 .active-tab {
-  border: 1px solid #ccd5ae;
-  background-color: #ccd5ae;
-  color: white;
-  box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.4);
+  background-color: #ffffff;
+  color: #767c61;
+  border: 1px solid #dddddd; /* 테두리 강조 */
+  border-bottom: none; /* 아래쪽 테두리 제거 */
   z-index: 1;
+}
+
+.select-router {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #dddddd; /* 상단 제외 테두리 */
+  border-top: none; /* 상단 테두리 제거 */
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* 부드러운 그림자 */
+  z-index: 0;
+}
+
+.tab-button:not(.active-tab) {
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1); /* 흐린 가장자리 효과 */
 }
 </style>
