@@ -208,7 +208,6 @@ public class TravelPlanController {
 
 		List<TravelPlansDto> result = travelPlanService.getUserPlans(id);
 		attracionService.setPlanImage(result);
-
 		return ResponseEntity.ok(result);
 	}
 
@@ -221,7 +220,6 @@ public class TravelPlanController {
 		List<TravelPlansDto> result = travelPlanService.getUserFavoritePlans(id);
 		
 		attracionService.setPlanImage(result);
-
 		return ResponseEntity.ok(result);
 	}
 
