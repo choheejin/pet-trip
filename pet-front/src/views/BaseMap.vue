@@ -9,6 +9,7 @@ import attractionApi from "@/api/attractionApi";
 import { useCartStore } from "@/stores/cart";
 import { useSidoStore } from "@/stores/sido";
 import MapContentIdList from "@/components/map/MapContentIdList.vue";
+import { faL } from "@fortawesome/free-solid-svg-icons";
 
 /* 전체적으로 자주 쓰이는 값 */
 const attractions = ref([]); // 리스트의 값
@@ -77,6 +78,8 @@ const title = ref("");
 const dogsize = ref(""); // 강아지 크기
 const dogSizes = ["모든 견종", "대형견", "중형견", "소형견"];
 
+const isAnimate = ref(true);
+
 const page = ref(1);
 const totalPageNum = ref(0);
 const setPage = (n) => {
@@ -116,6 +119,8 @@ watch(
     [newSido, newDogsize, newGugun, newContentType, newPage],
     [oldSido, oldDogsize, oldGugun, oldContentType, oldPage]
   ) => {
+    isAnimate.value = true;
+    attractions.value = [];
     // page가 변경된 경우 처리
     const isOtherValueChanged =
       newSido !== oldSido ||
@@ -150,7 +155,12 @@ const getAttractions = async () => {
     page: page.value,
   };
 
-  const { data } = await attractionApi.get("/search", { params });
+  const { data } = await attractionApi
+    .get("/search", { params })
+    .then((response) => {
+      isAnimate.value = false;
+      return response;
+    });
 
   attractions.value = data.data;
   totalPageNum.value = data.totalPage;
@@ -381,8 +391,20 @@ onMounted(() => {
 
       <!-- 리스트 -->
       <div class="outer">
+        <div
+          v-if="isAnimate"
+          style="
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          "
+        >
+          <i class="fa-solid fa-circle-notch animate-spin"></i>
+        </div>
         <div class="list-group">
-          <div v-if="attractions.length <= 0" class="no-items">
+          <div v-if="attractions.length <= 0 && !isAnimate" class="no-items">
             검색 결과가 존재하지 않습니다.
           </div>
           <div v-else>
@@ -633,5 +655,21 @@ onMounted(() => {
   padding: 0.25rem 0.3rem;
   border: 1px solid rgb(209 213 219);
   border-radius: 0.325rem;
+}
+
+.animate-spin {
+  text-align: center;
+  font-size: 30px;
+  color: rgb(115 115 115);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
