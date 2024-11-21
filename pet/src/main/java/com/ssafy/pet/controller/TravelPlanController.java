@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.pet.config.PaginationConstants;
-import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UserPlansResponseDto;
@@ -219,6 +218,7 @@ public class TravelPlanController {
 		List<TravelPlansDto> result = travelPlanService.getUserFavoritePlans(id);
 		
 		attracionService.setPlanImage(result);
+
 		return ResponseEntity.ok(result);
 	}
 
