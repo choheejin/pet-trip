@@ -9,7 +9,6 @@ import attractionApi from "@/api/attractionApi";
 import { useCartStore } from "@/stores/cart";
 import { useSidoStore } from "@/stores/sido";
 import MapContentIdList from "@/components/map/MapContentIdList.vue";
-import { faL } from "@fortawesome/free-solid-svg-icons";
 
 /* 전체적으로 자주 쓰이는 값 */
 const attractions = ref([]); // 리스트의 값
@@ -367,7 +366,7 @@ onMounted(() => {
               {{ sido.sido_name }}
             </option>
           </select>
-          <!-- TODO: 구군 이름 추가 -->
+
           <select name="" id="" v-model="gugun_code">
             <option value="">구군 전체</option>
             <option
