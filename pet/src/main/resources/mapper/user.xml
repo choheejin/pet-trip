@@ -2,52 +2,74 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.ssafy.pet.model.mapper.UserMapper" >
+<mapper namespace="com.ssafy.pet.model.mapper.UserMapper">
 	<insert id="signup" parameterType="usersDto">
-		insert into users(user_id, username, email, password)
-		values (#{user_id}, #{username}, #{email}, #{password});
+		insert into users(user_id,
+		username, email, password)
+		values (#{user_id}, #{username}, #{email},
+		#{password});
 	</insert>
-	
+
 	<select id="login" parameterType="usersDto">
 		select id, user_id, username
 		from users
-		where user_id=#{user_id} and password=#{password} and is_activate=1
+		where user_id=#{user_id} and password=#{password} and
+		is_activate=1
 	</select>
-	
+
 	<select id="userInfo" parameterType="string">
 		select *
 		from users
-		where user_id=#{user_id} and is_activate=1
+		where
+		user_id=#{user_id} and is_activate=1
 	</select>
-	
+
 	<update id="update" parameterType="usersDto">
 		update users
 		set username=#{username}, email=#{email}, password=#{password}
 		where user_id=#{user_id}
 	</update>
-	
+
 	<update id="deactivate" parameterType="string">
 		update users
-		set is_activate=0
+		set
+		is_activate=0
 		where user_id=#{user_id}
 	</update>
-		
+
 	<select id="findIdByUserId" parameterType="string">
 		select id
 		from users
 		where user_id=#{user_id}
 	</select>
-	
+
 	<select id="findUserIdById" parameterType="int">
 		select user_id
-		from users
+		from
+		users
 		where id=#{id}
 	</select>
-	
-	<update id="updateImage" parameterType="usersDto">
-		update users
-		set image = #{image}
-		where user_id = #{user_id}
+
+	<update id="updateProfileImage">
+		UPDATE profile_images
+		SET
+		original_name =
+		#{profileImageDto.original_name},
+		stored_name =
+		#{profileImageDto.stored_name},
+		file_path =
+		#{profileImageDto.file_path},
+		uploaded_at =
+		#{profileImageDto.uploaded_at}
+		WHERE user_id = #{user_id}
 	</update>
+
+	<!-- 사용자 ID로 프로필 이미지 조회 -->
+	<select id="getProfileImageByUserId"
+		resultType="ProfileImageDto" parameterType="int">
+		select * from profile_images where user_id = #{user_id};
+	</select>
+
+
 </mapper>
 

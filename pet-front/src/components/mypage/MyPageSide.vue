@@ -10,7 +10,14 @@ const userInfo = ref([]);
 const getUserInfo = async () => {
   const { data } = await myPageApi.get("/info", {});
   userInfo.value = data;
-  // console.log("사용자 정보 출력하기 : ", userInfo);
+  console.log("사용자 정보 출력하기 : ", userInfo.value);
+  if (userInfo.value.image !== null) {
+    // userInfo.value.image 경로가 "profile/ssafy1.png" 형태라면
+    img.value =
+      "http://localhost:8080/pet/profile/" +
+      userInfo.value.image.split("/").pop();
+  }
+  console.log("사용자 이미지 정보 : ", img.value);
 };
 
 const openFilePicker = () => {
@@ -19,40 +26,45 @@ const openFilePicker = () => {
 
 // 프로필 이미지 변경
 const changeProfile = () => {
-  const file = fileInput.value.files[0];
+  const file = fileInput.value.files[0]; // 파일 선택
   if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      img.value = e.target.result; // 새로운 이미지 설정
-      console.log("프로필 이미지 변경! : ", img.value);
+    const reader = new FileReader(); // FileReader 객체 생성
+
+    // 파일 읽기가 완료되면
+    reader.onload = async (e) => {
+      img.value = e.target.result; // 새로운 이미지 미리보기
 
       // 이미지 변경 API 호출
       updateImage(file);
     };
+
+    // 선택한 파일을 Data URL로 읽기
     reader.readAsDataURL(file);
   }
 };
+
 // 이미지 업데이트하는 api 호출
 const updateImage = async (file) => {
   const formData = new FormData();
-  formData.append("image", file);
-  formData.append("user", JSON.stringify(userInfo.value));
+  formData.append("file", file); // 이미지만 전송
 
   try {
-
-
-    const {data} = await myPageApi.patch("/updateimage", formData, {
+    const { data } = await myPageApi.patch("/updateimage", formData, {
       headers: {
-        "Content-Type": "multipart/form-data" // 파일 전송에 필요한 헤더
+        "Content-Type": "multipart/form-data", // 파일 전송에 필요한 헤더
       },
     });
 
-    console.log("이미지 업데이트 성공!!!");
+    // 서버에서 반환된 이미지 URL을 img에 할당하여 미리보기 업데이트
+    img.value = `http://localhost:8080/pet/profile/${data.newImageName}`;
+    console.log("이미지 업데이트 성공!!!", img.value);
+
+    // 사용자 정보 재조회
     getUserInfo();
   } catch (error) {
     console.log("이미지 업데이트 실패 : ", error);
   }
-}
+};
 
 getUserInfo();
 </script>
