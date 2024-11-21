@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import { useAuthStore } from "@/stores/user";
 import LoginModal from "@/components/layout/LoginModal.vue";
 import SignupModal from "@/components/layout/SignupModal.vue";
@@ -8,6 +8,7 @@ import myPageApi from "@/api/myPageApi.js";
 const userStore = useAuthStore();
 const img = ref("/icon.png");
 const userImg = ref(null);
+const userInfo = ref([]);
 
 const logout = () => {
   userStore.logout();
@@ -16,9 +17,15 @@ const logout = () => {
 
 // 사용자 프로필 이미지
 const getUserImage = async () => {
-  const {data} = await myPageApi.get("/info", {});
-  // console.log("로그인 감지!! : ", data)
-  userImg.value = (data.image != null) ? data.image : img.value;
+  const { data } = await myPageApi.get("/info", {});
+  userInfo.value = data;
+  if (userInfo.value.image !== null) {
+    // userInfo.value.image 경로가 "profile/ssafy1.png" 형태라면
+    img.value =
+      "http://localhost:8080/pet/profile/" +
+      userInfo.value.image.split("/").pop();
+  }
+  console.log("사용자 정보 출력하기 : ", userInfo.value);
 };
 
 // 모달 상태 관리
@@ -41,15 +48,15 @@ const closeModal = () => {
 // 로그인 했을 때 다시 프로필 이미지 로드
 const handleLogin = async () => {
   // 로그인된 이후에 프로필 이미지 업데이트
-  await getUserImage();
-}
+  getUserImage();
+};
 
 // 초기 이미지 로드
 onMounted(() => {
   if (userStore.token) {
     getUserImage();
   }
-})
+});
 </script>
 <template>
   <nav class="navbar navbar-expand-lg">
@@ -92,13 +99,13 @@ onMounted(() => {
             <li class="nav-item">
               <a class="nav-link" href="#" @click.prevent="logout">로그아웃</a>
             </li>
-<!--            <li class="nav-item">-->
-<!--              <img :src="userImg" alt="Profile" class="profile-image" />-->
-<!--            </li>-->
+            <li class="nav-item">
+              <img :src="img" alt="Profile" class="profile-image" />
+            </li>
           </template>
           <template v-else>
             <li class="nav-item">
-              <a class="nav-link"  href="#" @click.prevent="showSignUpModal"
+              <a class="nav-link" href="#" @click.prevent="showSignUpModal"
                 >회원가입</a
               >
             </li>
@@ -114,7 +121,11 @@ onMounted(() => {
   </nav>
 
   <!-- 모달 컴포넌트 삽입 -->
-  <LoginModal v-if="isLoginModalVisible" @close="closeModal" @loginSuccess="handleLogin"/>
+  <LoginModal
+    v-if="isLoginModalVisible"
+    @close="closeModal"
+    @loginSuccess="handleLogin"
+  />
   <SignupModal v-if="isSignupModalVisible" @close="closeModal" />
 </template>
 

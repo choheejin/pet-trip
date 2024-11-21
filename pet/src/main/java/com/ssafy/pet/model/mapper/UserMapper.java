@@ -2,7 +2,9 @@ package com.ssafy.pet.model.mapper;
 
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import com.ssafy.pet.dto.ProfileImageDto;
 import com.ssafy.pet.dto.UsersDto;
 
 @Mapper
@@ -27,6 +29,9 @@ public interface UserMapper {
 
 	String findUserIdById(int id);
 	
-	// 프로필 이미지 수정
-	int updateImage(UsersDto user);
+	// 프로필 이미지 업데이트
+	int updateProfileImage(@Param("user_id") int user_id,@Param("profileImageDto") ProfileImageDto profileImageDto);
+	
+	// 프로필 이미지 조회
+	ProfileImageDto getProfileImageByUserId(int user_id);
 }
