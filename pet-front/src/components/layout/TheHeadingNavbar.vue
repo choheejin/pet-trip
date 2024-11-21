@@ -164,8 +164,11 @@ onMounted(() => {
   width: auto;
   border-radius: 50%;
   object-fit: cover;
+  cursor: pointer;
 }
-
+.profile-image:hover {
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.5);
+}
 .container-fluid {
   padding-left: 15px;
   padding-right: 15px;

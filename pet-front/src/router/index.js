@@ -3,6 +3,9 @@ import { createRouter, createWebHistory } from "vue-router";
 import TheMainView from "@/views/TheMainView.vue";
 import TheBoardView from "@/views/TheBoardView.vue";
 import TheMyPageView from "@/views/TheMyPageView.vue";
+import PostTravelPlan from "@/components/mypage/mypages/PostTravelPlan.vue";
+import LikeAttractions from "@/components/mypage/mypages/LikeAttractions.vue";
+import LikeTravelPlan from "@/components/mypage/mypages/LikeTravelPlan.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +33,26 @@ const router = createRouter({
       name: "MyPage",
       component: TheMyPageView,
       meta: { requiresAuth: true },
+      children: [
+        {
+          path: "/post-travel-plan",
+          name: "PostTravelPlan",
+          component: PostTravelPlan,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: "/like-attraction",
+          name: "LikeAttractions",
+          component: LikeAttractions,
+          meta: { requiresAuth: true },
+        },
+        {
+          path: "/like-travel-plan",
+          name: "LikeTravelPlan",
+          component: LikeTravelPlan,
+          meta: { requiresAuth: true },
+        },
+      ],
     },
   ],
 });
