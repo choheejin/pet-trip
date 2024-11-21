@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.pet.dto.UsersDto;
@@ -31,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final JWTUtil jwtUtil;
 	private final UserService userService;
+	private final UserHelperService userHelperService;
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> userRegister(@RequestBody UsersDto userDto) {
@@ -100,5 +102,17 @@ public class UserController {
 		status = HttpStatus.NO_CONTENT;
 		
 		return new ResponseEntity<>(status);	
+	}
+	
+	@PatchMapping("/update-info")
+	@ResponseBody
+	public ResponseEntity<?> updateUserInfo(@RequestHeader("accessToken") String header, @RequestBody UsersDto user) {
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		userService.update(user).orElseThrow(() -> new RuntimeException());
+		
+		status = HttpStatus.NO_CONTENT;
+		
+		return ResponseEntity.ok(status);
 	}
 }
