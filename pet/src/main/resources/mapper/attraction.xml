@@ -113,7 +113,7 @@
 		select a.first_image1
 		from travel_plan_items tpi
 		join attractions a on tpi.content_id = a.content_id
-		where tpi.plan_id = 2 and a.first_image1 != ''
+		where tpi.plan_id = #{id} and a.first_image1 != ''
 		limit 1;
 	</select>
 	
