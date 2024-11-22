@@ -43,7 +43,7 @@ import lombok.RequiredArgsConstructor;
 public class AttractionController {
 	private final AttractionService attractionService;
 	private final UserHelperService userHelperService;
-	
+
 	@GetMapping("/openapi-detail")
 	public ResponseEntity<?> getDetail(@RequestParam(name = "contentId") String contentId,
 			@RequestParam(name = "contentTypeId") String contentTypeId) throws Exception {
@@ -74,41 +74,38 @@ public class AttractionController {
 
 		return ResponseEntity.ok(responseBody);
 	}
-	
+
 	// (시도, 구군, 이름, 관광지 타입) 선택적 조회
 	@GetMapping("/search")
 	@ResponseBody
 	public ResponseEntity<PaginatedResponseDto<AttractionsDto>> searchAttractions(
-			@RequestParam(required = false) Integer sidoCode,
-	        @RequestParam(required = false) Integer gugunCode,
-	        @RequestParam(required = false) String title,
-	        @RequestParam(required = false) Integer contentTypeId,
-	        @RequestParam(required = false) String keyword,
-	        @RequestParam(value = "page", required = false, defaultValue = "1") int page
-	){
+			@RequestParam(required = false) Integer sidoCode, @RequestParam(required = false) Integer gugunCode,
+			@RequestParam(required = false) String title, @RequestParam(required = false) Integer contentTypeId,
+			@RequestParam(required = false) String keyword,
+			@RequestParam(value = "page", required = false, defaultValue = "1") int page) {
 		Map<String, Object> params = new HashMap<>();
 		params.put("sidoCode", sidoCode);
 		params.put("gugunCode", gugunCode);
 		params.put("title", title);
 		params.put("contentTypeId", contentTypeId);
 		params.put("keyword", keyword);
-		
+
 		int page_start = UtilClass.caculateOffest(page);
 		params.put("page_start", page_start);
 		params.put("page_size", PaginationConstants.ATTRACTION_PAGE_SIZE);
-		
+
 		List<AttractionsDto> attractions = attractionService.searchAttractions(params);
-		
+
 		params.put("page_start", -1);
 		params.put("page_size", -1);
-		
+
 		List<AttractionsDto> allAttractions = attractionService.searchAttractions(params);
-				
+
 		int total_page = UtilClass.calculateTotalPages(allAttractions.size());
-		
+
 		return ResponseEntity.ok(new PaginatedResponseDto<>(attractions, total_page));
 	}
-	
+
 	// content_id로 상세 내용 조회
 	@GetMapping("/detail/{content_id}")
 	@ResponseBody
@@ -119,143 +116,138 @@ public class AttractionController {
 		result.setAttraction(attractionService.searchByContentID(content_id));
 		// petattractions 정보 추가
 		result.setPetAttraction(attractionService.searchPetByContentID(content_id));
-		
+
 		return result;
 	}
-	
+
 	@GetMapping("/detail")
 	@ResponseBody
-	public ResponseEntity<PaginatedResponseDto<AttractionDetailDto>> searchDetailByKeyword(@RequestParam(value = "page", required = false, defaultValue = "1") int page, 
+	public ResponseEntity<PaginatedResponseDto<AttractionDetailDto>> searchDetailByKeyword(
+			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value = "keyword", required = false) String keyword) {
-	    if (keyword == null) {
-	    	throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND, keyword);
-	    } else {
-	    	
-	    	int page_start = UtilClass.caculateOffest(page);
-	       
-	        List<AttractionDetailDto> attrDetail = attractionService.searchDetailByKeyword(keyword, page_start, PaginationConstants.PAGE_SIZE);
-	        
-	        List<AttractionDetailDto> allAttrDetail = attractionService.searchDetailByKeyword(keyword, -1, -1);
-		    
-	        int total_pages = UtilClass.calculateTotalPages(allAttrDetail.size());
-		    
-		    return ResponseEntity.ok(new PaginatedResponseDto<>(attrDetail, total_pages));
-	    }
-	}
-	
-	@PostMapping("/hotplace/{content_id}")
-	public ResponseEntity<?> updateHotplace(@RequestHeader("accessToken") String header, @PathVariable("content_id") int content_id)
-	{
-		//유저 아이디 테이블의 아이디 받기
-		int id = userHelperService.getUserIdFromHeader(header);
-		
-		//핫플레이스 테이블에 데이터 추가하기
-		int result = attractionService.addHotplace(content_id, id);
-		
-		if(result > 0)
-		{
-			return ResponseEntity.ok("핫플레이스 추가 성공"); 
+		if (keyword == null) {
+			throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND, keyword);
+		} else {
+
+			int page_start = UtilClass.caculateOffest(page);
+
+			List<AttractionDetailDto> attrDetail = attractionService.searchDetailByKeyword(keyword, page_start,
+					PaginationConstants.PAGE_SIZE);
+
+			List<AttractionDetailDto> allAttrDetail = attractionService.searchDetailByKeyword(keyword, -1, -1);
+
+			int total_pages = UtilClass.calculateTotalPages(allAttrDetail.size());
+
+			return ResponseEntity.ok(new PaginatedResponseDto<>(attrDetail, total_pages));
 		}
-		else {
+	}
+
+	@PostMapping("/hotplace/{content_id}")
+	public ResponseEntity<?> updateHotplace(@RequestHeader("accessToken") String header,
+			@PathVariable("content_id") int content_id) {
+		// 유저 아이디 테이블의 아이디 받기
+		int id = userHelperService.getUserIdFromHeader(header);
+
+		// 핫플레이스 테이블에 데이터 추가하기
+		int result = attractionService.addHotplace(content_id, id);
+
+		if (result > 0) {
+			return ResponseEntity.ok("핫플레이스 추가 성공");
+		} else {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("핫플레이스 추가 실패");
 		}
 	}
-	
+
 	@GetMapping("/search/{sido_code}")
 	@ResponseBody
-	public ResponseEntity<List<GugunsDto>> searchGugunCode(@PathVariable("sido_code") int sido_code){
+	public ResponseEntity<List<GugunsDto>> searchGugunCode(@PathVariable("sido_code") int sido_code) {
 		List<GugunsDto> gugun = attractionService.searchGugunCodeBySidoCode(sido_code);
-		
-		if(gugun == null)
-		{
+
+		if (gugun == null) {
 			throw new ApplicationException(SearchErrorCode.KEYWORD_MISSING, (Integer.toString(sido_code)));
 		}
-		
+
 		return ResponseEntity.ok(gugun);
 	}
-	
+
 	@GetMapping("/plan-ranking")
 	@ResponseBody
-	public ResponseEntity<List<TravelPlansDto>> getPlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
-		
+	public ResponseEntity<List<TravelPlansDto>> getPlanRanking(
+			@RequestParam(value = "page", required = false, defaultValue = "1") int page) {
+
 		int start = UtilClass.caculateOffest(page);
 		List<TravelPlansDto> result = attractionService.getPlanRanking(start, PaginationConstants.PAGE_SIZE);
-		
-		if(result == null)
-		{
+
+		if (result == null) {
 			throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND);
 		}
-		
+
 		return ResponseEntity.ok(result);
 	}
-	
+
 	@GetMapping("/hotplace-ranking")
 	@ResponseBody
-	public ResponseEntity<List<AttractionsDto>> getHotplacePlanRanking(@RequestParam(value = "page", required = false, defaultValue = "1") int page){
-		
+	public ResponseEntity<List<AttractionsDto>> getHotplacePlanRanking(
+			@RequestParam(value = "page", required = false, defaultValue = "1") int page) {
+
 		int start = UtilClass.caculateOffest(page);
 		List<AttractionsDto> result = attractionService.getHotplaceRanking(start, PaginationConstants.PAGE_SIZE);
-		
-		if(result == null)
-		{
+
+		if (result == null) {
 			throw new ApplicationException(SearchErrorCode.NO_RESULTS_FOUND);
 		}
-		
+
 		return ResponseEntity.ok(result);
 	}
-	
+
 	@GetMapping("/user-likes")
 	@ResponseBody
-	public ResponseEntity<List<AttractionsDto>> getUserFavorites(@RequestHeader("accessToken") String header)
-	{
+	public ResponseEntity<List<AttractionsDto>> getUserFavorites(@RequestHeader("accessToken") String header) {
 		List<AttractionsDto> result = new ArrayList<>();
-		
+
 		int id = userHelperService.getUserIdFromHeader(header);
-		
+
 		List<Integer> content_ids = attractionService.listHotplaceContentIdsByUserId(id);
-		
-		for(var content_id : content_ids)
-		{
+
+		for (var content_id : content_ids) {
 			result.add(attractionService.searchByContentID(content_id));
 		}
-		
+
 		return ResponseEntity.ok(result);
 	}
-	
+
 	@PostMapping("/add-user-hotplace")
-	public ResponseEntity<?> addUserHotplace(@RequestHeader("accessToken") String header, @RequestParam(value="content_id") int content_id)
-	{
+	public ResponseEntity<?> addUserHotplace(@RequestHeader("accessToken") String header,
+			@RequestParam(value = "content_id") int content_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
-		
+
 		int id = userHelperService.getUserIdFromHeader(header);
 		int cnt = attractionService.addHotplace(content_id, id);
-		
-		if(cnt < 0)
-		{
+
+		if (cnt < 0) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Data conflict or operation not permitted");
 		}
-		
+
 		status = HttpStatus.CREATED;
-		
+
 		return ResponseEntity.ok(status);
-		
+
 	}
-	
+
 	@DeleteMapping("/delete-user-hotplace")
-	public ResponseEntity<?> deleteUserHotplace(@RequestHeader("accessToken") String header, @RequestParam(value="content_id") int content_id)
-	{
+	public ResponseEntity<?> deleteUserHotplace(@RequestHeader("accessToken") String header,
+			@RequestParam(value = "content_id") int content_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
 		int id = userHelperService.getUserIdFromHeader(header);
-		
+
 		int res = attractionService.deleteHotplace(content_id, id);
-		
-		if(res < 0) 
-		{
+
+		if (res < 0) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Data conflict or operation not permitted");
 		}
-		
+
 		status = HttpStatus.NO_CONTENT;
-		
-		return ResponseEntity.ok(status);	
+
+		return ResponseEntity.ok(status);
 	}
 }
