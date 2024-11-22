@@ -15,33 +15,33 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ConfirmInterceptor implements HandlerInterceptor {
 	private final JWTUtil jwtUtil;
-	
+
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		
-		if(request.getMethod().equalsIgnoreCase("OPTIONS")) return true;
-		
-		
-		
-		if(request.getMethod().equalsIgnoreCase("GET")) {
-		    String uri = request.getRequestURI().trim();
-		    System.out.println("Request URI: " + uri);
-		    
-		    if(!uri.equalsIgnoreCase("/pet/user/info")) {
-		        return true;
-		    }
-		}		
-		
+
+		if (request.getMethod().equalsIgnoreCase("OPTIONS"))
+			return true;
+
+		if (request.getMethod().equalsIgnoreCase("GET")) {
+			String uri = request.getRequestURI().trim();
+
+			System.out.println("get메서드에서 인터셉터 작");
+
+			if (!uri.equalsIgnoreCase("/pet/user/info")) {
+				return true;
+			}
+		}
+
 		String header = request.getHeader("accessToken");
-		
+
 		System.out.println(header);
 		System.out.println("인터셉터 작동");
-		
+
 		if (header == null || !jwtUtil.checkToken(header)) {
-			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);			
+			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
 		}
-		
+
 		return true;
 	}
 }
