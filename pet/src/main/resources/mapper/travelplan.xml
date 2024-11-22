@@ -155,7 +155,16 @@
 		from plans_favorites
 		where user_id = #{user_id};
 	</select>
+		
+	<insert id="addFavoritePlan" parameterType="PlansFavoritesDto">
+		insert into plans_favorites (plan_id, user_id)
+		values(#{plan_id}, #{user_id});
+	</insert>
 	
+	<delete id="deleteFavoritePlan" parameterType="PlansFavoritesDto">
+		delete from plans_favorites
+		where plan_id=#{plan_id} and user_id=#{user_id}
+	</delete>
 
 </mapper>
 

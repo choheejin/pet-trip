@@ -2,22 +2,19 @@
 import { computed, ref } from "vue";
 import MapCartDetail from "./MapCartDetail.vue";
 import { useCartStore } from "@/stores/cart";
-import { useAuthStore } from "@/stores/user";
 import mapApi from "@/api/mapApi";
 
 const cartStore = useCartStore();
-const authStore = useAuthStore();
 
 const emit = defineEmits(["clickHandler"]);
+const summary = ref({});
+const isShowedSummary = ref(false);
 
 const plan = ref({
   title: "",
   is_public: "1",
   description: "",
 });
-
-// // 스토어 사용
-// cartStore.setAttraction(props.attractions);
 
 const draggedIdx = ref();
 const emitHandler = () => {
@@ -58,17 +55,53 @@ const postPlan = async () => {
     items: items,
   };
 
-  await mapApi
-    .post("", data, { headers: { accessToken: authStore.token } })
-    .then(() => {
-      alert("게시글 작성 완료");
-      window.location.reload(true);
-    });
+  await mapApi.post("", data).then(() => {
+    alert("게시글 작성 완료");
+    window.location.reload(true);
+  });
+};
+
+const getRecommendRoute = async () => {
+  const len = cartStore.attraction.length - 1;
+  if (len == 0) return;
+  const startString =
+    cartStore.attraction[0].longitude + "," + cartStore.attraction[0].latitude;
+
+  // 경유지 계산
+  const waypointsString = cartStore.attraction
+    .reduce((acc, curr, idx) => {
+      if (idx != 0 && idx != cartStore.attraction.length - 1) {
+        return acc + curr.longitude + "," + curr.latitude + "|";
+      }
+      return acc;
+    }, "")
+    .slice(0, -1);
+
+  const goalString =
+    cartStore.attraction[len].longitude +
+    "," +
+    cartStore.attraction[len].latitude;
+
+  const params = {
+    start: startString,
+    goal: goalString,
+    waypoints: waypointsString,
+  };
+  await mapApi.get("/naver-map", { params }).then((res) => {
+    console.log(
+      "전체 경로 거리: " + res.data.route.traoptimal[0].summary.distance
+    );
+    console.log(
+      "전체 경로 소요 시간" + res.data.route.traoptimal[0].summary.duration
+    );
+    summary.value = res.data.route.traoptimal[0].summary;
+    isShowedSummary.value = true;
+  });
 };
 </script>
 
 <template>
-  <form class="cart-container" @submit.prevent="postPlan">
+  <div class="cart-container">
     <div class="title">게시글 작성</div>
     <div class="input-group">
       <label>제목 </label
@@ -94,15 +127,34 @@ const postPlan = async () => {
         />
       </svg>
     </div>
-    <div class="input-group-private">
-      <label>공개 설정 </label>
-      <div>
-        <label for="option1">공개</label>
-        <input type="radio" id="option1" v-model="plan.is_public" value="1" />
+    <div class="input-group-detail">
+      <div class="input-group-private">
+        <label>공개 설정 </label>
+        <div>
+          <label for="option1">공개</label>
+          <input type="radio" id="option1" v-model="plan.is_public" value="1" />
+        </div>
+        <div>
+          <label for="option2">비공개</label>
+          <input type="radio" id="option2" v-model="plan.is_public" value="0" />
+        </div>
       </div>
-      <div>
-        <label for="option2">비공개</label>
-        <input type="radio" id="option2" v-model="plan.is_public" value="0" />
+      <div class="button" @click="getRecommendRoute">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6"
+          />
+        </svg>
+
+        <button>실시간 교통 시간 분석</button>
       </div>
     </div>
 
@@ -121,6 +173,20 @@ const postPlan = async () => {
         />
       </div>
       <div class="cart-compute">
+        <div v-if="isShowedSummary" class="summary">
+          <div>
+            <span>택시비: </span
+            >{{ summary.taxiFare.toLocaleString("ko-KR") }}원
+          </div>
+          <div>
+            <span>총 소요시간: </span
+            >{{ Math.ceil((summary.duration / (1000 * 60)) % 60) }}분
+          </div>
+          <div>
+            <span>총 거리: </span
+            >{{ summary.distance.toLocaleString("ko-KR") }}m
+          </div>
+        </div>
         <div><span>총 장소 수: </span>{{ totalCnt }}</div>
       </div>
     </div>
@@ -132,8 +198,8 @@ const postPlan = async () => {
       ></textarea>
     </div>
 
-    <div><button>게시글 작성</button></div>
-  </form>
+    <div><button @click="postPlan">게시글 작성</button></div>
+  </div>
 </template>
 
 <style scoped>
@@ -168,20 +234,57 @@ textarea {
   flex-grow: 1;
 }
 
-.input-group-private {
+.input-group-detail {
   display: flex;
   width: 100%;
-  justify-content: baseline;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.input-group-detail > .input-group-private {
+  display: flex;
+  width: 100%;
+  align-items: center;
   gap: 1rem;
 }
 
-.input-group-private > label {
+.input-group-detail > .input-group-private > label {
   width: 5rem;
   font-weight: bold;
 }
 
+.input-group-detail > .button {
+  display: flex;
+  justify-content: center;
+  min-width: fit-content;
+  padding: 0.5rem 1rem;
+  background-color: rgb(16 185 129);
+  border: 1px solid rgb(16 185 129);
+  border-radius: 0.5rem;
+  color: white;
+}
+
+.input-group-detail > .button:hover {
+  display: flex;
+  justify-content: center;
+  min-width: fit-content;
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border: 1px solid rgb(16 185 129);
+  border-radius: 0.5rem;
+  color: rgb(16 185 129);
+}
+
+.input-group-detail > .button > svg {
+  width: 30px;
+}
+
+.input-group-detail > .button > button {
+  width: 100%;
+}
+
 .cart-container > .input-group > textarea {
-  height: 100px;
+  height: 8rem;
   overflow-y: auto;
 }
 
@@ -202,14 +305,20 @@ textarea {
 }
 
 .cart-detail-container > .cart-detail-item {
-  height: 300px;
+  height: 14rem;
   overflow-y: auto;
 }
 
 .cart-detail-container > .cart-compute {
   display: flex;
+  flex-direction: column;
   margin-top: 1rem;
   justify-content: end;
+}
+
+.cart-detail-container > .cart-compute > .summary {
+  display: flex;
+  gap: 1rem;
 }
 
 .cart-detail-container > .cart-compute > div > span {

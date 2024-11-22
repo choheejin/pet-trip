@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 
 public interface TravelPlanService {
@@ -48,6 +49,12 @@ public interface TravelPlanService {
 	
 	//페이지네이션용 게시글 조회
 	List<TravelPlansDto> getAllPlansBySort(String sort);
+	
+	//유저가 좋아요 누른 게시글 plans_favorites에 추가하기
+	int addFavoritePlan(PlansFavoritesDto favorite_plan);
+	
+	//유저가 좋아요 누른 게시글 삭제하기
+	int deleteFavoritePlan(PlansFavoritesDto favoritePlan);
 	
 	//유저가 좋아요 누른 게시글 상태 계산
 	boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, int user_id);

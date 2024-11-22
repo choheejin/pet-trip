@@ -12,7 +12,6 @@ public enum TravelPlanErrorCode implements ErrorCode {
 	private final String message;
 	private final HttpStatus status;
 
-
 	private TravelPlanErrorCode(String messge, HttpStatus status) {
 		this.message = messge;
 		this.status = status;

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.pet.config.PaginationConstants;
+import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.exception.ApplicationException;
@@ -233,6 +234,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
 	@Override
 	public boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, int user_id) {
+		List<Integer> plan_ids = travelPlanMapper.getUserFavoritePlanIds(user_id);
 		boolean[] favoritePlans = new boolean[PaginationConstants.PAGE_SIZE];
 		
 		for(int i = 0; i < plans.size(); i++)
@@ -244,5 +246,19 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		}
 		
 		return favoritePlans;
+	}
+
+
+	@Override
+	public int addFavoritePlan(PlansFavoritesDto favorite_plan) {
+		// TODO Auto-generated method stub
+		return travelPlanMapper.addFavoritePlan(favorite_plan);
+	}
+
+
+	@Override
+	public int deleteFavoritePlan(PlansFavoritesDto favoritePlan) {
+		// TODO Auto-generated method stub
+		return travelPlanMapper.deleteFavoritePlan(favoritePlan);
 	}
 }

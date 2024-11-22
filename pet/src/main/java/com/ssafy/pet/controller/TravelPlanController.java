@@ -5,8 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,11 +32,11 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.PaginatedResponseDto;
+import com.ssafy.pet.dto.PlansFavoritesDto;
+
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UserPlansResponseDto;
-import com.ssafy.pet.exception.ApplicationException;
-import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.model.service.travelplan.TravelPlanService;
 import com.ssafy.pet.model.service.user.UserHelperService;
@@ -47,6 +53,29 @@ public class TravelPlanController {
 	private final TravelPlanService travelPlanService;
 	private final AttractionService attracionService;
 	private final UserHelperService userHelperService;
+
+	@GetMapping("/naver-map")
+	public ResponseEntity<?> getNaverMap(@RequestParam(value = "start") String start,
+			@RequestParam(value = "goal") String goal, @RequestParam(value = "waypoints") String waypoints) {
+		RestTemplate restTemplate = new RestTemplate();
+
+		String url = "https://naveropenapi.apigw.ntruss.com/map-direction/v1/driving";
+		String uri = UriComponentsBuilder.fromHttpUrl(url).queryParam("start", start).queryParam("goal", goal)
+				.queryParam("waypoints", waypoints).toUriString();
+
+		System.out.println("naverapi 요청 uri:: " + uri);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("X-NCP-APIGW-API-KEY-ID", "pg2yaio94a");
+		headers.set("X-NCP-APIGW-API-KEY", "mwsnJqT5q0e3OWJY9EhbzCJ4r4c835VUndpHFqOS");
+
+		HttpEntity request = new HttpEntity(headers);
+		System.out.println("naverapi 요청 headers:: " + headers);
+
+		ResponseEntity<Map> response = restTemplate.exchange(uri, HttpMethod.GET, request, Map.class);
+		
+		return response;
+	}
 
 	@GetMapping
 	public ResponseEntity<?> getPlans(@RequestParam(required = false) Integer page) {
@@ -70,38 +99,40 @@ public class TravelPlanController {
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
-	
+
 	@GetMapping("/plans")
-	public ResponseEntity<UserPlansResponseDto> getPlans(@RequestParam(value = "page", required = false, defaultValue = "1") int page,
-			@RequestParam(value="sort", required = false, defaultValue="oldest") String sort, @RequestHeader("accessToken") String header){
-		
+	public ResponseEntity<UserPlansResponseDto> getPlans(
+			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
+			@RequestParam(value = "sort", required = false, defaultValue = "oldest") String sort,
+			@RequestHeader("accessToken") String header) {
+
 		int id = userHelperService.getUserIdFromHeader(header);
-		
+
 		int page_start = UtilClass.caculateOffest(page);
-		List<TravelPlansDto> sortedPlan = travelPlanService.getPlansBySort(sort, page_start, PaginationConstants.PAGE_SIZE);
+		List<TravelPlansDto> sortedPlan = travelPlanService.getPlansBySort(sort, page_start,
+				PaginationConstants.PAGE_SIZE);
 		List<TravelPlansDto> allRes = travelPlanService.getAllPlansBySort(sort);
-		
+
 		attracionService.setPlanImage(sortedPlan);
 		int total_pages = UtilClass.calculateTotalPages(allRes.size());
-		
+
 		UserPlansResponseDto res = new UserPlansResponseDto();
-		
+
 		boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, id);
 		res.setPlans(sortedPlan);
 		res.setFavoritePlans(userFavoriteStatus);
 		res.setTotal_pages(total_pages);
-		
+
 		return ResponseEntity.ok(res);
 	}
-	
+
 	@GetMapping("/comments")
 	@ResponseBody
-	public ResponseEntity<List<String>> getComments(@RequestParam(value = "plan_id") int plan_id)
-	{
+	public ResponseEntity<List<String>> getComments(@RequestParam(value = "plan_id") int plan_id) {
 		List<String> comments = new ArrayList<>();
-		
+
 		comments = travelPlanService.getComments(plan_id);
-		
+
 		return ResponseEntity.ok(comments);
 	}
 
@@ -139,27 +170,71 @@ public class TravelPlanController {
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 	
+	@PostMapping("/add-user-favorite-plan")
+	public ResponseEntity<?> addUserFavoritePlan(@RequestBody PlansFavoritesDto pf)
+	{
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		int res = travelPlanService.addFavoritePlan(pf);
+		
+		if(res < 0) 
+		{
+			throw new RuntimeException();
+		}
+		
+		status = HttpStatus.CREATED;
+		
+		return ResponseEntity.ok(status);
+	}
+	
+	@DeleteMapping("/delete-user-favorite-plan")
+	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestBody PlansFavoritesDto pf)
+	{
+		HttpStatus status = HttpStatus.ACCEPTED;
+		int id = userHelperService.getUserIdFromHeader(header);
+		
+		if(id == pf.getUser_id())
+		{
+			int res = travelPlanService.deleteFavoritePlan(pf);
+			
+			if(res < 0) 
+			{
+				throw new RuntimeException();
+			}
+			
+			status = HttpStatus.NO_CONTENT;
+			
+			return ResponseEntity.ok(status);	
+		}
+		else
+		{
+			return ResponseEntity
+					.status(HttpStatus.FORBIDDEN)
+					.body("좋아요 취소 할 수 있는 유저가 아닙니다.");			
+		}
+	}
 	@GetMapping("/user-plan")
 	@ResponseBody
 	public ResponseEntity<List<TravelPlansDto>> userPlan(@RequestHeader("accessToken") String header) {
-		
+
 		int id = userHelperService.getUserIdFromHeader(header);
-		
+
 		List<TravelPlansDto> result = travelPlanService.getUserPlans(id);
-		
+
 		return ResponseEntity.ok(result);
 	}
-	
+
 	@GetMapping("/user-favorite-plans")
 	@ResponseBody
-	public ResponseEntity<List<TravelPlansDto>> userFavoritePlans(@RequestHeader("accessToken") String header, @RequestBody List<TravelPlansDto> plans) {
-		
+	public ResponseEntity<List<TravelPlansDto>> userFavoritePlans(@RequestHeader("accessToken") String header,
+			@RequestBody List<TravelPlansDto> plans) {
+
 		int id = userHelperService.getUserIdFromHeader(header);
-		
+
 		List<TravelPlansDto> result = travelPlanService.getUserFavoritePlans(id);
-		
+
 		return ResponseEntity.ok(result);
-	} 
+	}
 
 	@PutMapping("/{plan_id}")
 	public ResponseEntity<?> updatePlans(@PathVariable("plan_id") String plan_id,

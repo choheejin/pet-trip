@@ -39,6 +39,7 @@ public class WebConfig implements WebMvcConfigurer {
 		registry.addMapping("/**")	//모든 요청에 대해
 		.allowedOriginPatterns("*")	//모든 오리진에 적용
 		.allowedMethods("GET","POST","PUT","PATCH","DELETE","OPTIONS")
+		.allowedHeaders("*")
 		.allowCredentials(true);
 	}
 	
