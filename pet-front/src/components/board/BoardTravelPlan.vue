@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref } from "vue";
+import { defineProps, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/user";
 import BoardTravelPlanDetail from "@/components/board/BoardTravelPlanDetail.vue";
@@ -8,15 +8,20 @@ import mapApi from "@/api/mapApi";
 
 const authStore = useAuthStore();
 const router = useRouter();
-// console.log("로그인 ??? : ", authStore.value);
 
 const userInfo = ref([]);
 
 // 사용자 정보 조회 /info
 const getUserInfo = async () => {
-  const { data } = await myPageApi.get("/user/info", {});
-  userInfo.value = data;
-  console.log("사용자 정보 출력하기 : ", userInfo.value);
+  if (authStore.token !== undefined) {
+    // 로그인 되어있음
+    // console.log("로그인 ??? : ", authStore.token);
+    const { data } = await myPageApi.get("/user/info", {});
+    userInfo.value = data;
+    console.log("사용자 정보 출력하기 : ", userInfo.value);
+  } else {
+    console.log("로그인 안되어있음~~");
+  }
 };
 
 // 하트 데이터
@@ -47,15 +52,24 @@ const TravelDetail = (id) => {
   router.push({ name: "PlanDetail", query: { id } });
 };
 
+// favorite_cnt 갱신 메서드
+const travelPlanUpdateFavoriteCount = (id, increment) => {
+  const plan = props.travelplans.find((plan) => plan.id === id);
+  if (plan) {
+    plan.favorite_cnt += increment; // 해당 계획의 favorite_cnt를 증가/감소
+  }
+};
 // 좋아요 요청
-const travelPlanLike = (id) => {
-  console.log("좋아요 누름! : ", id);
+const travelPlanLike = (id, index) => {
+  console.log("좋아요 누름! : ", userInfo.value);
+  travelPlanUpdateFavoriteCount(id, +1);
   emit("like", { plan_id: id, user_id: userInfo.value.pk_id }); // 상위로 이벤트 전달
 };
 
 // 좋아요 취소 요청
 const travelPlanDisLike = (id) => {
   console.log("좋아요 취소! : ", id);
+  travelPlanUpdateFavoriteCount(id, -1);
   emit("dislike", { plan_id: id, user_id: userInfo.value.pk_id }); // 상위로 이벤트 전달
 };
 
@@ -63,6 +77,7 @@ const travelPlanDisLike = (id) => {
 const defaultImg =
   "https://st3.depositphotos.com/8687452/13536/i/450/depositphotos_135362258-stock-photo-seoul-south-korea-nov-1.jpg";
 
+// 로그인 되어있을 때만 사용자 조회하게 - accessToken 여부
 getUserInfo();
 </script>
 
@@ -78,12 +93,16 @@ getUserInfo();
         ></div>
         <div class="heart">
           <!-- 로그인 안된 상태 -->
-          <i class="fa-regular fa-heart" v-if="!authStore.token"></i>
+          <i
+            class="fa-regular fa-heart"
+            @click="travelPlanLike(plan.id)"
+            v-if="!authStore.token"
+          ></i>
           <!-- 좋아요 아이콘 - 로그인 된 상태 & 좋아요가 false -->
           <i
             class="fa-regular fa-heart"
-            v-else-if="authStore.token && !favorites[index]"
             @click="travelPlanLike(plan.id)"
+            v-else-if="authStore.token && !favorites[index]"
           ></i>
           <!-- 좋아요 아이콘 - 로그인 된 상태 & 좋아요가 true -->
           <i

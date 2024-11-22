@@ -1,5 +1,5 @@
 import axios from "axios";
-import {useAuthStore} from "@/stores/user.js";
+import { useAuthStore } from "@/stores/user.js";
 
 const travelplanApi = axios.create({
   baseURL: "http://localhost:8080/pet/plan",
@@ -15,4 +15,13 @@ travelplanApi.interceptors.request.use((config) => {
   // console.log(config.headers);
   return config;
 });
+
+travelplanApi.interceptors.response.use(
+  (config) => config,
+  (error) => {
+    if (error.status == 401) {
+      alert("로그인 하세요");
+    }
+  }
+);
 export default travelplanApi;

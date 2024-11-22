@@ -189,6 +189,7 @@ public class TravelPlanController {
 	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestBody PlansFavoritesDto pf)
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
+		log.trace("addUserFavoritePlan : {}",pf);
 		int id = userHelperService.getUserIdFromHeader(header);
 		
 		if(id == pf.getUser_id())

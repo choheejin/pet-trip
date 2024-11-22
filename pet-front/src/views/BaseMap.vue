@@ -109,6 +109,10 @@ onMounted(() => {
     dogsize.value = selectedDogSize.value;
   }
 
+  if (mainSelectStore.selectedAttraction !== null) {
+    title.value = mainSelectStore.selectedAttraction;
+  }
+
   getAttractions();
 });
 
