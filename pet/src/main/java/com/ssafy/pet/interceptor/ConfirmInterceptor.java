@@ -37,10 +37,11 @@ public class ConfirmInterceptor implements HandlerInterceptor {
 
 		System.out.println(header);
 		System.out.println("인터셉터 작동");
+
 		if (header == null || !jwtUtil.checkToken(header)) {
 			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
 		}
-		
+
 		return true;
 	}
 }
