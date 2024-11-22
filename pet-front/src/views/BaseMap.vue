@@ -9,7 +9,6 @@ import attractionApi from "@/api/attractionApi";
 import { useCartStore } from "@/stores/cart";
 import { useSidoStore } from "@/stores/sido";
 import MapContentIdList from "@/components/map/MapContentIdList.vue";
-import { faL } from "@fortawesome/free-solid-svg-icons";
 
 /* 전체적으로 자주 쓰이는 값 */
 const attractions = ref([]); // 리스트의 값
@@ -52,6 +51,11 @@ const clickCart = () => {
 
 // 장바구니 추가
 const selectCartItem = (attraction) => {
+  if (cartStore.attraction.length > 6) {
+    alert("경로를 8개 이상 담을 수 없습니다.");
+    return;
+  }
+
   alert("상품이 추가 되었습니다");
 
   cartStore.attraction.push(attraction);
@@ -142,6 +146,8 @@ watch(
   }
 );
 
+const attractionMarker = ref([]);
+
 // 검색하기
 const getAttractions = async () => {
   setShowDetail(false);
@@ -164,6 +170,22 @@ const getAttractions = async () => {
 
   attractions.value = data.data;
   totalPageNum.value = data.totalPage;
+
+  if (attractionMarker.value.length > 0) {
+    attractionMarker.value.forEach((item) => item.setMap(null));
+    attractionMarker.value = [];
+  }
+
+  attractions.value.forEach((item) => {
+    attractionMarker.value.push(
+      new naver.maps.Marker({
+        position: new naver.maps.LatLng(item.latitude, item.longitude),
+        map: map.value,
+      })
+    );
+  });
+
+  setMapCenter(attractions.value);
 };
 
 const getGugunCode = async () => {
@@ -303,22 +325,26 @@ watch(
       map.value.setCenter(new naver.maps.LatLng(36.8057, 128.6243));
       map.value.setZoom(7);
     } else {
-      const latitudes = attraction.map((coord) => coord.latitude);
-      const longitudes = attraction.map((coord) => coord.longitude);
-
-      const center_lat = getMean(latitudes);
-      const center_lng = getMean(longitudes);
-
-      const zoom = shouldZoom(latitudes, longitudes);
-
-      map.value.setCenter(new naver.maps.LatLng(center_lat, center_lng));
-      map.value.setZoom(zoom);
+      setMapCenter(attraction);
     }
   },
   {
     deep: true,
   }
 );
+
+const setMapCenter = (attractions) => {
+  const latitudes = attractions.map((coord) => coord.latitude);
+  const longitudes = attractions.map((coord) => coord.longitude);
+
+  const center_lat = getMean(latitudes);
+  const center_lng = getMean(longitudes);
+
+  const zoom = shouldZoom(latitudes, longitudes);
+
+  map.value.setCenter(new naver.maps.LatLng(center_lat, center_lng));
+  map.value.setZoom(zoom);
+};
 
 onMounted(() => {
   map.value = new naver.maps.Map(mapDiv.value);
@@ -367,7 +393,7 @@ onMounted(() => {
               {{ sido.sido_name }}
             </option>
           </select>
-          <!-- TODO: 구군 이름 추가 -->
+
           <select name="" id="" v-model="gugun_code">
             <option value="">구군 전체</option>
             <option
