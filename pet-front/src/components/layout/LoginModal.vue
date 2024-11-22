@@ -10,7 +10,7 @@ const loginForm = ref({
   user_id: "",
   password: "",
 });
-
+console.log("로그아웃?? : ", useAuthStore().token);
 const login = async () => {
   try {
     // console.log("로그인 시도");

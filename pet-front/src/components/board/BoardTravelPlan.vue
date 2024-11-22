@@ -13,7 +13,7 @@ const userInfo = ref([]);
 
 // 사용자 정보 조회 /info
 const getUserInfo = async () => {
-  if (authStore.token !== undefined) {
+  if (authStore.token !== null) {
     // 로그인 되어있음
     // console.log("로그인 ??? : ", authStore.token);
     const { data } = await myPageApi.get("/user/info", {});
