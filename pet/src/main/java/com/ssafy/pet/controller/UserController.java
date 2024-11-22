@@ -161,6 +161,7 @@ public class UserController {
 		
 		String fileName = user_id + extension; // 저장될 파일 이름
 
+		System.out.println("파일 도착 : !!!!!!"+fileName);
 		File destination = new File(directory + fileName);
 
 		try {

@@ -23,10 +23,14 @@ public class ConfirmInterceptor implements HandlerInterceptor {
 		if(request.getMethod().equalsIgnoreCase("GET")) {
 			String uri = request.getRequestURI();
 			System.out.println();
-			if(!uri.equals("/user/info")) {
+			if(!uri.equals("/pet/user/info")) {
 				return true;
 			}
 		}
+		
+//        
+//        System.out.print("인터셉터에서 바디 확인하기:: ");
+//        System.out.println(request);
 		
 		if(request.getMethod().equalsIgnoreCase("OPTIONS")) return true;
 		

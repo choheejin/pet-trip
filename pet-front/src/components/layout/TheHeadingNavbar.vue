@@ -24,6 +24,8 @@ const getUserImage = async () => {
     userImg.value =
       "http://localhost:8080/pet/profile/" +
       userInfo.value.image.split("/").pop();
+  } else {
+    userImg.value = img.value;
   }
   // console.log("사용자 정보 출력하기 : ", userInfo.value);
 };
@@ -100,7 +102,10 @@ onMounted(() => {
               <a class="nav-link" href="#" @click.prevent="logout">로그아웃</a>
             </li>
             <li class="nav-item">
-              <img :src="userImg" alt="Profile" class="profile-image" />
+              <!-- 프로필 이미지 누르면 마이페이지로 이동 -->
+              <router-link to="/mypage">
+                <img :src="userImg" alt="Profile" class="profile-image" />
+              </router-link>
             </li>
           </template>
           <template v-else>
@@ -142,6 +147,12 @@ onMounted(() => {
   font-weight: bold;
   font-size: 3rem;
 }
+
+.navbar-nav {
+  display: flex;
+  justify-content: center;
+}
+
 .navbar-nav .nav-link {
   margin: 0 10px;
   font-size: 1rem;
@@ -159,9 +170,11 @@ onMounted(() => {
 }
 
 .profile-image {
+  display: flex;
+  justify-content: center;
   border: 1px solid black;
-  height: 30px;
-  width: auto;
+  height: 40px;
+  width: 40px;
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;

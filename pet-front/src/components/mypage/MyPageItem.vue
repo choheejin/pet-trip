@@ -77,7 +77,7 @@
 
 .select-router {
   width: 100%;
-  height: 100%;
+  height: calc(100% - 42px);
   border: 1px solid #dddddd; /* 상단 제외 테두리 */
   border-top: none; /* 상단 테두리 제거 */
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3); /* 부드러운 그림자 */

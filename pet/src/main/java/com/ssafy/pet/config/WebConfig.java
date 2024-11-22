@@ -21,6 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
 	
 	private final List<String> patterns = Arrays.asList(
 			"/plan/**",
+			"/user/updateimage",
 			"/user/info/**",
 			"/attractions/hotplace/**",
 			"/attractions/user-likes/**"
