@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,7 +128,6 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		return cnt == 0 ? Optional.empty() : Optional.of(cnt);
 	}
 
-
 	@Override
 	public TravelPlansDto findPlanByIdAndUserId(int id, String userId) {
 		int u_id = userMapper.findIdByUserId(userId); // 사용자의 PK 가져오기
@@ -188,14 +188,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
 	@Override
 	public List<TravelPlansDto> getUserFavoritePlans(int user_id) {
-		List<Integer> plan_ids = travelPlanMapper.getUserFavoritePlanIds(user_id);
-		List<TravelPlansDto> favoritePlans = new ArrayList<>();
-		
-		for(var plan_id : plan_ids) {
-			favoritePlans.add(travelPlanMapper.findPlanById(plan_id));
-		}
-		
-		return favoritePlans;
+		return travelPlanMapper.getUserFavoritePlans(user_id);
 	}
 
 	@Override
@@ -240,7 +233,6 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		
 		return favoritePlans;
 	}
-
 
 	@Override
 	public int addFavoritePlan(PlansFavoritesDto favorite_plan) {

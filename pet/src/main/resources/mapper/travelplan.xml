@@ -150,6 +150,14 @@
 		where user_id = #{user_id};
 	</select>
 	
+	<select id="getUserFavoritePlans" parameterType="int" resultType="TravelPlansDto">
+		select tp.*
+		from travel_plans tp
+		join plans_favorites pf
+		on tp.id = pf.plan_id
+		where pf.user_id = #{id};
+	</select>
+	
 	<select id="getUserFavoritePlanIds" parameterType="int" resultType="int">
 		select plan_id
 		from plans_favorites

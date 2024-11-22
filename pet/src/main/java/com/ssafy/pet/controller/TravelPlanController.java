@@ -77,19 +77,6 @@ public class TravelPlanController {
 		return response;
 	}
 
-//	@GetMapping
-//	public ResponseEntity<?> getPlans(@RequestParam(required = false) Integer page) {
-//		HttpStatus status = HttpStatus.ACCEPTED;
-//
-//		Map<String, Object> resultMap = new HashMap<>();
-//		List<TravelPlansDto> list = travelPlanService.selectWithLimit(page).orElseThrow(() -> new RuntimeException());
-//
-//		resultMap.put("list", list);
-//		status = HttpStatus.OK;
-//
-//		return new ResponseEntity<Map<String, Object>>(resultMap, status);
-//	}
-
 	@GetMapping("/{plan_id}")
 	public ResponseEntity<?> getPlanById(@PathVariable("plan_id") Integer plan_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
@@ -236,8 +223,7 @@ public class TravelPlanController {
 
 	@GetMapping("/user-favorite-plans")
 	@ResponseBody
-	public ResponseEntity<List<TravelPlansDto>> userFavoritePlans(@RequestHeader("accessToken") String header,
-			@RequestBody List<TravelPlansDto> plans) {
+	public ResponseEntity<List<TravelPlansDto>> userFavoritePlans(@RequestHeader("accessToken") String header) {
 
 		int id = userHelperService.getUserIdFromHeader(header);
 
