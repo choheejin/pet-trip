@@ -17,6 +17,7 @@ const addFavorite = async (param) => {
       plan_id: param.plan_id,
       user_id: param.user_id,
     };
+    console.log("데이터 확인해보자!!! : ", data);
     // API 요청
     await travelplanApi.post("/add-user-favorite-plan", data);
 
@@ -39,6 +40,7 @@ const removeFavorite = async (param) => {
       plan_id: param.plan_id,
       user_id: param.user_id,
     };
+    console.log("취소 데이터 확인해보자!!! : ", data);
     // API 요청
     await travelplanApi.delete("/delete-user-favorite-plan", { data });
 

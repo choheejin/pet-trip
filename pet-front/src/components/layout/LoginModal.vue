@@ -10,14 +10,15 @@ const loginForm = ref({
   user_id: "",
   password: "",
 });
-
+console.log("로그아웃?? : ", useAuthStore().token);
 const login = async () => {
   try {
     // console.log("로그인 시도");
     // console.log("로그인 폼 데이터:", loginForm.value); // 로그인 폼 데이터 콘솔 출력
     await userStore.login(loginForm.value); // 로그인 처리
-    emit("login-success") // 로그인 성공 이벤트 전달
+    emit("login-success"); // 로그인 성공 이벤트 전달
     emit("close"); // 로그인 성공 후 모달 닫기
+    // console.log("로그인 확인", useAuthStore());
   } catch (error) {
     console.error("에러:", error);
     alert("로그인 실패");

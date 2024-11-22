@@ -33,12 +33,12 @@ getHotPlaces();
 getHotPlans();
 
 // 순위에서 하나 클릭하면 - 페이지 이동
-function selectAttraction(content_id) {
-  console.log("선택된 핫플레이스 : ", content_id);
-  selectedAttraction.value = content_id;
-  mainSelectStore.setAttraction(content_id);
+function selectAttraction(title) {
+  console.log("선택된 핫플레이스 : ", title);
+  selectedAttraction.value = title;
+  mainSelectStore.setAttraction(title);
   // 이걸로 BaseMap 에 전송??
-  // router.push({name:"BaseMap"});
+  router.push({ name: "BaseMap" });
 }
 function selectTravelPlan(id) {
   // console.log("선택된 여행 계획 : ", id);
@@ -55,7 +55,7 @@ function selectTravelPlan(id) {
       <li
         v-for="(place, index) in hotplaces.slice(0, 5)"
         :key="index"
-        @click="selectAttraction(place.content_id)"
+        @click="selectAttraction(place.title)"
         class="hotPlaceItem"
       >
         <div class="rankNum">{{ index + 1 }}</div>

@@ -1,11 +1,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import myPageApi from "@/api/myPageApi.js";
+import router from "@/router/index.js";
+import { useMainSelectStore } from "@/stores/mainselect.js";
 
+const mainSelectStore = useMainSelectStore();
 const plans = ref([]);
 const page = ref(1); // 현재 페이지 번호
 const loading = ref(false); // 로딩 중 상태
 const hasMore = ref(true); // 추가 데이터가 있는지 여부
+const selectedAttraction = ref("");
 
 // 기본 이미지
 const defaultImg =
@@ -43,7 +47,12 @@ const loadMore = () => {
 };
 
 // 위치보기 버튼 = 지도에 마커로 표시
-const attractionOnMap = (content_id) => {};
+const attractionOnMap = (title) => {
+  selectedAttraction.value = title;
+  mainSelectStore.setAttraction(title);
+  // 이걸로 BaseMap 에 전송??
+  router.push({ name: "BaseMap" });
+};
 // 컴포넌트가 마운트될 때 초기 데이터 로드
 onMounted(() => {
   getPlans(); // 초기 데이터 불러오기
@@ -73,7 +82,7 @@ onMounted(() => {
       </div>
       <div class="card-bottom">
         <div class="content">
-          <v-btn class="map-btn" @click="attractionOnMap(plan.content_id)">
+          <v-btn class="map-btn" @click="attractionOnMap(plan.title)">
             위치보기
           </v-btn>
           <div class="stats">
@@ -103,13 +112,14 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
+  border-bottom-left-radius: 15px;
 }
 
 .card {
   height: 240px;
   border: 1px solid #ccd5aeca;
   border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); */
 }
 
 .card-top {
@@ -136,6 +146,7 @@ onMounted(() => {
 }
 
 .card-bottom {
+  height: 97px;
   padding: 10px;
   display: flex;
   justify-content: space-between;

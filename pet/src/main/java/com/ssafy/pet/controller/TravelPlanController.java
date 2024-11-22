@@ -190,6 +190,7 @@ public class TravelPlanController {
 	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
+		log.trace("addUserFavoritePlan : {}",pf);
 		int id = userHelperService.getUserIdFromHeader(header);
 		
 		int res = travelPlanService.deleteFavoritePlan(id, plan_id);

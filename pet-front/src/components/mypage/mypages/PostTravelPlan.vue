@@ -104,7 +104,7 @@ onMounted(() => {
   height: 240px;
   border: 1px solid #ccd5aeca;
   border-radius: 15px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); */
 }
 
 .card-top {
@@ -131,6 +131,7 @@ onMounted(() => {
 }
 
 .card-bottom {
+  height: 97px;
   padding: 10px;
   display: flex;
   justify-content: space-between;
