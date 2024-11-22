@@ -53,6 +53,19 @@ public class UserController {
 
 		return new ResponseEntity<>(status);
 	}
+	
+	@PatchMapping("/update-info")
+	@ResponseBody
+	public ResponseEntity<?> updateUserInfo(@RequestHeader("accessToken") String header, @RequestBody UsersDto user) {
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		userService.update(user).orElseThrow(() -> new RuntimeException());
+		
+		status = HttpStatus.NO_CONTENT;
+		
+		return ResponseEntity.ok(status);
+	}
+
 
 	@PostMapping("/login")
 	public ResponseEntity<?> userLogin(@RequestBody UsersDto user) {
