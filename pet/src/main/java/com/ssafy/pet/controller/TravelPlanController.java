@@ -168,12 +168,13 @@ public class TravelPlanController {
 	}
 	
 	@PostMapping("/add-user-favorite-plan")
-	public ResponseEntity<?> addUserFavoritePlan(@RequestBody PlansFavoritesDto pf)
+	public ResponseEntity<?> addUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
 	{
+		int id = userHelperService.getUserIdFromHeader(header);
 		HttpStatus status = HttpStatus.ACCEPTED;
-		log.trace("addUserFavoritePlan : {}",pf);
+		log.trace("addUserFavoritePlan : {}", plan_id);
 		
-		int res = travelPlanService.addFavoritePlan(pf);
+		int res = travelPlanService.addFavoritePlan(id,  plan_id);
 		
 		if(res < 0) 
 		{
@@ -186,31 +187,23 @@ public class TravelPlanController {
 	}
 	
 	@DeleteMapping("/delete-user-favorite-plan")
-	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestBody PlansFavoritesDto pf)
+	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
 		int id = userHelperService.getUserIdFromHeader(header);
 		
-		if(id == pf.getUser_id())
+		int res = travelPlanService.deleteFavoritePlan(id, plan_id);
+		
+		if(res < 0) 
 		{
-			int res = travelPlanService.deleteFavoritePlan(pf);
-			
-			if(res < 0) 
-			{
-				throw new RuntimeException();
-			}
-			
-			status = HttpStatus.NO_CONTENT;
-			
-			return ResponseEntity.ok(status);	
+			throw new RuntimeException();
 		}
-		else
-		{
-			return ResponseEntity
-					.status(HttpStatus.FORBIDDEN)
-					.body("좋아요 취소 할 수 있는 유저가 아닙니다.");			
-		}
+		
+		status = HttpStatus.NO_CONTENT;
+		
+		return ResponseEntity.ok(status);	
 	}
+	
 	@GetMapping("/user-plan")
 	@ResponseBody
 	public ResponseEntity<List<TravelPlansDto>> userPlan(@RequestHeader("accessToken") String header) {

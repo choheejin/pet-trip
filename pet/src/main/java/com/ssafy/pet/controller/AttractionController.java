@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -176,7 +177,7 @@ public class AttractionController {
 		
 		int id = userHelperService.getUserIdFromHeader(header);
 		
-		List<Integer> content_ids = attractionService.getContentIdByUserID(id);
+		List<Integer> content_ids = attractionService.listHotplaceContentIdsByUserId(id);
 		
 		for(var content_id : content_ids)
 		{
@@ -184,5 +185,42 @@ public class AttractionController {
 		}
 		
 		return ResponseEntity.ok(result);
+	}
+	
+	@PostMapping("/add-user-hotplace")
+	public ResponseEntity<?> addUserHotplace(@RequestHeader("accessToken") String header, @RequestParam(value="content_id") int content_id)
+	{
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		int id = userHelperService.getUserIdFromHeader(header);
+		int cnt = attractionService.addHotplace(content_id, id);
+		
+		if(cnt < 0)
+		{
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Data conflict or operation not permitted");
+		}
+		
+		status = HttpStatus.CREATED;
+		
+		return ResponseEntity.ok(status);
+		
+	}
+	
+	@DeleteMapping("/delete-user-hotplace")
+	public ResponseEntity<?> deleteUserHotplace(@RequestHeader("accessToken") String header, @RequestParam(value="content_id") int content_id)
+	{
+		HttpStatus status = HttpStatus.ACCEPTED;
+		int id = userHelperService.getUserIdFromHeader(header);
+		
+		int res = attractionService.deleteHotplace(content_id, id);
+		
+		if(res < 0) 
+		{
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Data conflict or operation not permitted");
+		}
+		
+		status = HttpStatus.NO_CONTENT;
+		
+		return ResponseEntity.ok(status);	
 	}
 }

@@ -69,6 +69,11 @@
 		insert into hotplace (content_id,user_id)
 		values(#{content_id}, #{user_id});
 	</insert>
+	
+	<delete id="deleteHotplace">
+		delete from hotplace
+		where content_id=#{content_id} and user_id=#{user_id}
+	</delete>
 
 	<select id="searchUserByUserId" parameterType="String"
 		resultType="int">
@@ -117,7 +122,7 @@
 		limit 1;
 	</select>
 	
-	<select id="getContentIdByUserID" parameterType="int" resultType="int">
+	<select id="listHotplaceContentIdsByUserId" parameterType="int" resultType="int">
 		select content_id
 		from hotplace
 		where user_id = #{user_id};

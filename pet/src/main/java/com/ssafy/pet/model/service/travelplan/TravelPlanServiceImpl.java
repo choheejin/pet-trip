@@ -235,15 +235,15 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public int addFavoritePlan(PlansFavoritesDto favorite_plan) {
+	public int addFavoritePlan(int user_id, int favorite_plan_id) {
 		// TODO Auto-generated method stub
-		return travelPlanMapper.addFavoritePlan(favorite_plan);
+		return travelPlanMapper.addFavoritePlan(user_id, favorite_plan_id);
 	}
 
 
 	@Override
-	public int deleteFavoritePlan(PlansFavoritesDto favoritePlan) {
+	public int deleteFavoritePlan(int user_id, int favorite_plan_id) {
 		// TODO Auto-generated method stub
-		return travelPlanMapper.deleteFavoritePlan(favoritePlan);
+		return travelPlanMapper.deleteFavoritePlan(user_id, favorite_plan_id);
 	}
 }

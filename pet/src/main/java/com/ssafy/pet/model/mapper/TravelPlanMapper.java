@@ -52,10 +52,10 @@ public interface TravelPlanMapper {
 	/////////////////////////////////////////////////////
 	
 	//유저가 좋아요 누른 게시글 plans_favorites에 추가하기
-	int addFavoritePlan(PlansFavoritesDto favorite_plan);
+	int addFavoritePlan(@Param("user_id") int user_id, @Param("plan_id") int favorite_plan_id);
 	
 	//유저가 좋아요 누른 게시글 삭제하기
-	int deleteFavoritePlan(PlansFavoritesDto favoritePlan);
+	int deleteFavoritePlan(@Param("user_id") int user_id, @Param("plan_id") int favorite_plan_id);
 	
 	List<Map<String, Object>> findItemById(int id);
 }

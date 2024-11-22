@@ -38,6 +38,9 @@ public interface AttractionService {
 	// 핫플레이스로 장소 등록
 	int addHotplace(int content_id, int user_id);
 	
+	// 핫플레이스 장소 삭제: key_content_id, value: user
+	int deleteHotplace(int content_id, int user_id);
+	
 	//sido_code로 gugun_code 찾기
 	List<GugunsDto> searchGugunCodeBySidoCode(int sido_code);
 
@@ -54,7 +57,7 @@ public interface AttractionService {
 	void setPlanImage(List<TravelPlansDto> plans);
 	
 	//user_id를 통해서 hotplace의 content_id 찾기
-	List<Integer> getContentIdByUserID(int user_id);
+	List<Integer> listHotplaceContentIdsByUserId(int user_id);
 	
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();

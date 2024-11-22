@@ -49,6 +49,11 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 	
 	@Override
+	public int deleteHotplace(int content_id, int user_id) {
+		return attractionMapper.deleteHotplace(content_id, user_id);
+	}
+	
+	@Override
 	public HotplaceDto searchHotplaceById(int content_id) {
 		return attractionMapper.searchHotplaceById(content_id);
 	}
@@ -124,10 +129,7 @@ public class AttractionServiceImpl implements AttractionService {
 	}
 
 	@Override
-	public List<Integer> getContentIdByUserID(int user_id) {
-		// TODO Auto-generated method stub
-		return attractionMapper.getContentIdByUserID(user_id);
+	public List<Integer> listHotplaceContentIdsByUserId(int user_id) {
+		return attractionMapper.listHotplaceContentIdsByUserId(user_id);
 	}
-
-
 }
