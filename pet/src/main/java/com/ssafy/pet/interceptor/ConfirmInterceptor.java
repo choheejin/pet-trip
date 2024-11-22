@@ -26,18 +26,12 @@ public class ConfirmInterceptor implements HandlerInterceptor {
 		
 		if(request.getMethod().equalsIgnoreCase("GET")) {
 		    String uri = request.getRequestURI().trim();
-		    System.out.println("get메서드에서 인터셉터 작");
-		    if (uri.endsWith("/")) {
-		        uri = uri.substring(0, uri.length() - 1);
-		    }
-
 		    System.out.println("Request URI: " + uri);
 		    
 		    if(!uri.equalsIgnoreCase("/pet/user/info")) {
 		        return true;
 		    }
-		}
-		
+		}		
 		
 		String header = request.getHeader("accessToken");
 		

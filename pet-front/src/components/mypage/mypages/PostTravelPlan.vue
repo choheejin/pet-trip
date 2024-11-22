@@ -51,39 +51,44 @@ onMounted(() => {
     class="card-container"
     v-infinite-scroll="loadMore"
     :scroll-distance="100"
-  style="overflow-y: auto; height: 800px;"
+    style="overflow-y: auto; height: 100%"
   >
-  <div v-for="plan in plans" :key="plan.id" class="card">
-    <div class="card-top">
-      <div
-        class="card-img"
-        :style="{
+    <div v-for="plan in plans" :key="plan.id" class="card">
+      <div class="card-top">
+        <div
+          class="card-img"
+          :style="{
             backgroundImage: `url(${plan.image ? plan.image : defaultImg})`,
           }"
-      ></div>
-      <div class="card-title">
-        <div>{{ plan.title }}</div>
-      </div>
-    </div>
-    <div class="card-bottom">
-      <div class="content">
-        <v-btn class="detail-btn" @click="TravelDetail(plan.id)">
-          상세보기
-        </v-btn>
-        <div class="stats">
-          <div>
-            <i class="fa fa-eye eye-icon"></i> {{ plan.view_cnt }}
-            <i class="fa fa-heart heart-icon"></i> {{ plan.favorite_cnt }}
-          </div>
+        ></div>
+        <div class="card-title">
+          <div>{{ plan.title }}</div>
         </div>
       </div>
-      <div class="description">{{ plan.description }}</div>
+      <div class="card-bottom">
+        <div class="content">
+          <v-btn class="detail-btn" @click="TravelDetail(plan.id)">
+            상세보기
+          </v-btn>
+          <div class="stats">
+            <div>
+              <i class="fa fa-eye eye-icon"></i> {{ plan.view_cnt }}
+              <i class="fa fa-heart heart-icon"></i> {{ plan.favorite_cnt }}
+            </div>
+          </div>
+        </div>
+        <div class="description">{{ plan.description }}</div>
+      </div>
     </div>
-  </div>
-  <v-progress-circular v-if="loading" indeterminate color="primary" class="loading-indicator" />
-  <div v-if="!hasMore" class="no-more-data">
-    <span>더 이상 데이터가 없습니다.</span>
-  </div>
+    <v-progress-circular
+      v-if="loading"
+      indeterminate
+      color="primary"
+      class="loading-indicator"
+    />
+    <div v-if="!hasMore" class="no-more-data">
+      <span>더 이상 데이터가 없습니다.</span>
+    </div>
   </div>
 </template>
 
@@ -96,6 +101,7 @@ onMounted(() => {
 }
 
 .card {
+  height: 240px;
   border: 1px solid #ccd5aeca;
   border-radius: 15px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);

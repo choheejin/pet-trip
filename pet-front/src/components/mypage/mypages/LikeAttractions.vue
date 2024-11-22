@@ -24,7 +24,7 @@ const getPlans = async () => {
       plans.value = [...plans.value, ...data]; // 기존 데이터에 새 데이터를 추가
       page.value += 1; // 다음 페이지로 이동
 
-      console.log("좋아요한 관광지들 : ", plans.value)
+      // console.log("좋아요한 관광지들 : ", plans.value);
     } else {
       hasMore.value = false; // 데이터가 더 이상 없으면 플래그 설정
     }
@@ -43,9 +43,7 @@ const loadMore = () => {
 };
 
 // 위치보기 버튼 = 지도에 마커로 표시
-const attractionOnMap = (content_id) => {
-
-}
+const attractionOnMap = (content_id) => {};
 // 컴포넌트가 마운트될 때 초기 데이터 로드
 onMounted(() => {
   getPlans(); // 초기 데이터 불러오기
@@ -57,14 +55,16 @@ onMounted(() => {
     class="card-container"
     v-infinite-scroll="loadMore"
     :scroll-distance="100"
-    style="overflow-y: auto; height: 800px;"
+    style="overflow-y: auto; height: 100%"
   >
     <div v-for="plan in plans" :key="plan.id" class="card">
       <div class="card-top">
         <div
           class="card-img"
           :style="{
-            backgroundImage: `url(${plan.first_image2 ? plan.first_image2 : defaultImg})`,
+            backgroundImage: `url(${
+              plan.first_image2 ? plan.first_image2 : defaultImg
+            })`,
           }"
         ></div>
         <div class="card-title">
@@ -85,7 +85,12 @@ onMounted(() => {
         <div class="address">{{ plan.addr1 }}</div>
       </div>
     </div>
-    <v-progress-circular v-if="loading" indeterminate color="primary" class="loading-indicator" />
+    <v-progress-circular
+      v-if="loading"
+      indeterminate
+      color="primary"
+      class="loading-indicator"
+    />
     <div v-if="!hasMore" class="no-more-data">
       <span>더 이상 데이터가 없습니다.</span>
     </div>
@@ -101,6 +106,7 @@ onMounted(() => {
 }
 
 .card {
+  height: 240px;
   border: 1px solid #ccd5aeca;
   border-radius: 15px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
