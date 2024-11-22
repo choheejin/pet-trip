@@ -106,7 +106,6 @@ public class TravelPlanController {
 			@RequestParam(value = "sort", required = false, defaultValue = "oldest") String sort,
 			@RequestHeader("accessToken") String header) {
 
-		int id = userHelperService.getUserIdFromHeader(header);
 
 		int page_start = UtilClass.caculateOffest(page);
 		List<TravelPlansDto> sortedPlan = travelPlanService.getPlansBySort(sort, page_start,
@@ -118,9 +117,14 @@ public class TravelPlanController {
 
 		UserPlansResponseDto res = new UserPlansResponseDto();
 
-		boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, id);
+		if(header != null)
+		{
+			int id = userHelperService.getUserIdFromHeader(header);
+			boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, id);
+			res.setFavoritePlans(userFavoriteStatus);			
+		}
+		
 		res.setPlans(sortedPlan);
-		res.setFavoritePlans(userFavoriteStatus);
 		res.setTotal_pages(total_pages);
 
 		return ResponseEntity.ok(res);

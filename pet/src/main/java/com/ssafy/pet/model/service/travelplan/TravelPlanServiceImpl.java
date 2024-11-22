@@ -2,9 +2,11 @@ package com.ssafy.pet.model.service.travelplan;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -141,17 +143,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		
 		return plan;
 	}
-
-	@Override
-	public Optional<List<TravelPlansDto>> selectWithLimit(Integer page) {
-		
-		int limit = (page - 1) * 6;
-		
-		List<TravelPlansDto> list = travelPlanMapper.selectWithLimit(limit);
-		
-		return list == null ? Optional.empty() : Optional.of(list);
-	}
-
+	
 	@Override
 	public Optional<Map<String, Object>> findPlanWithItemsById(int id) {
 		TravelPlansDto plan = travelPlanMapper.findPlanById(id);
@@ -228,18 +220,19 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
 	@Override
 	public List<TravelPlansDto> getAllPlansBySort(String sort) {
-		// TODO Auto-generated method stub
 		return getPlansBySort(sort, -1, -1);
 	}
 
 	@Override
 	public boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, int user_id) {
 		List<Integer> plan_ids = travelPlanMapper.getUserFavoritePlanIds(user_id);
+		Set<Integer> favoritePlanSet = new HashSet<>(plan_ids);
+		
 		boolean[] favoritePlans = new boolean[PaginationConstants.PAGE_SIZE];
 		
 		for(int i = 0; i < plans.size(); i++)
 		{
-			if(plans.get(i).getUser_id() == user_id)
+			if(favoritePlanSet.contains(plans.get(i).getId()))
 			{
 				favoritePlans[i] = true;
 			}
