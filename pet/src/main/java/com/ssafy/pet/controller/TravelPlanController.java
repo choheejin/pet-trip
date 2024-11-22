@@ -69,9 +69,8 @@ public class TravelPlanController {
 		System.out.println("naverapi 요청 headers:: " + headers);
 
 		ResponseEntity<Map> response = restTemplate.exchange(uri, HttpMethod.GET, request, Map.class);
-
-		System.out.println("response:" + response.getBody());
-		return null;
+		
+		return response;
 	}
 
 	@GetMapping

@@ -2,13 +2,13 @@
 import { computed, ref } from "vue";
 import MapCartDetail from "./MapCartDetail.vue";
 import { useCartStore } from "@/stores/cart";
-import { useAuthStore } from "@/stores/user";
 import mapApi from "@/api/mapApi";
 
 const cartStore = useCartStore();
-const authStore = useAuthStore();
 
 const emit = defineEmits(["clickHandler"]);
+const summary = ref({});
+const isShowedSummary = ref(false);
 
 const plan = ref({
   title: "",
@@ -55,27 +55,23 @@ const postPlan = async () => {
     items: items,
   };
 
-  await mapApi
-    .post("", data, { headers: { accessToken: authStore.token } })
-    .then(() => {
-      alert("게시글 작성 완료");
-      window.location.reload(true);
-    });
+  await mapApi.post("", data).then(() => {
+    alert("게시글 작성 완료");
+    window.location.reload(true);
+  });
 };
 
 const getRecommendRoute = async () => {
   const len = cartStore.attraction.length - 1;
-  if (len == 1) return;
+  if (len == 0) return;
   const startString =
-    cartStore.attraction[len].longitude +
-    "%2C" +
-    cartStore.attraction[len].latitude;
+    cartStore.attraction[0].longitude + "," + cartStore.attraction[0].latitude;
 
   // 경유지 계산
   const waypointsString = cartStore.attraction
     .reduce((acc, curr, idx) => {
       if (idx != 0 && idx != cartStore.attraction.length - 1) {
-        return acc + curr.longitude + "%2C" + curr.latitude + "%3A";
+        return acc + curr.longitude + "," + curr.latitude + "|";
       }
       return acc;
     }, "")
@@ -83,7 +79,7 @@ const getRecommendRoute = async () => {
 
   const goalString =
     cartStore.attraction[len].longitude +
-    "%2C" +
+    "," +
     cartStore.attraction[len].latitude;
 
   const params = {
@@ -91,8 +87,16 @@ const getRecommendRoute = async () => {
     goal: goalString,
     waypoints: waypointsString,
   };
-  const { data } = await mapApi.get("/naver-map", { params });
-  console.log(data);
+  await mapApi.get("/naver-map", { params }).then((res) => {
+    console.log(
+      "전체 경로 거리: " + res.data.route.traoptimal[0].summary.distance
+    );
+    console.log(
+      "전체 경로 소요 시간" + res.data.route.traoptimal[0].summary.duration
+    );
+    summary.value = res.data.route.traoptimal[0].summary;
+    isShowedSummary.value = true;
+  });
 };
 </script>
 
@@ -150,7 +154,7 @@ const getRecommendRoute = async () => {
           />
         </svg>
 
-        <button>추천 경로 설정</button>
+        <button>실시간 교통 시간 분석</button>
       </div>
     </div>
 
@@ -169,6 +173,20 @@ const getRecommendRoute = async () => {
         />
       </div>
       <div class="cart-compute">
+        <div v-if="isShowedSummary" class="summary">
+          <div>
+            <span>택시비: </span
+            >{{ summary.taxiFare.toLocaleString("ko-KR") }}원
+          </div>
+          <div>
+            <span>총 소요시간: </span
+            >{{ Math.ceil((summary.duration / (1000 * 60)) % 60) }}분
+          </div>
+          <div>
+            <span>총 거리: </span
+            >{{ summary.distance.toLocaleString("ko-KR") }}m
+          </div>
+        </div>
         <div><span>총 장소 수: </span>{{ totalCnt }}</div>
       </div>
     </div>
@@ -287,14 +305,20 @@ textarea {
 }
 
 .cart-detail-container > .cart-detail-item {
-  height: 12rem;
+  height: 14rem;
   overflow-y: auto;
 }
 
 .cart-detail-container > .cart-compute {
   display: flex;
+  flex-direction: column;
   margin-top: 1rem;
   justify-content: end;
+}
+
+.cart-detail-container > .cart-compute > .summary {
+  display: flex;
+  gap: 1rem;
 }
 
 .cart-detail-container > .cart-compute > div > span {
