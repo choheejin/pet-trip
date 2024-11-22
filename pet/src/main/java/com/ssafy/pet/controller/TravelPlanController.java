@@ -44,10 +44,12 @@ import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.UtilClass;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/plan")
+@Slf4j
 public class TravelPlanController {
 	private final JWTUtil jwtUtil;
 	private final TravelPlanService travelPlanService;
@@ -77,19 +79,19 @@ public class TravelPlanController {
 		return response;
 	}
 
-	@GetMapping
-	public ResponseEntity<?> getPlans(@RequestParam(required = false) Integer page) {
-		HttpStatus status = HttpStatus.ACCEPTED;
-
-		Map<String, Object> resultMap = new HashMap<>();
-		List<TravelPlansDto> list = travelPlanService.selectWithLimit(page).orElseThrow(() -> new RuntimeException());
-
-		resultMap.put("list", list);
-		status = HttpStatus.OK;
-
-		return new ResponseEntity<Map<String, Object>>(resultMap, status);
-	}
-
+//	@GetMapping
+//	public ResponseEntity<?> getPlans(@RequestParam(required = false) Integer page) {
+//		HttpStatus status = HttpStatus.ACCEPTED;
+//
+//		Map<String, Object> resultMap = new HashMap<>();
+//		List<TravelPlansDto> list = travelPlanService.selectWithLimit(page).orElseThrow(() -> new RuntimeException());
+//
+//		resultMap.put("list", list);
+//		status = HttpStatus.OK;
+//
+//		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+//	}
+//
 	@GetMapping("/{plan_id}")
 	public ResponseEntity<?> getPlanById(@PathVariable("plan_id") Integer plan_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
@@ -178,6 +180,7 @@ public class TravelPlanController {
 	public ResponseEntity<?> addUserFavoritePlan(@RequestBody PlansFavoritesDto pf)
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
+		log.trace("addUserFavoritePlan : {}",pf);
 		
 		int res = travelPlanService.addFavoritePlan(pf);
 		
