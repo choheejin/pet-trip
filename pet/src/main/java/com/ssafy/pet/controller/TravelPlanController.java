@@ -170,7 +170,7 @@ public class TravelPlanController {
 
 		int res = travelPlanService.addFavoritePlan(id, plan_id);
 
-		if (res < 0) {
+		if (res <= 0) {
 			throw new RuntimeException();
 		}
 
@@ -188,7 +188,7 @@ public class TravelPlanController {
 
 		int res = travelPlanService.deleteFavoritePlan(id, plan_id);
 
-		if (res < 0) {
+		if (res <= 0) {
 			throw new RuntimeException();
 		}
 
