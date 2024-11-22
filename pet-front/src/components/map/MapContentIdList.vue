@@ -103,6 +103,11 @@ const types = [
   min-width: fit-content;
   font-weight: 600;
 }
+.type-group > .name:hover {
+  min-width: fit-content;
+  font-weight: 600;
+  color: rgb(59 130 246);
+}
 
 .name-color {
   color: rgb(59 130 246);

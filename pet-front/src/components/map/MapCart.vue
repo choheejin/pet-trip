@@ -154,11 +154,7 @@ const getRecommendRoute = async () => {
           />
         </svg>
 
-        <<<<<<< HEAD
         <button>실시간 교통 시간 분석</button>
-        =======
-        <button>추천 경로 설정</button>
-        >>>>>>> 695a463 (feat(map): 네이버 추천 경로 cors 에러 해결 필요)
       </div>
     </div>
 
@@ -309,11 +305,7 @@ textarea {
 }
 
 .cart-detail-container > .cart-detail-item {
-<<<<<<< HEAD
   height: 14rem;
-=======
-  height: 12rem;
->>>>>>> 695a463 (feat(map): 네이버 추천 경로 cors 에러 해결 필요)
   overflow-y: auto;
 }
 
