@@ -103,7 +103,8 @@ public class UserController {
 		String user_id = jwtUtil.getUserId(header);
 		UsersDto userInfo = userService.userInfo(user_id)
 				.orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
-
+		
+		resultMap.put("pk_id", userInfo.getId());
 		resultMap.put("user_id", userInfo.getUser_id());
 		resultMap.put("username", userInfo.getUsername());
 		resultMap.put("email", userInfo.getEmail());

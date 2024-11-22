@@ -44,10 +44,12 @@ import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.UtilClass;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/plan")
+@Slf4j
 public class TravelPlanController {
 	private final JWTUtil jwtUtil;
 	private final TravelPlanService travelPlanService;
@@ -169,6 +171,7 @@ public class TravelPlanController {
 	public ResponseEntity<?> addUserFavoritePlan(@RequestBody PlansFavoritesDto pf)
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
+		log.trace("addUserFavoritePlan : {}",pf);
 		
 		int res = travelPlanService.addFavoritePlan(pf);
 		

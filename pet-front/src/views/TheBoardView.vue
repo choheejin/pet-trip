@@ -10,9 +10,52 @@ const favorites = ref([]);
 const page = ref(1);
 const sort = ref("");
 
+// 좋아요 추가
+const addFavorite = async (param) => {
+  try {
+    const data = {
+      plan_id: param.plan_id,
+      user_id: param.user_id,
+    };
+    // API 요청
+    await travelplanApi.post("/add-user-favorite-plan", data);
+
+    // 로컬 상태 업데이트
+    const index = travelplans.value.findIndex(
+      (plan) => plan.id === param.plan_id
+    );
+    if (index !== -1) {
+      favorites.value[index] = true; // 좋아요로 업데이트
+    }
+  } catch (error) {
+    console.error("좋아요 요청 실패:", error);
+  }
+};
+
+// 좋아요 취소
+const removeFavorite = async (param) => {
+  try {
+    const data = {
+      plan_id: param.plan_id,
+      user_id: param.user_id,
+    };
+    // API 요청
+    await travelplanApi.delete("/delete-user-favorite-plan", { data });
+
+    // 로컬 상태 업데이트
+    const index = travelplans.value.findIndex(
+      (plan) => plan.id === param.plan_id
+    );
+    if (index !== -1) {
+      favorites.value[index] = false; // 좋아요 취소로 업데이트
+    }
+  } catch (error) {
+    console.error("좋아요 취소 요청 실패:", error);
+  }
+};
+
 // 검색 하기 - 정렬 조건
 const getTravelPlansBySorting = async () => {
-
   try {
     const { data } = await travelplanApi.get("/plans", {
       params: {
@@ -74,7 +117,12 @@ onMounted(async () => {
           </div>
           <div class="CardTravelPlan">
             <!--        <h1>선택된 정렬 기준 : {{ sort }}</h1>-->
-            <BoardTravelPlan :travelplans="travelplans" :favorites="favorites"/>
+            <BoardTravelPlan
+              :travelplans="travelplans"
+              :favorites="favorites"
+              @like="addFavorite"
+              @dislike="removeFavorite"
+            />
           </div>
 
           <!-- 페이지네이션 -->
