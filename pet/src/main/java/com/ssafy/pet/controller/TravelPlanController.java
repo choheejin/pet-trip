@@ -92,6 +92,7 @@ public class TravelPlanController {
 			@RequestParam(value = "sort", required = false, defaultValue = "oldest") String sort,
 			@RequestHeader(value = "accessToken", required = false) String header) {
 
+
 		int page_start = UtilClass.caculateOffest(page);
 		List<TravelPlansDto> sortedPlan = travelPlanService.getPlansBySort(sort, page_start,
 				PaginationConstants.PAGE_SIZE);
@@ -102,15 +103,17 @@ public class TravelPlanController {
 
 		UserPlansResponseDto res = new UserPlansResponseDto();
 
-		if (header != null && !header.isEmpty()) {
+		if(header != null && !header.isEmpty())
+		{
 			int id = userHelperService.getUserIdFromHeader(header);
 			boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, id);
-			res.setFavoritePlans(userFavoriteStatus);
-		} else {
-			boolean[] defaultFavoriteStatus = new boolean[PaginationConstants.PAGE_SIZE];
-			res.setFavoritePlans(defaultFavoriteStatus);
+			res.setFavoritePlans(userFavoriteStatus);			
 		}
-
+		else {
+			 boolean[] defaultFavoriteStatus = new boolean[PaginationConstants.PAGE_SIZE];
+		     res.setFavoritePlans(defaultFavoriteStatus);
+		}
+		
 		res.setPlans(sortedPlan);
 		res.setTotal_pages(total_pages);
 
@@ -160,7 +163,7 @@ public class TravelPlanController {
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
-
+	
 	@PostMapping("/add-user-favorite-plan")
 	public ResponseEntity<?> addUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
 	{
@@ -174,12 +177,12 @@ public class TravelPlanController {
 		{
 			throw new RuntimeException();
 		}
-
+		
 		status = HttpStatus.CREATED;
-
+		
 		return ResponseEntity.ok(status);
 	}
-
+	
 	@DeleteMapping("/delete-user-favorite-plan")
 	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
 	{
@@ -197,7 +200,7 @@ public class TravelPlanController {
 		
 		return ResponseEntity.ok(status);	
 	}
-
+	
 	@GetMapping("/user-plan")
 	@ResponseBody
 	public ResponseEntity<List<TravelPlansDto>> userPlan(@RequestHeader("accessToken") String header) {
@@ -205,6 +208,7 @@ public class TravelPlanController {
 		int id = userHelperService.getUserIdFromHeader(header);
 
 		List<TravelPlansDto> result = travelPlanService.getUserPlans(id);
+		
 		attracionService.setPlanImage(result);
 
 		return ResponseEntity.ok(result);
