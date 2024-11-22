@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 
@@ -44,6 +45,12 @@ public interface TravelPlanMapper {
 	
 	//유저가 좋아요한 게시글 아이디 조회
 	List<Integer> getUserFavoritePlanIds(int user_id);
+	
+	//유저가 좋아요 누른 게시글 plans_favorites에 추가하기
+	int addFavoritePlan(PlansFavoritesDto favorite_plan);
+	
+	//유저가 좋아요 누른 게시글 삭제하기
+	int deleteFavoritePlan(PlansFavoritesDto favoritePlan);
 	
 	List<Map<String, Object>> findItemById(int id);
 }
