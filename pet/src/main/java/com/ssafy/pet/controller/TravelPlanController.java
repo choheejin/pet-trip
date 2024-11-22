@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.pet.config.PaginationConstants;
-import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UserPlansResponseDto;
@@ -93,6 +92,7 @@ public class TravelPlanController {
 			@RequestParam(value = "sort", required = false, defaultValue = "oldest") String sort,
 			@RequestHeader(value = "accessToken", required = false) String header) {
 
+
 		int page_start = UtilClass.caculateOffest(page);
 		List<TravelPlansDto> sortedPlan = travelPlanService.getPlansBySort(sort, page_start,
 				PaginationConstants.PAGE_SIZE);
@@ -103,15 +103,17 @@ public class TravelPlanController {
 
 		UserPlansResponseDto res = new UserPlansResponseDto();
 
-		if (header != null && !header.isEmpty()) {
+		if(header != null && !header.isEmpty())
+		{
 			int id = userHelperService.getUserIdFromHeader(header);
 			boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, id);
-			res.setFavoritePlans(userFavoriteStatus);
-		} else {
-			boolean[] defaultFavoriteStatus = new boolean[PaginationConstants.PAGE_SIZE];
-			res.setFavoritePlans(defaultFavoriteStatus);
+			res.setFavoritePlans(userFavoriteStatus);			
 		}
-
+		else {
+			 boolean[] defaultFavoriteStatus = new boolean[PaginationConstants.PAGE_SIZE];
+		     res.setFavoritePlans(defaultFavoriteStatus);
+		}
+		
 		res.setPlans(sortedPlan);
 		res.setTotal_pages(total_pages);
 
@@ -161,45 +163,45 @@ public class TravelPlanController {
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
-
+	
 	@PostMapping("/add-user-favorite-plan")
-	public ResponseEntity<?> addUserFavoritePlan(@RequestBody PlansFavoritesDto pf) {
+	public ResponseEntity<?> addUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
+	{
+		int id = userHelperService.getUserIdFromHeader(header);
 		HttpStatus status = HttpStatus.ACCEPTED;
-		log.trace("addUserFavoritePlan : {}", pf);
-
-		int res = travelPlanService.addFavoritePlan(pf);
-
-		if (res < 0) {
+		log.trace("addUserFavoritePlan : {}", plan_id);
+		
+		int res = travelPlanService.addFavoritePlan(id,  plan_id);
+		
+		if(res < 0) 
+		{
 			throw new RuntimeException();
 		}
-
+		
 		status = HttpStatus.CREATED;
-
+		
 		return ResponseEntity.ok(status);
 	}
-
+	
 	@DeleteMapping("/delete-user-favorite-plan")
-	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header,
-			@RequestBody PlansFavoritesDto pf) {
+	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
+	{
 		HttpStatus status = HttpStatus.ACCEPTED;
 		log.trace("addUserFavoritePlan : {}",pf);
 		int id = userHelperService.getUserIdFromHeader(header);
-
-		if (id == pf.getUser_id()) {
-			int res = travelPlanService.deleteFavoritePlan(pf);
-
-			if (res < 0) {
-				throw new RuntimeException();
-			}
-
-			status = HttpStatus.NO_CONTENT;
-
-			return ResponseEntity.ok(status);
-		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("좋아요 취소 할 수 있는 유저가 아닙니다.");
+		
+		int res = travelPlanService.deleteFavoritePlan(id, plan_id);
+		
+		if(res < 0) 
+		{
+			throw new RuntimeException();
 		}
+		
+		status = HttpStatus.NO_CONTENT;
+		
+		return ResponseEntity.ok(status);	
 	}
-
+	
 	@GetMapping("/user-plan")
 	@ResponseBody
 	public ResponseEntity<List<TravelPlansDto>> userPlan(@RequestHeader("accessToken") String header) {
@@ -207,7 +209,9 @@ public class TravelPlanController {
 		int id = userHelperService.getUserIdFromHeader(header);
 
 		List<TravelPlansDto> result = travelPlanService.getUserPlans(id);
+		
 		attracionService.setPlanImage(result);
+
 		return ResponseEntity.ok(result);
 	}
 
@@ -220,6 +224,7 @@ public class TravelPlanController {
 		List<TravelPlansDto> result = travelPlanService.getUserFavoritePlans(id);
 		
 		attracionService.setPlanImage(result);
+
 		return ResponseEntity.ok(result);
 	}
 

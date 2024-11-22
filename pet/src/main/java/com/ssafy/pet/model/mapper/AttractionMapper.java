@@ -37,6 +37,9 @@ public interface AttractionMapper {
 	// 핫플레이스 장소 등록: key_content_id, value: user
 	int addHotplace(@Param("content_id") int content_id, @Param("user_id") int user_id);
 	
+	// 핫플레이스 장소 삭제: key_content_id, value: user
+	int deleteHotplace(@Param("content_id") int content_id, @Param("user_id") int user_id);
+	
 	//user_id로 user table의 primary-key인 id 찾기
 	int searchUserByUserId(String user_id);
 	
@@ -53,7 +56,7 @@ public interface AttractionMapper {
 	String getFirstImageByPlanId(int plan_id);
 	
 	//user_id를 통해서 hotplace의 content_id 찾기
-	List<Integer> getContentIdByUserID(int user_id);
+	List<Integer> listHotplaceContentIdsByUserId(int user_id);
 	
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();

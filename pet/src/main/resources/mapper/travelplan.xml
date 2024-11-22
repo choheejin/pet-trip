@@ -164,12 +164,12 @@
 		where user_id = #{user_id};
 	</select>
 		
-	<insert id="addFavoritePlan" parameterType="PlansFavoritesDto">
+	<insert id="addFavoritePlan">
 		insert into plans_favorites (plan_id, user_id)
 		values(#{plan_id}, #{user_id});
 	</insert>
 	
-	<delete id="deleteFavoritePlan" parameterType="PlansFavoritesDto">
+	<delete id="deleteFavoritePlan">
 		delete from plans_favorites
 		where plan_id=#{plan_id} and user_id=#{user_id}
 	</delete>
