@@ -8,9 +8,12 @@ const mapApi = axios.create({
 mapApi.interceptors.request.use((config) => {
   // 요청이 POST일 때만 Authorization 헤더 추가
   const authStore = useAuthStore();
-  if (config.method === "POST") {
+  console.log("mapApi interceptor");
+  console.log(config.method);
+  if (config.method === "post") {
     const token = authStore.token;
     config.headers.accessToken = token;
+    console.log(config.headers);
   }
   return config;
 });
