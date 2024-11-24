@@ -40,9 +40,19 @@ public interface TravelPlanService {
 	//유저가 좋아요한 게시글 조회
 	List<TravelPlansDto> getUserFavoritePlans(int user_id);
 	
+	/////////////////////////////////////
 	//게시글의 댓글 조회
-	//List<String> getComments(int plan_id);
-	List<TravelPlanCommentsDto> getComments(int plan_id);
+	List<TravelPlanCommentsDto> listParentComments(int plan_id);
+	
+	//대댓글 가져오기
+	List<TravelPlanCommentsDto> listChildComments(int parent_comment_id);
+	
+	//댓글 작성
+	int postComment(TravelPlanCommentsDto comment);
+	
+	//댓글 삭제
+	int deleteComment(int comment_pk);
+	////////////////////////////////////
 	
 	//정렬 타입별 게시글 조회
 	List<TravelPlansDto> getPlansBySort(String sort, int page_start, int page_size);

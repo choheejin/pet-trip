@@ -38,9 +38,19 @@ public interface TravelPlanMapper {
 	//가장 많이 조회 된 순으로 게시글 조회
 	List<TravelPlansDto> getPlansByMostViews(@Param("page_start") int page_start, @Param("page_size") int page_size);
 	
-	//게시글의 댓글 조회
-	//List<String> getComments(int plan_id);
-	List<TravelPlanCommentsDto> getComments(int plan_id);
+	///////////////////댓글
+	//게시글의 본 댓글만(대댓글 제외) 조회 - 시간순으로
+	List<TravelPlanCommentsDto> listParentComments(int plan_id);
+	
+	//대댓글들 가져오기
+	List<TravelPlanCommentsDto> listChildComments(int parent_comment_id);
+	
+	//댓글 작성
+	int postComment(TravelPlanCommentsDto comment);
+	
+	//댓글 삭제
+	int deleteComment(int comment_pk);
+	////////////////////////////
 	
 	//유저가 게시한 게시글 조회
 	List<TravelPlansDto> getUserPlans(int user_id);

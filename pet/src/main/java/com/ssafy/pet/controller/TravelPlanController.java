@@ -123,14 +123,25 @@ public class TravelPlanController {
 		return ResponseEntity.ok(res);
 	}
 
-	@GetMapping("/comments")
+	@GetMapping("/parent-comments")
 	@ResponseBody
 	public ResponseEntity<List<TravelPlanCommentsDto>> getComments(@RequestParam(value = "plan_id") int plan_id) {
 		List<TravelPlanCommentsDto> comments = new ArrayList<>();
 
-		comments = travelPlanService.getComments(plan_id);
+		comments = travelPlanService.listParentComments(plan_id);
 
 		return ResponseEntity.ok(comments);
+	}
+	
+	@GetMapping("/child-comments")
+	@ResponseBody
+	public ResponseEntity<List<TravelPlanCommentsDto>> listChildComments(@RequestParam(value="parent_comment_id") int parent_comment_id)
+	{
+		List<TravelPlanCommentsDto> childComments = new ArrayList<>();
+		
+		childComments = travelPlanService.listChildComments(parent_comment_id);
+		
+		return ResponseEntity.ok(childComments);
 	}
 
 	@PostMapping
@@ -232,6 +243,42 @@ public class TravelPlanController {
 
 		return ResponseEntity.ok(result);
 	}
+	
+	@PostMapping("/post-comment")
+	@ResponseBody
+	public ResponseEntity<?> postComment(@RequestHeader("accessToken") String header, @RequestBody TravelPlanCommentsDto comment)
+	{
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		int cnt = travelPlanService.postComment(comment);
+		
+		if(cnt < 0)
+		{
+			throw new RuntimeException();
+		}
+		
+		status = HttpStatus.CREATED;
+		
+		return ResponseEntity.ok(status);
+	}
+	
+	@DeleteMapping("/delete-comment")
+	public ResponseEntity<?> deleteComment(@RequestHeader("accessToken") String header, @RequestParam(value="comment_pk") int comment_pk)
+	{
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		int res = travelPlanService.deleteComment(comment_pk);
+		
+		if(res < 0) 
+		{
+			throw new RuntimeException();
+		}
+		
+		status = HttpStatus.NO_CONTENT;
+		
+		return ResponseEntity.ok(status);	
+	}
+	
 
 	@PutMapping("/{plan_id}")
 	public ResponseEntity<?> updatePlans(@PathVariable("plan_id") String plan_id,

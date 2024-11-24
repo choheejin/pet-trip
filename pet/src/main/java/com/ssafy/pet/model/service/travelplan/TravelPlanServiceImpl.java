@@ -178,8 +178,8 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public List<TravelPlanCommentsDto> getComments(int plan_id) {
-		return travelPlanMapper.getComments(plan_id);
+	public List<TravelPlanCommentsDto> listParentComments(int plan_id) {
+		return travelPlanMapper.listParentComments(plan_id);
 	}
 
 	@Override
@@ -237,14 +237,30 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
 	@Override
 	public int addFavoritePlan(int user_id, int favorite_plan_id) {
-		// TODO Auto-generated method stub
 		return travelPlanMapper.addFavoritePlan(user_id, favorite_plan_id);
 	}
 
 
 	@Override
 	public int deleteFavoritePlan(int user_id, int favorite_plan_id) {
-		// TODO Auto-generated method stub
 		return travelPlanMapper.deleteFavoritePlan(user_id, favorite_plan_id);
+	}
+
+
+	@Override
+	public List<TravelPlanCommentsDto> listChildComments(int parent_comment_id) {
+		return travelPlanMapper.listChildComments(parent_comment_id);
+	}
+
+
+	@Override
+	public int postComment(TravelPlanCommentsDto comment) {
+		return travelPlanMapper.postComment(comment);
+	}
+
+
+	@Override
+	public int deleteComment(int comment_pk) {
+		return travelPlanMapper.deleteComment(comment_pk);
 	}
 }

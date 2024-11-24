@@ -106,43 +106,29 @@
 		</if>
 	</select>
 
-	<select id="getComments" parameterType="int" resultType="TravelPlanCommentsDto">
-		WITH
-		RECURSIVE CommentHierarchy AS (
-		SELECT
-		id AS comment_id,
-		plan_id,
-		user_id,
-		comment,
-		created_at,
-		updated_at,
-		parent_comment_id,
-		id AS top_comment_id
-		FROM travel_plan_comments
-		WHERE parent_comment_id IS NULL
-
-		UNION ALL
-
-		SELECT
-		c.id AS comment_id,
-		c.plan_id,
-		c.user_id,
-		c.comment,
-		c.created_at,
-		c.updated_at,
-		c.parent_comment_id,
-		h.top_comment_id
-		FROM travel_plan_comments c
-		INNER JOIN CommentHierarchy h
-		ON c.parent_comment_id = h.comment_id
-		)
-
-		SELECT *
-		FROM CommentHierarchy
-		WHERE plan_id = #{plan_id}
-		ORDER BY
-		top_comment_id, created_at;
+	<select id="listParentComments" parameterType="int" resultType="TravelPlanCommentsDto">
+		select *
+		from travel_plan_comments
+		where parent_comment_id is null
+		order by created_at;
 	</select>
+	
+	<select id="listChildComments" parameterType="int" resultType="TravelPlanCommentsDto">
+		select *
+		from travel_plan_comments
+		where parent_comment_id = #{parent_comment_id}
+		order by created_at;
+	</select>
+	
+	<insert id="postComment" parameterType="TravelPlanCommentsDto">
+		insert into travel_plan_comments (plan_id, user_id, comment, created_at, updated_at, parent_comment_id)
+		values(#{plan_id}, #{user_id}, #{comment}, #{created_at}, #{updated_at}, #{parent_comment_id});
+	</insert>
+	
+	<delete id="deleteComment" parameterType="int">
+		delete from travel_plan_comments
+		where id = #{
+	</delete>
 
 	<select id="getUserPlans" parameterType="int" resultType="TravelPlansDto">
 		select *
