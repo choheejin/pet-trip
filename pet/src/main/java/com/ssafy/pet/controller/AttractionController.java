@@ -240,7 +240,7 @@ public class AttractionController {
 		int id = userHelperService.getUserIdFromHeader(header);
 		int cnt = attractionService.addHotplace(content_id, id);
 
-		if (cnt < 0) {
+		if (cnt <= 0) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Data conflict or operation not permitted");
 		}
 
