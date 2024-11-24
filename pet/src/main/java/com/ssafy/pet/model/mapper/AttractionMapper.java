@@ -60,4 +60,7 @@ public interface AttractionMapper {
 	
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();
+	
+	// 유저 pk와 content_id를 통해 유저 좋아요 여부 확인
+	int getUserLikedAttraction(@Param("user_id") int user_id, @Param("content_id") int content_id);
 }

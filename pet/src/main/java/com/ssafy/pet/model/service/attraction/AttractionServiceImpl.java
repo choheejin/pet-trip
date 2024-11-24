@@ -16,11 +16,15 @@ import com.ssafy.pet.dto.PetAttractionsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.model.mapper.AttractionMapper;
+import com.ssafy.pet.model.mapper.UserMapper;
+import com.ssafy.pet.model.service.user.UserService;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AttractionServiceImpl implements AttractionService {
+	private final UserMapper userMapper;
 	private final AttractionMapper attractionMapper;
 
 	@Override
@@ -131,5 +135,13 @@ public class AttractionServiceImpl implements AttractionService {
 	@Override
 	public List<Integer> listHotplaceContentIdsByUserId(int user_id) {
 		return attractionMapper.listHotplaceContentIdsByUserId(user_id);
+	}
+
+	@Override
+	public boolean getUserLikedContent(String user_id, int content_id) {
+		int user_pk = userMapper.findIdByUserId(user_id);
+		int cnt = attractionMapper.getUserLikedAttraction(user_pk, content_id);
+		System.out.println(user_pk + ":" + cnt);
+		return cnt != 0;
 	}
 }
