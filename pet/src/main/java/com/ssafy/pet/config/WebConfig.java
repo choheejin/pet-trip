@@ -23,8 +23,8 @@ public class WebConfig implements WebMvcConfigurer {
 			"/plan/**",
 			"/user/updateimage",
 			"/user/info/**",
-			"/attractions/hotplace/**",
-			"/attractions/user-likes/**"
+			"/attraction/**",
+			"/attraction/user-likes/**"
 	);
 	
 	private final ConfirmInterceptor confirmInterceptor;
