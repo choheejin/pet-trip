@@ -1,7 +1,42 @@
 <script setup>
+import attractionApi from "@/api/attractionApi";
 import { defineProps, ref } from "vue";
 
 const props = defineProps(["attraction", "detailInfo"]);
+
+const debounce = (func, delay) => {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};
+
+const handleLikeOrDisLike = debounce(() => {
+  const params = {
+    content_id: props.detailInfo.contentid,
+  };
+
+  if (!props.detailInfo.isLiked) {
+    console.log("좋아요 등록 요청");
+    attractionApi.post("/add-user-hotplace", null, { params }).then((res) => {
+      if (res.status == 200) {
+        props.detailInfo.isLiked = true;
+      }
+    });
+  }
+
+  if (props.detailInfo.isLiked) {
+    console.log("좋아요 취소 요청");
+    attractionApi.delete("/delete-user-hotplace", { params }).then((res) => {
+      if (res.status == 200) {
+        props.detailInfo.isLiked = false;
+      }
+    });
+  }
+}, 500);
 
 const emit = defineEmits(["addCartItem"]);
 
@@ -57,7 +92,13 @@ const emitHandler = () => {
           </svg>
           <span>여행경로 추가</span>
         </div>
-        <div class="button-heart">
+        <div
+          :class="{
+            'button-heart-blank': detailInfo.isLiked,
+            'button-heart': !detailInfo.isLiked,
+          }"
+          @click="handleLikeOrDisLike"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -283,6 +324,23 @@ img {
 }
 
 .button-group > .button-heart:hover > svg {
+  stroke: white;
+}
+
+.button-group > .button-heart-blank {
+  display: flex;
+  gap: 0.35rem;
+  cursor: pointer;
+  width: 48%;
+  color: white;
+  background-color: rgb(244 63 94);
+  border: 1px solid white;
+  border-radius: 0.35rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.button-group > .button-heart-blank > svg {
+  width: 1.5rem;
   stroke: white;
 }
 

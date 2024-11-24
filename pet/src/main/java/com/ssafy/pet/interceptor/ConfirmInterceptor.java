@@ -1,5 +1,9 @@
 package com.ssafy.pet.interceptor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -15,6 +19,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ConfirmInterceptor implements HandlerInterceptor {
 	private final JWTUtil jwtUtil;
+
+	// GET 요청이지만 accessToken 확인이 필요한 경우 패턴 추가 필요
+	private final List<String> getPatterns = Arrays.asList(
+			"/pet/user/info",
+			"/pet/plan/user-plan",
+			"/pet/attraction/user-likes",
+			"/pet/plan/user-favorite-plans"
+	);
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -37,7 +49,6 @@ public class ConfirmInterceptor implements HandlerInterceptor {
 
 		System.out.println(header);
 		System.out.println("인터셉터 작동");
-
 		if (header == null || !jwtUtil.checkToken(header)) {
 			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
 		}

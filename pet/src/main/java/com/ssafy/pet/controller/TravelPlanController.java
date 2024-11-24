@@ -184,11 +184,10 @@ public class TravelPlanController {
 		int id = userHelperService.getUserIdFromHeader(header);
 		HttpStatus status = HttpStatus.ACCEPTED;
 		log.trace("addUserFavoritePlan : {}", plan_id);
-		
-		int res = travelPlanService.addFavoritePlan(id,  plan_id);
-		
-		if(res < 0) 
-		{
+
+		int res = travelPlanService.addFavoritePlan(id, plan_id);
+
+		if (res <= 0) {
 			throw new RuntimeException();
 		}
 		
@@ -201,15 +200,14 @@ public class TravelPlanController {
 	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
-		
+
 		//log.trace("addUserFavoritePlan : {}",pf);	
 
 		int id = userHelperService.getUserIdFromHeader(header);
 		
 		int res = travelPlanService.deleteFavoritePlan(id, plan_id);
-		
-		if(res < 0) 
-		{
+
+		if (res <= 0) {
 			throw new RuntimeException();
 		}
 		

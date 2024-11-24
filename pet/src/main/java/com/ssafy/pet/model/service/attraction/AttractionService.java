@@ -61,4 +61,7 @@ public interface AttractionService {
 	
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();
+	
+	// 사용자 id와 content_id를 통해 좋아요를 눌렀는지 확인한다
+	boolean getUserLikedContent(String user_id, int content_id);
 }

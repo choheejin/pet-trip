@@ -38,6 +38,7 @@ const getSelectDetail = async () => {
   const { data } = await attractionApi.get("/openapi-detail", { params });
   console.log(data);
   detailInfo.value = data.response.body.items.item[0];
+  detailInfo.value["isLiked"] = data.response.body.isLiked;
 };
 
 /* ================상세보기END================*/

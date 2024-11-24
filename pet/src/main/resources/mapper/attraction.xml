@@ -66,7 +66,7 @@
 	</select>
 
 	<insert id="addHotplace">
-		insert into hotplace (content_id,user_id)
+		insert into hotplace (content_id, user_id)
 		values(#{content_id}, #{user_id});
 	</insert>
 	
@@ -128,5 +128,9 @@
 		where user_id = #{user_id};
 	</select>
 	
-
+	<select id="getUserLikedAttraction" parameterType="map" resultType="int">
+		select count(*)
+		from hotplace
+		where user_id = #{user_id} and content_id = #{content_id}
+	</select>
 </mapper>
