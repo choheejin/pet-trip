@@ -39,8 +39,8 @@ public class ConfirmInterceptor implements HandlerInterceptor {
 			String uri = request.getRequestURI().trim();
 
 			System.out.println("get메서드에서 인터셉터 작");
-
-			if (!uri.equalsIgnoreCase("/pet/user/info")) {
+			
+			if(!getPatterns.contains(uri)) {
 				return true;
 			}
 		}

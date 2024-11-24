@@ -1,29 +1,27 @@
 package com.ssafy.pet.model.service.travelplan;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.pet.config.PaginationConstants;
-import com.ssafy.pet.dto.PlansFavoritesDto;
+import com.ssafy.pet.dto.ProfileImageDto;
 import com.ssafy.pet.dto.TravelPlanCommentsDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
+import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.exception.errorcode.TravelPlanErrorCode;
 import com.ssafy.pet.model.mapper.AttractionMapper;
 import com.ssafy.pet.model.mapper.TravelPlanMapper;
 import com.ssafy.pet.model.mapper.UserMapper;
-import com.ssafy.pet.model.service.attraction.AttractionService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -149,11 +147,21 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	public Optional<Map<String, Object>> findPlanWithItemsById(int id) {
 		TravelPlansDto plan = travelPlanMapper.findPlanById(id);
 		String userId = userMapper.findUserIdById(plan.getUser_id());
+		
+		UsersDto userInfo = userMapper.userInfo(userId);
+		ProfileImageDto profileInfo = userMapper.getProfileImageByUserId(userInfo.getId());
 		List<Map<String, Object>> items = travelPlanMapper.findItemById(id);
+
+		
+		Map<String, Object> userMap = new HashMap<>();
+		userMap.put("user_id", userInfo.getUser_id());
+		if(profileInfo != null) {
+			userMap.put("profile_path", profileInfo.getFile_path());
+		}
 		
 		Map<String, Object> resultMap = new HashMap<>();
 		
-		resultMap.put("user_id", userId);
+		resultMap.put("userInfo", userMap);
 		resultMap.put("plan", plan);
 		resultMap.put("items", items);
 
@@ -262,5 +270,13 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	@Override
 	public int deleteComment(int comment_pk) {
 		return travelPlanMapper.deleteComment(comment_pk);
+	}
+	
+	@Override
+	public boolean getUserLikedPlan(String user_id, int plan_id) {
+		int user_pk = userMapper.findIdByUserId(user_id);
+		int cnt = travelPlanMapper.getUserLikedPlan(user_pk, plan_id);
+		System.out.println(user_pk + ":" + cnt);
+		return cnt != 0;
 	}
 }

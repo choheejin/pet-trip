@@ -36,7 +36,7 @@ const router = createRouter({
       path: "/planDetail",
       name: "PlanDetail",
       component: BoardTravelPlanDetail,
-      meta: {requiresAuth: false}
+      meta: { requiresAuth: false },
     },
     {
       path: "/review",

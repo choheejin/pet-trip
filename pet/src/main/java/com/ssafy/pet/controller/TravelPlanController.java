@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -55,7 +56,7 @@ public class TravelPlanController {
 	private final TravelPlanService travelPlanService;
 	private final AttractionService attracionService;
 	private final UserHelperService userHelperService;
-	
+
 	@GetMapping("/naver-map")
 	public ResponseEntity<?> getNaverMap(@RequestParam(value = "start") String start,
 			@RequestParam(value = "goal") String goal, @RequestParam(value = "waypoints") String waypoints) {
@@ -80,11 +81,19 @@ public class TravelPlanController {
 	}
 
 	@GetMapping("/{plan_id}")
-	public ResponseEntity<?> getPlanById(@PathVariable("plan_id") Integer plan_id) {
+	public ResponseEntity<?> getPlanById(
+			@RequestHeader(value = "accessToken", required = false) Optional<String> header,
+			@PathVariable("plan_id") Integer plan_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
 
 		Map<String, Object> resultMap = travelPlanService.findPlanWithItemsById(plan_id)
 				.orElseThrow(() -> new RuntimeException());
+		
+		if(!header.isEmpty()) {
+			String user_id = jwtUtil.getUserId(header.get());
+			boolean isLiked = travelPlanService.getUserLikedPlan(user_id, plan_id);
+			resultMap.put("isLiked", isLiked);
+		}
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
@@ -94,7 +103,6 @@ public class TravelPlanController {
 			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value = "sort", required = false, defaultValue = "oldest") String sort,
 			@RequestHeader(value = "accessToken", required = false) String header) {
-
 
 		int page_start = UtilClass.caculateOffest(page);
 		List<TravelPlansDto> sortedPlan = travelPlanService.getPlansBySort(sort, page_start,
@@ -106,17 +114,15 @@ public class TravelPlanController {
 
 		UserPlansResponseDto res = new UserPlansResponseDto();
 
-		if(header != null && !header.isEmpty())
-		{
+		if (header != null && !header.isEmpty()) {
 			int id = userHelperService.getUserIdFromHeader(header);
 			boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, id);
-			res.setFavoritePlans(userFavoriteStatus);			
+			res.setFavoritePlans(userFavoriteStatus);
+		} else {
+			boolean[] defaultFavoriteStatus = new boolean[PaginationConstants.PAGE_SIZE];
+			res.setFavoritePlans(defaultFavoriteStatus);
 		}
-		else {
-			 boolean[] defaultFavoriteStatus = new boolean[PaginationConstants.PAGE_SIZE];
-		     res.setFavoritePlans(defaultFavoriteStatus);
-		}
-		
+
 		res.setPlans(sortedPlan);
 		res.setTotal_pages(total_pages);
 
@@ -177,10 +183,10 @@ public class TravelPlanController {
 
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
-	
+
 	@PostMapping("/add-user-favorite-plan")
-	public ResponseEntity<?> addUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
-	{
+	public ResponseEntity<?> addUserFavoritePlan(@RequestHeader("accessToken") String header,
+			@RequestParam(value = "plan_id") int plan_id) {
 		int id = userHelperService.getUserIdFromHeader(header);
 		HttpStatus status = HttpStatus.ACCEPTED;
 		log.trace("addUserFavoritePlan : {}", plan_id);
@@ -190,32 +196,32 @@ public class TravelPlanController {
 		if (res <= 0) {
 			throw new RuntimeException();
 		}
-		
+
 		status = HttpStatus.CREATED;
-		
+
 		return ResponseEntity.ok(status);
 	}
-	
+
 	@DeleteMapping("/delete-user-favorite-plan")
-	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header, @RequestParam(value="plan_id") int plan_id)
-	{
+	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header,
+			@RequestParam(value = "plan_id") int plan_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
 
 		//log.trace("addUserFavoritePlan : {}",pf);	
 
 		int id = userHelperService.getUserIdFromHeader(header);
-		
+
 		int res = travelPlanService.deleteFavoritePlan(id, plan_id);
 
 		if (res <= 0) {
 			throw new RuntimeException();
 		}
-		
+
 		status = HttpStatus.NO_CONTENT;
-		
-		return ResponseEntity.ok(status);	
+
+		return ResponseEntity.ok(status);
 	}
-	
+
 	@GetMapping("/user-plan")
 	@ResponseBody
 	public ResponseEntity<List<TravelPlansDto>> userPlan(@RequestHeader("accessToken") String header) {
@@ -223,7 +229,7 @@ public class TravelPlanController {
 		int id = userHelperService.getUserIdFromHeader(header);
 
 		List<TravelPlansDto> result = travelPlanService.getUserPlans(id);
-		
+
 		attracionService.setPlanImage(result);
 
 		return ResponseEntity.ok(result);
@@ -236,7 +242,7 @@ public class TravelPlanController {
 		int id = userHelperService.getUserIdFromHeader(header);
 
 		List<TravelPlansDto> result = travelPlanService.getUserFavoritePlans(id);
-		
+
 		attracionService.setPlanImage(result);
 
 		return ResponseEntity.ok(result);

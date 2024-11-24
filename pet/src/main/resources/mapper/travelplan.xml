@@ -159,6 +159,11 @@
 		delete from plans_favorites
 		where plan_id=#{plan_id} and user_id=#{user_id}
 	</delete>
-
+	
+	<select id="getUserLikedPlan" parameterType="map" resultType="int">
+		select count(*)
+		from plans_favorites
+		where user_id=#{user_id} and plan_id=#{plan_id}
+	</select>
 </mapper>
 
