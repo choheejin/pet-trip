@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.ssafy.pet.dto.PlansFavoritesDto;
+import com.ssafy.pet.dto.TravelPlanCommentsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 
 public interface TravelPlanService {
@@ -40,7 +41,8 @@ public interface TravelPlanService {
 	List<TravelPlansDto> getUserFavoritePlans(int user_id);
 	
 	//게시글의 댓글 조회
-	List<String> getComments(int plan_id);
+	//List<String> getComments(int plan_id);
+	List<TravelPlanCommentsDto> getComments(int plan_id);
 	
 	//정렬 타입별 게시글 조회
 	List<TravelPlansDto> getPlansBySort(String sort, int page_start, int page_size);

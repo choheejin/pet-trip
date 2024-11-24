@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ssafy.pet.dto.PlansFavoritesDto;
+import com.ssafy.pet.dto.TravelPlanCommentsDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 
@@ -38,7 +39,8 @@ public interface TravelPlanMapper {
 	List<TravelPlansDto> getPlansByMostViews(@Param("page_start") int page_start, @Param("page_size") int page_size);
 	
 	//게시글의 댓글 조회
-	List<String> getComments(int plan_id);
+	//List<String> getComments(int plan_id);
+	List<TravelPlanCommentsDto> getComments(int plan_id);
 	
 	//유저가 게시한 게시글 조회
 	List<TravelPlansDto> getUserPlans(int user_id);

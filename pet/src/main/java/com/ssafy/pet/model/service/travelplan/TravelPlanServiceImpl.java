@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.PlansFavoritesDto;
+import com.ssafy.pet.dto.TravelPlanCommentsDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.exception.ApplicationException;
@@ -177,7 +178,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public List<String> getComments(int plan_id) {
+	public List<TravelPlanCommentsDto> getComments(int plan_id) {
 		return travelPlanMapper.getComments(plan_id);
 	}
 

@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.pet.config.PaginationConstants;
+import com.ssafy.pet.dto.TravelPlanCommentsDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UserPlansResponseDto;
@@ -119,8 +120,8 @@ public class TravelPlanController {
 
 	@GetMapping("/comments")
 	@ResponseBody
-	public ResponseEntity<List<String>> getComments(@RequestParam(value = "plan_id") int plan_id) {
-		List<String> comments = new ArrayList<>();
+	public ResponseEntity<List<TravelPlanCommentsDto>> getComments(@RequestParam(value = "plan_id") int plan_id) {
+		List<TravelPlanCommentsDto> comments = new ArrayList<>();
 
 		comments = travelPlanService.getComments(plan_id);
 
@@ -184,7 +185,9 @@ public class TravelPlanController {
 	public ResponseEntity<?> deleteUserFavoritePlan(@RequestHeader("accessToken") String header,
 			@RequestParam(value = "plan_id") int plan_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
-		log.trace("addUserFavoritePlan : {}",pf);
+		
+		//log.trace("addUserFavoritePlan : {}",pf);
+		
 		int id = userHelperService.getUserIdFromHeader(header);
 
 		int res = travelPlanService.deleteFavoritePlan(id, plan_id);

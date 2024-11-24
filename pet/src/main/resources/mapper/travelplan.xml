@@ -106,7 +106,7 @@
 		</if>
 	</select>
 
-	<select id="getComments" parameterType="int" resultType="String">
+	<select id="getComments" parameterType="int" resultType="TravelPlanCommentsDto">
 		WITH
 		RECURSIVE CommentHierarchy AS (
 		SELECT
@@ -137,7 +137,7 @@
 		ON c.parent_comment_id = h.comment_id
 		)
 
-		SELECT comment
+		SELECT *
 		FROM CommentHierarchy
 		WHERE plan_id = #{plan_id}
 		ORDER BY
