@@ -16,6 +16,7 @@ const selectAttraction = ref(null); // 상세 보기의 값
 
 /* ================상세보기START================ */
 const showDetail = ref(false);
+const detailInfo = ref({});
 
 const setShowDetail = (isShowed) => {
   showDetail.value = isShowed;
@@ -26,6 +27,17 @@ const selected = (attraction) => {
   setShowDetail(true);
   isCartShowed.value = false;
   selectAttraction.value = attraction;
+  getSelectDetail();
+};
+
+const getSelectDetail = async () => {
+  const params = {
+    contentId: selectAttraction.value.content_id,
+    contentTypeId: selectAttraction.value.content_type_id,
+  };
+  const { data } = await attractionApi.get("/openapi-detail", { params });
+  console.log(data);
+  detailInfo.value = data.response.body.items.item[0];
 };
 
 /* ================상세보기END================*/
@@ -180,12 +192,45 @@ const getAttractions = async () => {
     attractionMarker.value = [];
   }
 
-  attractions.value.forEach((item) => {
+  attractions.value.forEach((item, idx) => {
     attractionMarker.value.push(
       new naver.maps.Marker({
         position: new naver.maps.LatLng(item.latitude, item.longitude),
         map: map.value,
       })
+    );
+    console.log("마커 클릭 함수 넣기 진행중");
+    console.log(attractions.value);
+    naver.maps.Event.addListener(
+      attractionMarker.value[idx],
+      "click",
+      function (e) {
+        if (
+          showDetail.value &&
+          selectAttraction.value.id == attractions.value[idx].id
+        ) {
+          setShowDetail(false);
+          return;
+        }
+        setShowDetail(true);
+        selectAttraction.value = attractions.value[idx];
+      }
+    );
+
+    naver.maps.Event.addListener(
+      attractionMarker.value[idx],
+      "mouseover",
+      function (e) {
+        const contentString = `      <div>
+        <div>${attractions.value[idx].title}</div>
+      </div>
+`;
+        console.log("마우스 오버");
+        var infowindow = new naver.maps.InfoWindow({
+          content: contentString,
+        });
+        infowindow.open(map.value, attractionMarker.value[idx]);
+      }
     );
   });
 
@@ -276,7 +321,7 @@ watch(
       ),
     });
 
-    attraction.map((item, idx) =>
+    attraction.map((item, idx) => {
       marker.value.push(
         new naver.maps.Marker({
           position: new naver.maps.LatLng(item.latitude, item.longitude),
@@ -322,8 +367,8 @@ watch(
             anchor: new naver.maps.Point(17, 32),
           },
         })
-      )
-    );
+      );
+    });
 
     if (attraction.length == 0) {
       map.value.setCenter(new naver.maps.LatLng(36.8057, 128.6243));
@@ -503,6 +548,7 @@ onMounted(() => {
       <div class="detail-side" v-if="showDetail">
         <MapDetail
           :attraction="selectAttraction"
+          :detail-info="detailInfo"
           @set-show-detail="setShowDetail"
           @add-cart-item="selectCartItem"
         />
