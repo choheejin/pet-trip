@@ -68,4 +68,7 @@ public interface TravelPlanService {
 	
 	//유저가 좋아요 누른 게시글 상태 계산
 	boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, int user_id);
+	
+	//유저가 특정 게시글을 좋아요를 눌렀었는지 확인
+	boolean getUserLikedPlan(String user_id, int plan_id);
 }

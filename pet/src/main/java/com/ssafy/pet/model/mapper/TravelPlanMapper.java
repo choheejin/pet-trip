@@ -70,4 +70,7 @@ public interface TravelPlanMapper {
 	int deleteFavoritePlan(@Param("user_id") int user_id, @Param("plan_id") int favorite_plan_id);
 	
 	List<Map<String, Object>> findItemById(int id);
+	
+	//유저가 특정 게시글을 좋아요를 눌렀었는지 확인
+	int getUserLikedPlan(@Param("user_id") int user_id, @Param("plan_id") int plan_id);
 }
