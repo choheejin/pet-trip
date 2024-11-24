@@ -90,6 +90,9 @@ onMounted(() => {
           <li class="nav-item">
             <a class="nav-link" href="/map">지도</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/review">후기</a>
+          </li>
         </ul>
 
         <!-- 오른쪽 메뉴 -->
@@ -151,11 +154,13 @@ onMounted(() => {
 .navbar-nav {
   display: flex;
   justify-content: center;
+
 }
 
 .navbar-nav .nav-link {
   margin: 0 10px;
   font-size: 1rem;
+
   color: #333;
 }
 

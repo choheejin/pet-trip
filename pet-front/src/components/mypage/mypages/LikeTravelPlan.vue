@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import myPageApi from "@/api/myPageApi.js";
+import router from "@/router/index.js";
 
 const plans = ref([]);
 const page = ref(1); // 현재 페이지 번호
@@ -40,6 +41,10 @@ const loadMore = () => {
   getPlans();
 };
 
+const travelPlanReview = (plan_id, plan_title) => {
+  console.log("리뷰 작성할 여행 계획 : ", plan_title)
+  router.push({name:"PlanReviewWrite", params: {plan_id}, query: { plan_title}});
+}
 // 컴포넌트가 마운트될 때 초기 데이터 로드
 onMounted(() => {
   getPlans(); // 초기 데이터 불러오기
@@ -61,6 +66,11 @@ onMounted(() => {
             backgroundImage: `url(${plan.image ? plan.image : defaultImg})`,
           }"
         ></div>
+        <div class="review">
+          <!--  리뷰 작성으로 넘어가는 버튼 -->
+          <i class="fa-regular fa-pen-to-square"
+          @click="travelPlanReview(plan.id, plan.title)"></i>
+        </div>
         <div class="card-title">
           <div>{{ plan.title }}</div>
         </div>
@@ -120,7 +130,17 @@ onMounted(() => {
   position: relative;
   filter: brightness(50%);
 }
-
+.review {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+}
+.review:hover {
+  color: #5995ff;
+}
 .card-title {
   position: absolute;
   bottom: 10px;

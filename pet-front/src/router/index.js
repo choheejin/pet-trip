@@ -7,6 +7,9 @@ import PostTravelPlan from "@/components/mypage/mypages/PostTravelPlan.vue";
 import LikeAttractions from "@/components/mypage/mypages/LikeAttractions.vue";
 import LikeTravelPlan from "@/components/mypage/mypages/LikeTravelPlan.vue";
 import BoardTravelPlanDetail from "@/components/board/BoardTravelPlanDetail.vue";
+import ThePlanReview from "@/views/ThePlanReview.vue";
+import PlanReviewWrite from "@/components/review/PlanReviewWrite.vue";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +39,12 @@ const router = createRouter({
       meta: {requiresAuth: false}
     },
     {
+      path: "/review",
+      name: "Review",
+      component: ThePlanReview,
+      meta: {requiresAuth: false}
+    },
+    {
       path: "/mypage",
       name: "MyPage",
       redirect: "/post-travel-plan", // 기본 active router
@@ -62,6 +71,12 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/plan-review-write/:plan_id",
+      name: "PlanReviewWrite",
+      component: PlanReviewWrite,
+      meta: {requiresAuth: true}
+    }
   ],
 });
 

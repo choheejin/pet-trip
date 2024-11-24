@@ -166,8 +166,11 @@ getUserInfo();
   top: 5px;
   right: 10px;
   color: rgb(247, 67, 97);
-  font-size: 30px;
+  font-size: 20px;
   cursor: pointer;
+}
+.heart:hover {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .card-title {
