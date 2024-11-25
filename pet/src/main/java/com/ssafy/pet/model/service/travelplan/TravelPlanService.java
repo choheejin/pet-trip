@@ -21,6 +21,8 @@ public interface TravelPlanService {
 	
 	Optional<Integer> updateItem(Map<String, Object> parmas);
 	
+	Optional<Integer> delete(int plan_id);
+	
 	TravelPlansDto findPlanByIdAndUserId(int id, String userId);
 	
 	Optional<Map<String, Object>> findPlanWithItemsById(int id); 
