@@ -127,6 +127,7 @@ public class TravelPlanController {
 		res.setPlans(sortedPlan);
 		res.setTotal_pages(total_pages);
 
+		
 		return ResponseEntity.ok(res);
 	}
 

@@ -88,6 +88,12 @@ public class UserServiceImpl implements UserService {
 		System.out.println("updateProfileImage 서비스 후");
 		return cnt != 0 ? Optional.of(cnt) : Optional.empty();
 	}
+	
+	@Override
+	public Optional<Integer> updatePassword(int user_id, String password) {
+		int cnt = userMapper.updatePassword(user_id, password);
+		return cnt > 0 ? Optional.of(cnt) : Optional.empty();
+	}
 
 	@Override
 	public ProfileImageDto getProfileImageByUserId(int user_id) {
