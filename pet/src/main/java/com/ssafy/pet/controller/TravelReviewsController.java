@@ -7,6 +7,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
@@ -54,7 +55,7 @@ public class TravelReviewsController {
 		// 파일 저장 경로 설정
 	    String directory = "src/main/resources/upload/reviews/";
 	    String originalFileName = file.getOriginalFilename();
-	    String fileName = plan_id + "_" + originalFileName + "_" +
+	    String fileName = plan_id + "_" + originalFileName.substring(0, originalFileName.lastIndexOf(".")) + "_" +
 	            LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".jpg";
 	    
 	    File reviewDirectory = new File(directory + review_id);
@@ -118,69 +119,63 @@ public class TravelReviewsController {
 		}
 	}
 
-	// 리뷰 전체 조회
+	// 리뷰 전체 조회 
 	@GetMapping
-	public ResponseEntity<?> getReviews(@RequestParam(defaultValue = "date", required=false) String orderBy,
-			@RequestParam(required = false) Integer dog_size) {
-		try {
-			List<TravelReviewsDto> reviews = travelReviewsService.getReviews(dog_size, orderBy);
-			
-			return ResponseEntity.ok(reviews);
-		} catch (Exception e) {
-			log.error("Error fetching reviews: {}", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-		}
+	public ResponseEntity<?> getReviewsWithThumbnail(@RequestParam(defaultValue = "date", required=false) String orderBy,
+	                                     @RequestParam(required = false) Integer dog_size) {
+	    try {
+	        List<Map<String, Object>> reviews = travelReviewsService.getReviewsWithThumbnail(dog_size, orderBy);
+	        return ResponseEntity.ok(reviews);
+	    } catch (Exception e) {
+	        log.error("Error fetching reviews: {}", e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
+	    }
 	}
-
+	
+	
+	// 리뷰 상세 조회 - 이미지 전부 가져오기
+	@GetMapping("/detail/{review_id}/images")
+    public List<String> getReviewImages(@PathVariable int review_id) {
+        // ReviewService의 getReviewImages 메서드를 호출하여 이미지 리스트 반환
+        return travelReviewsService.getReviewImages(review_id);
+    }
+	
 	// 리뷰 상세 조회
-	@GetMapping("/{review_id}")
-	public ResponseEntity<?> getReviewDetails(@PathVariable int review_id) {
-		try {
-			TravelReviewsDto reviewDetails = travelReviewsService.getReviewDetails(review_id);
-			return ResponseEntity.ok(reviewDetails);
-		} catch (Exception e) {
-			log.error("Error fetching review details: {}", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-		}
-	}
+	@GetMapping("/detail/{id}")
+    public TravelReviewsDto getReviewDetail(@PathVariable("id") int id) {
+        return travelReviewsService.getReviewDetail(id);
+    }
+	
+	// 좋아요 추가
+    @PostMapping("/like/{id}")
+    public ResponseEntity<String> incrementFavoriteCount(
+            @RequestHeader("accessToken") String header,
+            @PathVariable("id") int id) {
+        
+        // 헤더에서 user_id 추출
+        int userId = userHelperService.getUserIdFromHeader(header);
 
-	// 리뷰 상세 조회 - 이미지 가져오기
-	@GetMapping("/{review_id}/images")
-	public ResponseEntity<?> getReviewDetailImages(@PathVariable int review_id) {
-		try {
-			List<ReviewImagesDto> images = travelReviewsService.getReviewDetailImages(review_id);
-			return ResponseEntity.ok(images);
-		} catch (Exception e) {
-			log.error("Error fetching review images: {}", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-		}
-	}
+        // 서비스 호출
+        travelReviewsService.addFavorite(userId, id);
 
-	// 리뷰 수정
-	@PutMapping("/{review_id}")
-	public ResponseEntity<?> updateReview(@PathVariable int review_id, @RequestBody TravelReviewsDto reviewDto) {
-		try {
-			reviewDto.setId(review_id);
-			Optional<Integer> updatedId = travelReviewsService.updateReview(reviewDto);
-			return updatedId.isPresent() ? ResponseEntity.ok("Review updated successfully")
-					: ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Review update failed");
-		} catch (Exception e) {
-			log.error("Error updating review: {}", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-		}
-	}
+        return ResponseEntity.ok("Favorite added successfully!");
+    }
 
-	// 리뷰 삭제
-	@DeleteMapping("/{reviewId}")
-	public ResponseEntity<?> deleteReview(@PathVariable int reviewId) {
-		try {
-			Optional<Integer> deletedId = travelReviewsService.deleteReview(reviewId);
-			return deletedId.isPresent() ? ResponseEntity.ok("Review deleted successfully")
-					: ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Review deletion failed");
-		} catch (Exception e) {
-			log.error("Error deleting review: {}", e.getMessage());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error");
-		}
-	}
+    // 좋아요 취소
+    @DeleteMapping("/like/{id}")
+    public ResponseEntity<String> decrementFavoriteCount(
+            @RequestHeader("accessToken") String header,
+            @PathVariable("id") int id) {
+        
+        // 헤더에서 user_id 추출
+        int userId = userHelperService.getUserIdFromHeader(header);
+
+        // 서비스 호출
+        travelReviewsService.removeFavorite(userId, id);
+
+        return ResponseEntity.ok("Favorite removed successfully!");
+    }
+	
+
 
 }

@@ -1,47 +1,100 @@
 <script setup>
 import { useRoute } from 'vue-router';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import reviewApi from "@/api/reviewApi.js";
+import axios from "axios";
+import {useAuthStore} from "@/stores/user.js";
+
+// 기본 이미지 경로 설정
+const defaultImg = 'http://localhost:8080/pet/default.jpg'; // 기본 이미지 경로
 
 // useRoute()를 이용하여 라우트 객체를 가져오고, plan_id를 추출합니다.
 const route = useRoute();
-const planId = ref(route.params.plan_id);  // 동적 파라미터 plan_id를 받아옵니다.
+const id = ref(route.query.id);
+const review = ref(null);
+const reviewImages = ref([]);
+const isReady = ref(false);
+const users = useAuthStore();
 
-// travel_reviews 데이터 (샘플 데이터로 가정)
-const review = ref({
-  review_id: 1,
-  title: '환상적인 여행지!',
-  content: '이곳은 정말 멋진 곳입니다. 자연 경관과 함께 즐길 수 있는 활동들이 많아서 좋았습니다.',
-  rating: 5,
-  created_at: '2024-11-24',
+// 리뷰 데이터 가져오기
+const getReview = async () => {
+  const {data} = await reviewApi.get(`/detail/${id.value}`);
+  review.value = data;
+};
+
+// 리뷰 이미지 가져오기
+const getReviewImages = async () => {
+  const {data} = await reviewApi.get(`/detail/${id.value}/images`);
+  reviewImages.value = data;
+};
+
+// 리뷰 좋아요 누르기
+const addLike = async (reviewId) => {
+  try {
+    const { data } = await reviewApi.post(
+      `/like/${reviewId}`,
+      {}, // POST 요청 body는 빈 객체로 전달
+      {
+        headers: {
+          accessToken: users.token, // 사용자 토큰을 헤더에 포함
+        },
+      }
+    );
+    console.log('좋아요 추가 성공:', data);
+  } catch (error) {
+    console.error('좋아요 추가 실패:', error.response ? error.response.data : error.message);
+  }
+};
+
+// 리뷰 좋아요 취소하기
+const deleteLike = async (reviewId) => {
+  try {
+    const { data } = await reviewApi.delete(`/like/${reviewId}`, {
+      headers: {
+        accessToken: users.token, // 사용자 토큰을 헤더에 포함
+      },
+    });
+    console.log('좋아요 취소 성공:', data);
+  } catch (error) {
+    console.error('좋아요 취소 실패:', error.response ? error.response.data : error.message);
+  }
+};
+
+// 컴포넌트 마운트 후 데이터 가져오기
+onMounted(async () => {
+  await getReview();
+  await getReviewImages();
 });
-
-// review_images 데이터 (샘플 이미지 데이터로 가정)
-const reviewImages = ref([
-  { image_url: 'https://via.placeholder.com/600x400', description: '여행지 전경' },
-  { image_url: 'https://via.placeholder.com/600x400', description: '맛있는 음식' },
-]);
 </script>
 
 <template>
-  <div style="display: flex; align-items: center; flex-direction: column;">
+  <div v-if="review">
     <div class="write-box">
-      <h1>여행 계획 ID: {{ planId }}</h1>
+      <h1>{{ review.id }}</h1>
       <h2>{{ review.title }}</h2>
-      <p><strong>작성일:</strong> {{ review.created_at }}</p>
-      <p><strong>평점:</strong> {{ review.rating }} / 5</p>
       <p>{{ review.content }}</p>
+    </div>
 
-      <!-- 이미지 갤러리 -->
-      <div class="image-gallery">
-        <h3>이미지 갤러리</h3>
-        <div class="images">
-          <div v-for="(image, index) in reviewImages" :key="index" class="image-item">
-            <img :src="image.image_url" :alt="image.description" />
-            <p>{{ image.description }}</p>
-          </div>
+    <!-- 이미지 갤러리 -->
+    <div class="image-gallery">
+      <div class="images">
+        <div v-for="(image, index) in reviewImages" :key="index" class="image-item">
+          <!-- 이미지 경로 설정 -->
+          <img
+            :src="`url(${
+              review.stored_name
+                ? 'http://localhost:8080/pet/reviews/' + review.id + '/' + review.stored_name
+                : defaultImg
+            })`"
+            :alt="'Image ' + (index + 1)"
+          />
+          <p>{{ image.description || 'No description' }}</p>
         </div>
       </div>
     </div>
+  </div>
+  <div v-else>
+    <p>로딩 중...</p>
   </div>
 </template>
 
@@ -69,6 +122,7 @@ h3 {
   color: #555;
 }
 
+/* 이미지 갤러리 스타일 */
 .image-gallery {
   width: 100%;
   margin-top: 20px;
@@ -77,21 +131,44 @@ h3 {
 .images {
   display: flex;
   gap: 20px;
-  flex-wrap: wrap;
+  overflow-x: auto; /* 가로로 스크롤 가능하도록 */
+  padding-bottom: 10px;
 }
 
 .image-item {
+  flex-shrink: 0; /* 크기가 고정되도록 */
   width: 300px;
   text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .image-item img {
   width: 100%;
+  height: auto;
   border-radius: 8px;
 }
 
 .image-item p {
   margin-top: 10px;
   color: #777;
+  font-size: 0.9rem;
+}
+
+/* 스크롤 바 스타일 */
+.images::-webkit-scrollbar {
+  height: 8px;
+}
+
+.images::-webkit-scrollbar-thumb {
+  background-color: #aaa;
+  border-radius: 4px;
+}
+
+.images::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
 }
 </style>

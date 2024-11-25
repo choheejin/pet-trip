@@ -9,6 +9,7 @@ import LikeTravelPlan from "@/components/mypage/mypages/LikeTravelPlan.vue";
 import BoardTravelPlanDetail from "@/components/board/BoardTravelPlanDetail.vue";
 import ThePlanReview from "@/views/ThePlanReview.vue";
 import PlanReviewWrite from "@/components/review/PlanReviewWrite.vue";
+import PlanReviewDetail from "@/components/review/PlanReviewDetail.vue";
 
 
 const router = createRouter({
@@ -42,6 +43,12 @@ const router = createRouter({
       path: "/review",
       name: "Review",
       component: ThePlanReview,
+      meta: {requiresAuth: false}
+    },
+    {
+      path: "/review-detail",
+      name: "ReviewDetail",
+      component: PlanReviewDetail,
       meta: {requiresAuth: false}
     },
     {

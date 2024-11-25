@@ -1,6 +1,7 @@
 package com.ssafy.pet.model.service.travelreviews;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -28,31 +29,33 @@ public class TravelReviewsServiceImpl implements TravelReviewsService {
         return cnt != 0 ? Optional.of(cnt) : Optional.empty();
     }
 
-	@Override
-	public List<TravelReviewsDto> getReviews(Integer dog_size, String orderBy) {
-		return travelReviewsMapper.getReviews(orderBy, dog_size);
-	}
 
 	@Override
-	public TravelReviewsDto getReviewDetails(int reviewId) {
-		return travelReviewsMapper.getReviewDetails(reviewId);
+	public List<Map<String, Object>> getReviewsWithThumbnail(Integer dog_size, String orderBy) {
+	    return travelReviewsMapper.getReviewsWithThumbnail(dog_size, orderBy);
 	}
 	
 	@Override
-    public List<ReviewImagesDto> getReviewDetailImages(int reviewId) {
-        return travelReviewsMapper.getReviewDetailImages(reviewId);  // 이미지 목록 반환
+    public List<String> getReviewImages(int review_id) {
+        // ReviewMapper의 getReviewImages 메서드를 호출하여 이미지 리스트 반환
+        return travelReviewsMapper.getReviewImages(review_id);
     }
 
 	@Override
-	public Optional<Integer> updateReview(TravelReviewsDto reviewDto) {
-		int result = travelReviewsMapper.updateReview(reviewDto);
-		return result > 0 ? Optional.of(result) : Optional.empty();
-	}
-
+    public TravelReviewsDto getReviewDetail(int id) {
+		int cnt = travelReviewsMapper.incrementViewCount(id);
+		System.out.println("view_cnt 를 1 증가 : "+cnt);
+        return travelReviewsMapper.getReviewDetail(id);
+    }
+	
 	@Override
-	public Optional<Integer> deleteReview(int reviewId) {
-		int result = travelReviewsMapper.deleteReview(reviewId);
-		return result > 0 ? Optional.of(result) : Optional.empty();
-	}
+    public void addFavorite(int userId, int reviewId) {
+        travelReviewsMapper.insertFavorite(userId, reviewId);
+    }
+
+    @Override
+    public void removeFavorite(int userId, int reviewId) {
+        travelReviewsMapper.deleteFavorite(userId, reviewId);
+    }
 	
 }
