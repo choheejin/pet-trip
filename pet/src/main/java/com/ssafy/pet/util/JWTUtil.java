@@ -122,4 +122,21 @@ public class JWTUtil {
 				.signWith(SignatureAlgorithm.HS256, salt)
 				.compact();
 	}
+	
+	public boolean isPasswordResetToken(String token) {
+		try {
+			Claims claims = Jwts.parserBuilder()
+					.setSigningKey(this.generateKey())
+					.build()
+					.parseClaimsJws(token)
+					.getBody();
+			
+			String subject = claims.getSubject();
+			return "password-reset".equals(subject);
+		}
+		catch(Exception e)
+		{
+			return false;
+		}
+	}
 }

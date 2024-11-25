@@ -26,6 +26,9 @@ public interface UserMapper {
 	
 	// 정보 수정: username, email, pwd 한꺼번에 수정
 	int update(UsersDto user);
+	
+	//비밀번호 변경
+	int updatePassword(@Param("user_id") int user_id, @Param("password") String password);
 		
 	// 탈퇴
 	int deactivate(String user_id);
