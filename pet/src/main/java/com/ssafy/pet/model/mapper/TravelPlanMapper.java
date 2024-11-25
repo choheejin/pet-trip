@@ -23,6 +23,8 @@ public interface TravelPlanMapper {
 	
 	int updatePlanItem(Map<String, Object> param);
 	
+	int deletePlan(int plan_id);
+	
 	TravelPlansDto findPlanById(int id);
 	
 	TravelPlansDto findPlanByUserIdAndId(Map<String, Object> param);
