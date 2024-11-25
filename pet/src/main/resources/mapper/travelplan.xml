@@ -145,7 +145,10 @@
 	
 	<insert id="postComment" parameterType="TravelPlanCommentsDto">
 		insert into travel_plan_comments (plan_id, user_id, comment, created_at, updated_at, parent_comment_id)
-		values(#{plan_id}, #{user_id}, #{comment}, #{created_at}, #{updated_at}, #{parent_comment_id});
+		values(#{plan_id}, #{user_id}, #{comment}, now(), now(),
+		<if test="!parent_comment_id">null</if>
+		<if test="parent_comment_id">#{parent_comment_id}</if>
+		);
 	</insert>
 	
 	<delete id="deleteComment" parameterType="int">
