@@ -96,8 +96,8 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		param.put("plan", plan);
 		param.put("items", items);
 		
-		this.updatePlan(param).orElseThrow(() -> new RuntimeException());
-		this.updateItem(param).orElseThrow(() -> new RuntimeException());
+		this.updatePlan(param);
+		this.updateItem(param);
 
 		return Optional.of(1);
 	}
@@ -156,7 +156,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		Map<String, Object> userMap = new HashMap<>();
 		userMap.put("user_id", userInfo.getUser_id());
 		if(profileInfo != null) {
-			userMap.put("profile_path", profileInfo.getFile_path());
+			userMap.put("profile_path", profileInfo.getFile_path() + profileInfo.getStored_name());
 		}
 		
 		Map<String, Object> resultMap = new HashMap<>();
