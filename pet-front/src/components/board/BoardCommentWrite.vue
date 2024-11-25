@@ -2,42 +2,35 @@
 import travelplanApi from "@/api/travelplanApi";
 import { ref } from "vue";
 
-const props = defineProps(["plan_id"]);
+const props = defineProps(["plan_id", "parent_comment_id"]);
 const comment = ref("");
-const comments = ref([]);
-const parent_comment_id = ref(0);
 
 const handlePostComment = async () => {
   if (comment.value == "") return;
   const data = {
     plan_id: props.plan_id,
     comment: comment.value,
-    parent_comment_id: parent_comment_id.value,
+    parent_comment_id: props.parent_comment_id,
   };
 
-  await travelplanApi.post("/post-comment", data).then(() => {
-    comments.value.push(data); // 임의로 함 => 새로 댓글 가져오게 해야할듯
+  await travelplanApi.post("/post-comment", data).then((res) => {
+    if (res.status == 200) {
+      comment.value = "";
+    }
   });
 };
 </script>
 
 <template>
-  <div>
-    <div class="write-comment">
-      <textarea
-        name=""
-        id=""
-        v-model="comment"
-        placeholder="댓글을 작성하세요"
-      ></textarea>
-      <div class="submit">
-        <button @click="handlePostComment">댓글 작성</button>
-      </div>
-    </div>
-    <div>
-      <div v-for="item in comments">
-        {{ item.comment }}
-      </div>
+  <div class="write-comment">
+    <textarea
+      name=""
+      id=""
+      v-model="comment"
+      placeholder="댓글을 작성하세요"
+    ></textarea>
+    <div class="submit">
+      <button @click="handlePostComment">댓글 작성</button>
     </div>
   </div>
 </template>

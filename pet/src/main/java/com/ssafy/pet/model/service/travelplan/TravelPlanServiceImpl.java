@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.yaml.snakeyaml.tokens.CommentToken;
 
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.ProfileImageDto;
@@ -263,6 +264,10 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 
 	@Override
 	public int postComment(TravelPlanCommentsDto comment) {
+		if(comment.getParent_comment_id() != 0) {
+			int level = travelPlanMapper.getCommentLevelByParentId(comment.getParent_comment_id());
+			comment.setLevel(level + 1);
+		}
 		return travelPlanMapper.postComment(comment);
 	}
 

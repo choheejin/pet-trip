@@ -17,4 +17,5 @@ public class TravelPlanCommentsRequestDto {
 	private LocalDateTime created_at;
 	private LocalDateTime updated_at;
 	private int parent_comment_id;
+	private int level;
 }

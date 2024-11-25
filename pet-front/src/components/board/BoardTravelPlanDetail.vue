@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import travelplanApi from "@/api/travelplanApi.js";
 import BoardTravelPlanItemList from "./BoardTravelPlanItemList.vue";
 import { useAuthStore } from "@/stores/user";
-import BoardComment from "./BoardComment.vue";
+import BoardCommentWrite from "./BoardCommentWrite.vue";
+import BoardCommentList from "./BoardCommentList.vue";
 
 // 상세조회할 id
 const route = useRoute();
@@ -19,6 +20,7 @@ const writerInfo = ref({
   user_id: "",
   profile_path: "",
 });
+
 const comments = ref([]);
 
 const authStore = useAuthStore();
@@ -93,8 +95,25 @@ const handleLikeOrDisLike = debounce(() => {
   }
 }, 500);
 
+const getCommentList = async () => {
+  const params = {
+    plan_id: id,
+  };
+  await travelplanApi.get("/parent-comments", { params }).then((res) => {
+    comments.value = res.data;
+    comments.value.map((item) => {
+      return { id: item.id, isShow: false };
+    });
+  });
+};
+
+const totalComments = computed(() => {
+  return comments.value.length;
+});
+
 onMounted(() => {
   getDetail();
+  getCommentList();
 });
 </script>
 
@@ -163,7 +182,9 @@ onMounted(() => {
     </div>
 
     <div class="comment">
-      <BoardComment :plan_id="id" />
+      <BoardCommentWrite :plan_id="id" :parent_comment_id="0" />
+      <div class="strong">댓글 {{ totalComments }}개</div>
+      <BoardCommentList :plan_id="id" :comments="comments" />
     </div>
   </div>
 </template>

@@ -81,4 +81,7 @@ public interface TravelPlanMapper {
 	
 	//유저가 특정 게시글을 좋아요를 눌렀었는지 확인
 	int getUserLikedPlan(@Param("user_id") int user_id, @Param("plan_id") int plan_id);
+	
+	// 부모 댓글 id를 통해 부모의 level을 가져온다
+	int getCommentLevelByParentId(int parent_comment_id);
 }
