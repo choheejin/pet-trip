@@ -19,7 +19,7 @@ const addFavorite = async (param) => {
     };
     console.log("데이터 확인해보자!!! : ", data);
     // API 요청
-    await travelplanApi.post("/add-user-favorite-plan", data);
+    await travelplanApi.post(`/add-user-favorite-plan?plan_id=${data.plan_id}`);
 
     // 로컬 상태 업데이트
     const index = travelplans.value.findIndex(
@@ -42,7 +42,9 @@ const removeFavorite = async (param) => {
     };
     console.log("취소 데이터 확인해보자!!! : ", data);
     // API 요청
-    await travelplanApi.delete("/delete-user-favorite-plan", { data });
+    await travelplanApi.delete(
+      `/delete-user-favorite-plan?plan_id=${data.plan_id}`
+    );
 
     // 로컬 상태 업데이트
     const index = travelplans.value.findIndex(

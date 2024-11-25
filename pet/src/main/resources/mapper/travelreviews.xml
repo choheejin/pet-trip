@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.ssafy.pet.model.mapper.TravelReviewsMapper">
+	<insert id="saveReviewImage" parameterType="ReviewImagesDto">
+		insert into
+		review_images (
+		review_id, original_name, stored_name, file_path,
+		uploaded_at, is_thumbnail
+		)
+		values (
+		#{review_id}, #{original_name},
+		#{stored_name}, #{file_path}, #{uploaded_at},
+		#{is_thumbnail}
+		);
+	</insert>
+
+	<insert id="saveReview" parameterType="TravelReviewsDto">
+		insert into travel_reviews (
+		title, content, user_id, plan_id,
+		dog_size, is_public
+		) values (
+		#{title}, #{content}, #{user_id},
+		#{plan_id},
+		#{dog_size}, #{is_public}
+		);
+		<selectKey order="AFTER" keyProperty="id" keyColumn="id"
+			resultType="int">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+	</insert>
+	
+	
+	<resultMap id="ReviewWithThumbnailMap" type="TravelReviewsDto">
+        <id property="id" column="id"/>
+        <result property="plan_id" column="plan_id"/>
+        <result property="user_id" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="created_at" column="created_at"/>
+        <result property="updated_at" column="updated_at"/>
+        <result property="is_public" column="is_public"/>
+        <result property="view_cnt" column="view_cnt"/>
+        <result property="favorite_cnt" column="favorite_cnt"/>
+        <result property="dog_size" column="dog_size"/>
+        <result property="stored_name" column="stored_name"/>
+    </resultMap>
+
+    <select id="getReviews" resultMap="ReviewWithThumbnailMap">
+    SELECT 
+        a.*,
+        b.stored_name
+    FROM travel_reviews a
+    LEFT JOIN review_images b ON (a.id = b.review_id)
+    WHERE 
+        b.is_thumbnail = 1
+        <if test="dog_size != null">
+            AND a.dog_size = #{dog_size}
+        </if>
+    <!-- 정렬 조건 -->
+    <choose>
+        <when test="orderBy == 'date'">
+            ORDER BY a.updated_at DESC
+        </when>
+        <when test="orderBy == 'oldest'">
+            ORDER BY a.updated_at ASC
+        </when>
+        <when test="orderBy == 'view'">
+            ORDER BY a.view_cnt DESC
+        </when>
+        <when test="orderBy == 'favorite'">
+            ORDER BY a.favorite_cnt DESC
+        </when>
+        <otherwise>
+            ORDER BY a.updated_at DESC
+        </otherwise>
+    </choose>
+</select>
+
+</mapper>

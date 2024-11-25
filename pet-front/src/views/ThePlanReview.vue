@@ -1,100 +1,67 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import travelplanApi from "@/api/travelplanApi";
-import BoardSide from "@/components/board/BoardSide.vue";
-import BoardTravelPlan from "@/components/board/BoardTravelPlan.vue";
+import reviewApi from "@/api/reviewApi";
+import PlanReviewSide from "@/components/review/PlanReviewSide.vue";
 
 // 검색 결과
-const travelplans = ref([]);
-const favorites = ref([]);
-const page = ref(1);
-const sort = ref("");
+const travelreviews = ref([]);
+const loading = ref(false); // 로딩 중 상태
+const hasMore = ref(true); // 추가 데이터가 있는지 여부
+const page = ref(1); // 현재 페이지 번호
 
-// 좋아요 추가
-const addFavorite = async (param) => {
+// 정렬 조건과 강아지 크기
+const order_by = ref(""); // 정렬 조건
+const dog_size = ref(0); // 강아지 크기
+
+// 검색하기 - 정렬 조건 및 강아지 크기 필터링
+const getTravelReviewsBySorting = async () => {
+  console.log("조건 : ", {
+    order_by: order_by.value,
+    dog_size: dog_size.value,
+  });
   try {
-    const data = {
-      plan_id: param.plan_id,
-      user_id: param.user_id,
-    };
-    console.log("데이터 확인해보자!!! : ", data);
-    // API 요청
-    await travelplanApi.post("/add-user-favorite-plan", data);
-
-    // 로컬 상태 업데이트
-    const index = travelplans.value.findIndex(
-      (plan) => plan.id === param.plan_id
-    );
-    if (index !== -1) {
-      favorites.value[index] = true; // 좋아요로 업데이트
-    }
-  } catch (error) {
-    console.error("좋아요 요청 실패:", error);
-  }
-};
-
-// 좋아요 취소
-const removeFavorite = async (param) => {
-  try {
-    const data = {
-      plan_id: param.plan_id,
-      user_id: param.user_id,
-    };
-    console.log("취소 데이터 확인해보자!!! : ", data);
-    // API 요청
-    await travelplanApi.delete("/delete-user-favorite-plan", { data });
-
-    // 로컬 상태 업데이트
-    const index = travelplans.value.findIndex(
-      (plan) => plan.id === param.plan_id
-    );
-    if (index !== -1) {
-      favorites.value[index] = false; // 좋아요 취소로 업데이트
-    }
-  } catch (error) {
-    console.error("좋아요 취소 요청 실패:", error);
-  }
-};
-
-// 검색 하기 - 정렬 조건
-const getTravelPlansBySorting = async () => {
-  try {
-    const { data } = await travelplanApi.get("/plans", {
+    const { data } = await reviewApi.get("", {
       params: {
-        sort: sort.value,
-        page: page.value,
+        orderBy: order_by.value,
+        dog_size: dog_size.value,
       },
     });
-    console.log("정렬!!!", data);
-    travelplans.value = data.plans;
-    favorites.value = data.favoritePlans;
-    // console.log(sort.value, "조건으로 정렬된 계획 : ", travelplans.value);
+    console.log("조회 결과 : ", data);
+    if (data.length > 0) {
+      travelreviews.value = [...travelreviews.value, ...data]; // 기존 데이터에 새 데이터를 추가
+      page.value += 1; // 다음 페이지로 이동
+    } else {
+      hasMore.value = false; // 데이터가 더 이상 없으면 플래그 설정
+    }
   } catch (error) {
-    console.error("Error fetching travel plans:", error);
+    console.error("Error fetching travel reviews:", error);
+  } finally {
+    loading.value = false; // 로딩 종료
   }
 };
 
-// 페이지 네이션에서 페이지 변경 시 호출되는 함수
-const changePage = (newPage) => {
-  page.value = newPage;
-  // sort가 빈 값이면 오래된 순으로 getTravelPlansBySorting() 호출
-  if (sort.value === "") {
-    sort.value = "oldest";
-  }
-  // console.log("정렬 조건 주기:", sort.value);
-  getTravelPlansBySorting(); // 정렬된 목록 가져오기
-};
-
-// update-sort 이벤트를 받을 때 처리
+// update-sort 이벤트 처리
 const updateSort = (newSort) => {
-  sort.value = newSort;
-  // sort가 바뀔 때마다 changePage 호출하여 페이지를 초기화
-  changePage(1); // 정렬이 바뀌면 첫 페이지부터 다시 로드
+  order_by.value = newSort; // 정렬 조건 업데이트
+  getTravelReviewsBySorting(); // 검색 메서드 실행
+};
+
+// update-size 이벤트 처리
+const updateSize = (newSize) => {
+  dog_size.value = newSize; // 강아지 크기 업데이트
+  getTravelReviewsBySorting(); // 검색 메서드 실행
+};
+
+// 스크롤을 감지하여 데이터 로드하는 함수
+const loadMore = () => {
+  // 이미 로딩 중이거나 데이터가 더 이상 없으면 아무것도 하지 않음
+  if (loading.value || !hasMore.value) return;
+  getTravelReviewsBySorting();
 };
 
 // 처음 데이터 불러오기
 onMounted(async () => {
-  await getTravelPlansBySorting();
+  await getTravelReviewsBySorting();
 });
 </script>
 
@@ -102,64 +69,26 @@ onMounted(async () => {
   <div style="height: calc(100vh - 66px); display: flex; align-items: center">
     <div style="width: 1000px; margin: 0 auto; height: 100%; display: flex">
       <div class="left" style="width: 30%">
-        <BoardSide class="selectOption" @update-sort="updateSort" />
+        <PlanReviewSide
+          class="selectOption"
+          @update-sort="updateSort"
+          @update-size="updateSize"
+        />
       </div>
       <div class="right" style="width: 70%">
         <div style="height: 100%; display: flex; flex-direction: column">
           <h1>여기 후기 게시판으로 할거임</h1>
-          <div class="CardTravelPlan">
-            <!--        <h1>선택된 정렬 기준 : {{ sort }}</h1>-->
-            <BoardTravelPlan
-              :travelplans="travelplans"
-              :favorites="favorites"
-              @like="addFavorite"
-              @dislike="removeFavorite"
-            />
-          </div>
-
-          <!-- 페이지네이션 -->
-          <div class="pagination-group">
-            <nav aria-label="Page navigation example">
-              <ul class="pagination">
-                <li class="page-item" :class="{ disabled: page.value === 1 }">
-                  <a
-                    class="page-link"
-                    href="#"
-                    aria-label="Previous"
-                    @click.prevent="changePage(page.value - 1)"
-                  >
-                    <span aria-hidden="true">&laquo;</span>
-                    <span class="sr-only">Previous</span>
-                  </a>
-                </li>
-                <li class="page-item" :class="{ active: page.value === 1 }">
-                  <a class="page-link" href="#" @click.prevent="changePage(1)"
-                  >1</a
-                  >
-                </li>
-                <li class="page-item" :class="{ active: page.value === 2 }">
-                  <a class="page-link" href="#" @click.prevent="changePage(2)"
-                  >2</a
-                  >
-                </li>
-                <li class="page-item" :class="{ active: page.value === 3 }">
-                  <a class="page-link" href="#" @click.prevent="changePage(3)"
-                  >3</a
-                  >
-                </li>
-                <li class="page-item" :class="{ disabled: page.value === 3 }">
-                  <a
-                    class="page-link"
-                    href="#"
-                    aria-label="Next"
-                    @click.prevent="changePage(page.value + 1)"
-                  >
-                    <span aria-hidden="true">&raquo;</span>
-                    <span class="sr-only">Next</span>
-                  </a>
-                </li>
-              </ul>
-            </nav>
+          <div
+            class="CardTravelPlan"
+            v-infinite-scroll="loadMore"
+            :scroll-distance="100"
+            style="overflow-y: auto; height: 100%"
+          >
+            <div
+              v-for="review in travelreviews"
+              :key="review.id"
+              class="card"
+            ></div>
           </div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useAuthStore } from "@/stores/user.js";
 const userStore = useAuthStore();
 import { defineEmits } from "vue";
+import router from "@/router";
 
 const emit = defineEmits(["close", "login-success"]); // 이벤트를 부모 컴포넌트에 전달하기 위한 설정
 
@@ -10,7 +11,7 @@ const loginForm = ref({
   user_id: "",
   password: "",
 });
-console.log("로그아웃?? : ", useAuthStore().token);
+
 const login = async () => {
   try {
     // console.log("로그인 시도");
@@ -24,6 +25,8 @@ const login = async () => {
     alert("로그인 실패");
   }
 };
+
+const findPassword = () => {};
 </script>
 
 <template>
@@ -62,8 +65,9 @@ const login = async () => {
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-login">로그인</button>
-            <button type="button" class="btn btn-light">아이디 찾기</button>
-            <button type="button" class="btn btn-light">비밀번호 찾기</button>
+            <button @click="findPassword" type="button" class="btn btn-light">
+              비밀번호 찾기
+            </button>
           </div>
         </form>
       </div>

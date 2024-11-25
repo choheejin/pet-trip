@@ -20,6 +20,7 @@ const getPlans = async () => {
     const { data } = await myPageApi.get("/plan/user-plan", {
       params: { page: page.value, limit: 6 }, // 페이지네이션 매개변수 추가
     });
+    console.log("조회 결과 : ", data);
     if (data.length > 0) {
       plans.value = [...plans.value, ...data]; // 기존 데이터에 새 데이터를 추가
       page.value += 1; // 다음 페이지로 이동

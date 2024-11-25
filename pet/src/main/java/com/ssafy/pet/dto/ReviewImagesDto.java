@@ -12,5 +12,6 @@ public class ReviewImagesDto {
     private String stored_name;
     private String file_path;
     private LocalDateTime uploaded_at;
+    private boolean is_thumbnail;
 
 }
