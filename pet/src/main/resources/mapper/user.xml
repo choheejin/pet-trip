@@ -37,7 +37,7 @@
 		where user_id=#{user_id}
 	</update>
 
-	<select id="findIdByUserId" parameterType="string">
+	<select id="findIdByUserId" parameterType="string" resultType="int">
 		select id
 		from users
 		where user_id=#{user_id}

@@ -89,4 +89,24 @@ public class JWTUtil {
 		Map<String, Object> value = claims.getBody();
 		return (String) value.get("user_id");
 	}
+	
+	public int getUserPk(String authorization) {
+		Jws<Claims> claims = null;
+		
+		try {
+			claims = Jwts.parserBuilder().setSigningKey(this.generateKey()).build().parseClaimsJws(authorization);
+		} catch(ExpiredJwtException e) {
+			throw new ApplicationException(UserErrorCode.EXPIRED_JWT);
+		}
+		
+		Map<String, Object> value = claims.getBody();
+		
+		Object userPK = value.get("id");
+		
+		if(userPK == null) {
+			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
+		}
+		
+		return (int) userPK;
+	}
 }

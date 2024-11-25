@@ -66,16 +66,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<Boolean> findIdByUserId(String user_id) {
-		int cnt = 0;
+	public Optional<Integer> findIdByUserId(String user_id) {
+		Integer id = null;
 		
 		try {			
-			cnt = userMapper.findIdByUserId(user_id);
+			id = userMapper.findIdByUserId(user_id);
 		} catch(BindingException e) {
-			return Optional.of(true);
+			return Optional.empty();
 		}
 		
-		return cnt == 0 ? Optional.of(true) : Optional.empty();
+		return Optional.ofNullable(id);
 	}
 
 	@Override

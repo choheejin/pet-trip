@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.TravelPlanCommentsDto;
+import com.ssafy.pet.dto.TravelPlanCommentsRequestDto;
 import com.ssafy.pet.dto.PaginatedResponseDto;
 import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
@@ -41,6 +42,7 @@ import com.ssafy.pet.dto.UserPlansResponseDto;
 import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.model.service.travelplan.TravelPlanService;
 import com.ssafy.pet.model.service.user.UserHelperService;
+import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.UtilClass;
 
@@ -56,6 +58,7 @@ public class TravelPlanController {
 	private final TravelPlanService travelPlanService;
 	private final AttractionService attracionService;
 	private final UserHelperService userHelperService;
+	private final UserService userService;
 
 	@GetMapping("/naver-map")
 	public ResponseEntity<?> getNaverMap(@RequestParam(value = "start") String start,
@@ -250,9 +253,20 @@ public class TravelPlanController {
 	
 	@PostMapping("/post-comment")
 	@ResponseBody
-	public ResponseEntity<?> postComment(@RequestHeader("accessToken") String header, @RequestBody TravelPlanCommentsDto comment)
+	public ResponseEntity<?> postComment(@RequestHeader("accessToken") String header, @RequestBody TravelPlanCommentsRequestDto req_comment)
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		int user_pk = userService.findIdByUserId(req_comment.getUser_id()).get();
+		
+		TravelPlanCommentsDto comment = new TravelPlanCommentsDto();
+		comment.setId(req_comment.getId());
+		comment.setPlan_id(req_comment.getPlan_id());
+		comment.setUser_id(user_pk);
+		comment.setComment(req_comment.getComment());
+		comment.setCreated_at(req_comment.getCreated_at());
+		comment.setUpdated_at(req_comment.getUpdated_at());
+		comment.setParent_comment_id(req_comment.getParent_comment_id());
 		
 		int cnt = travelPlanService.postComment(comment);
 		
@@ -270,6 +284,14 @@ public class TravelPlanController {
 	public ResponseEntity<?> deleteComment(@RequestHeader("accessToken") String header, @RequestParam(value="comment_pk") int comment_pk)
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
+
+		//본인이 작성한 댓글만 삭제 가능하도록
+		int plan_user_pk = travelPlanService.findUserIdByCommentId(comment_pk);
+		int user_pk = userHelperService.getUserIdFromHeader(header);
+		
+		if(plan_user_pk != user_pk) {
+			return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
+		}
 		
 		int res = travelPlanService.deleteComment(comment_pk);
 		

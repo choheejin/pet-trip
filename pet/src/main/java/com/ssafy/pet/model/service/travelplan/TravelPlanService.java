@@ -52,6 +52,9 @@ public interface TravelPlanService {
 	
 	//댓글 삭제
 	int deleteComment(int comment_pk);
+	
+	//유저가 작성한 댓글인지 확인하기위해 comment_pk의 user_id 가져오기
+	int findUserIdByCommentId(int comment_pk);
 	////////////////////////////////////
 	
 	//정렬 타입별 게시글 조회

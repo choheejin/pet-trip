@@ -279,4 +279,10 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		System.out.println(user_pk + ":" + cnt);
 		return cnt != 0;
 	}
+
+
+	@Override
+	public int findUserIdByCommentId(int comment_pk) {
+		return travelPlanMapper.findUserIdByCommentId(comment_pk);
+	}
 }

@@ -19,7 +19,7 @@ public interface UserMapper {
 	UsersDto userInfo(String user_id);
 	
 	// 가입된 아이디인지 확인하기
-	int findIdByUserId(String user_id);
+	Integer findIdByUserId(String user_id);
 	
 	// 정보 수정: username, email, pwd 한꺼번에 수정
 	int update(UsersDto user);
