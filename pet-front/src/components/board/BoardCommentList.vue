@@ -20,6 +20,23 @@ const getCommentList = async () => {
   });
 };
 
+const handleDelete = (comment) => {
+  const params = {
+    comment_pk: comment.id,
+  };
+  console.log(params);
+  deleteComment(comment);
+};
+
+const deleteComment = async (comment) => {
+  await travelplanApi.delete("/delete-comment", { params }).then((res) => {
+    if (res.status == 200 && comment.level == 0) {
+      console.log("list에서:: " + comment.id);
+      comments.value = comments.value.filter((item) => item.id != comment.id);
+    }
+  });
+};
+
 const totalComments = computed(() => {
   return comments.value.length;
 });
@@ -34,6 +51,7 @@ onMounted(() => {
   <BoardCommentItem
     class="comment"
     v-for="comment in comments"
+    @handle-delete="handleDelete"
     :key="comment.id"
     :comment="comment"
     :plan_id="plan_id"

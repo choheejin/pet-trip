@@ -3,12 +3,15 @@ import BoardCommentItem from "@/components/board/BoardCommentItem.vue";
 import BoardCommentWrite from "./BoardCommentWrite.vue";
 import { ref, onMounted } from "vue";
 import travelplanApi from "@/api/travelplanApi";
+import { useAuthStore } from "@/stores/user";
 
 const props = defineProps(["comment", "plan_id"]);
+const emit = defineEmits(["handleDelete"]);
 
 const children = ref([]);
 
 const isWriting = ref(false);
+const authStore = useAuthStore();
 
 const handlePostComment = async (data) => {
   await travelplanApi.post("/post-comment", data).then((res) => {
@@ -16,6 +19,28 @@ const handlePostComment = async (data) => {
       console.log(children.value);
       children.value.push(res.data);
       isWriting.value = false;
+    }
+  });
+};
+
+const handle = (comment) => {
+  if (comment.level > 0) {
+    console.log("item에서:: " + comment.id);
+    deleteComment(comment);
+    console.log("?");
+  }
+  emit("handleDelete", comment);
+};
+
+const deleteComment = async (comment) => {
+  const params = {
+    comment_pk: comment.id,
+  };
+
+  await travelplanApi.delete("/delete-comment", { params }).then((res) => {
+    if (res.status == 200 && comment.level == 0) {
+      console.log("list에서:: " + comment.id);
+      children.value = children.value.filter((item) => item.id != comment.id);
     }
   });
 };
@@ -63,7 +88,14 @@ onMounted(() => {
         <div class="write-group">
           <div class="write-data">
             <span class="create-date">{{ comment.created_at }}</span>
-            <div class="write-button" @click="isWriting = !isWriting">답글</div>
+            <div class="button" @click="isWriting = !isWriting">답글</div>
+            <div
+              class="button"
+              v-if="authStore.user == comment.user_id"
+              @click="handle(comment)"
+            >
+              삭제
+            </div>
           </div>
         </div>
       </div>
@@ -139,7 +171,7 @@ onMounted(() => {
   font-size: small;
 }
 
-.write-group > .write-data > .write-button {
+.write-group > .write-data > .button {
   display: flex;
   font-weight: 700;
   cursor: pointer;
@@ -148,13 +180,6 @@ onMounted(() => {
 
 .comment-detail {
   padding: 0.5rem 0.25rem;
-}
-
-.write-button > svg {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 15px;
 }
 
 .write-input-root {
