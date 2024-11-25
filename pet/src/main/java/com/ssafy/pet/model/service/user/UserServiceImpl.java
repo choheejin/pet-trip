@@ -3,6 +3,8 @@ package com.ssafy.pet.model.service.user;
 import java.util.Optional;
 
 import org.apache.ibatis.binding.BindingException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 	private final UserMapper userMapper;
 	private final PasswordEncoder passwordEncoder;
+	private JavaMailSender javaMailSender;
 	
 	@Override
 	public Optional<Integer> signup(UsersDto user) {
@@ -66,16 +69,16 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<Boolean> findIdByUserId(String user_id) {
-		int cnt = 0;
+	public Optional<Integer> findIdByUserId(String user_id) {
+		Integer id = null;
 		
 		try {			
-			cnt = userMapper.findIdByUserId(user_id);
+			id = userMapper.findIdByUserId(user_id);
 		} catch(BindingException e) {
-			return Optional.of(true);
+			return Optional.empty();
 		}
 		
-		return cnt == 0 ? Optional.of(true) : Optional.empty();
+		return Optional.ofNullable(id);
 	}
 
 	@Override
@@ -92,5 +95,17 @@ public class UserServiceImpl implements UserService {
 		return userMapper.getProfileImageByUserId(user_id);
 	}
 
+	@Override
+	public void sendEmail(String to, String subject, String text) {
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setTo(to);
+		message.setSubject(subject);
+		message.setText(text);
+		javaMailSender.send(message);
+	}
 
+	@Override
+	public UsersDto findUserByUserIdAndEmail(String user_id, String email) {
+		return userMapper.findUserByUserIdAndEmail(user_id, email);
+	}
 }

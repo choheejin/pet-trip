@@ -23,6 +23,8 @@ public interface TravelPlanMapper {
 	
 	int updatePlanItem(Map<String, Object> param);
 	
+	int deletePlan(int plan_id);
+	
 	TravelPlansDto findPlanById(int id);
 	
 	TravelPlansDto findPlanByUserIdAndId(Map<String, Object> param);
@@ -50,6 +52,9 @@ public interface TravelPlanMapper {
 	
 	//댓글 삭제
 	int deleteComment(int comment_pk);
+	
+	//유저가 작성한 댓글인지 확인하기위해 comment_pk의 user_id 가져오기
+	int findUserIdByCommentId(int comment_pk);
 	////////////////////////////
 	
 	//유저가 게시한 게시글 조회
@@ -62,6 +67,9 @@ public interface TravelPlanMapper {
 	//유저가 좋아요한 게시글 아이디 조회
 	List<Integer> getUserFavoritePlanIds(int user_id);
 	/////////////////////////////////////////////////////
+	
+	//게시글 조회수 증가
+	int increasePlanViewCnt(int plan_id);
 	
 	//유저가 좋아요 누른 게시글 plans_favorites에 추가하기
 	int addFavoritePlan(@Param("user_id") int user_id, @Param("plan_id") int favorite_plan_id);

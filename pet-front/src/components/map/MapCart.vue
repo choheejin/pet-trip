@@ -1,16 +1,23 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import MapCartDetail from "./MapCartDetail.vue";
 import { useCartStore } from "@/stores/cart";
 import mapApi from "@/api/mapApi";
+import { useRoute } from "vue-router";
+import travelplanApi from "@/api/travelplanApi";
+import { useAuthStore } from "@/stores/user";
+import router from "@/router";
 
+const authStore = useAuthStore();
 const cartStore = useCartStore();
 
 const emit = defineEmits(["clickHandler"]);
 const summary = ref({});
 const isShowedSummary = ref(false);
+const isUpdate = ref(false);
 
 const plan = ref({
+  id: "",
   title: "",
   is_public: "1",
   description: "",
@@ -98,11 +105,59 @@ const getRecommendRoute = async () => {
     isShowedSummary.value = true;
   });
 };
+
+/* ================게시글 수정시 START================ */
+const putPlan = async () => {
+  const items = cartStore.attraction.map((item, idx) => {
+    return {
+      note: "내용없음",
+      order: idx + 1,
+      content_id: item.content_id,
+    };
+  });
+
+  const data = {
+    plan: plan.value,
+    items: items,
+  };
+
+  await travelplanApi.put(`${plan.value.id}`, data).then((res) => {
+    if (res.status === 204) {
+      router.push({ path: "planDetail", query: { id: plan.value.id } });
+      alert("수정이 완료되었습니다.");
+    }
+  });
+};
+
+const getUpdateDetail = async (id) => {
+  await travelplanApi.get(`/${id}`).then((res) => {
+    if (res.data.userInfo.user_id === authStore.user) {
+      console.log(res.data);
+      cartStore.attraction = res.data.items;
+      plan.value.id = id;
+      plan.value.title = res.data.plan.title;
+      plan.value.description = res.data.plan.description;
+      plan.value.is_public = res.data.plan.is_public;
+      isUpdate.value = true;
+    } else {
+      alert("접근 권한이 존재하지 않습니다.");
+    }
+  });
+};
+
+onMounted(() => {
+  const route = useRoute();
+  const id = route.query.id;
+  if (id) {
+    getUpdateDetail(id);
+  }
+});
+/* ================게시글 수정시 End================ */
 </script>
 
 <template>
   <div class="cart-container">
-    <div class="title">게시글 작성</div>
+    <div class="title">게시글 {{ isUpdate ? "수정" : "작성" }}</div>
     <div class="input-group">
       <label>제목 </label
       ><input
@@ -198,7 +253,10 @@ const getRecommendRoute = async () => {
       ></textarea>
     </div>
 
-    <div><button @click="postPlan">게시글 작성</button></div>
+    <div>
+      <button v-if="!isUpdate" @click="postPlan">게시글 작성</button>
+      <button v-else @click="putPlan">게시글 수정</button>
+    </div>
   </div>
 </template>
 

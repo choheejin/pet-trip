@@ -44,6 +44,23 @@
 			`plan_id`=#{plan_id}
 		</foreach>
 	</update>
+	
+	<update id="increasePlanViewCnt" parameterType="int">
+		update travel_plans
+		set view_cnt = view_cnt + 1
+		where id=#{id}
+	</update>
+
+	<delete id="deletePlan" parameterType="int">
+		delete from travel_plans
+		where id = #{plan_id}
+	</delete>
+
+	<select id="findUserByUserIdAndEmail" parameterType="PasswordCheck" resultType="UsersDto">
+		select *
+		from users
+		where user_id=#{user_id} and email=#{email};
+	</select>
 
 	<select id="findPlanById" parameterType="int"
 		resultType="travelPlansDto">
@@ -73,6 +90,12 @@
 		on
 		a.content_id = t.content_id
 		where plan_id = #{id};
+	</select>
+	
+	<select id="findUserIdByCommentId" parameterType="int" resultType="int">
+		select user_id
+		from travel_plan_comments
+		where id = #{id};
 	</select>
 
 	<select id="getOldestPlans" parameterType="int"
@@ -127,7 +150,7 @@
 	
 	<delete id="deleteComment" parameterType="int">
 		delete from travel_plan_comments
-		where id = #{
+		where id = #{id};
 	</delete>
 
 	<select id="getUserPlans" parameterType="int" resultType="TravelPlansDto">

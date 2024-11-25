@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlanCommentsDto;
+import com.ssafy.pet.dto.TravelPlanCommentsRequestDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 
 public interface TravelPlanService {
@@ -20,6 +21,8 @@ public interface TravelPlanService {
 	Optional<Integer> updatePlan(Map<String, Object> params);
 	
 	Optional<Integer> updateItem(Map<String, Object> parmas);
+	
+	Optional<Integer> delete(int plan_id);
 	
 	TravelPlansDto findPlanByIdAndUserId(int id, String userId);
 	
@@ -40,6 +43,8 @@ public interface TravelPlanService {
 	//유저가 좋아요한 게시글 조회
 	List<TravelPlansDto> getUserFavoritePlans(int user_id);
 	
+	List<TravelPlanCommentsRequestDto> convertToCommentsRequestDto(List<TravelPlanCommentsDto> plans);
+	
 	/////////////////////////////////////
 	//게시글의 댓글 조회
 	List<TravelPlanCommentsDto> listParentComments(int plan_id);
@@ -52,7 +57,13 @@ public interface TravelPlanService {
 	
 	//댓글 삭제
 	int deleteComment(int comment_pk);
+	
+	//유저가 작성한 댓글인지 확인하기위해 comment_pk의 user_id 가져오기
+	int findUserIdByCommentId(int comment_pk);
 	////////////////////////////////////
+	
+	//게시글 조회수 증가
+	Optional<Integer> increasePlanViewCnt(int plan_id);
 	
 	//정렬 타입별 게시글 조회
 	List<TravelPlansDto> getPlansBySort(String sort, int page_start, int page_size);
