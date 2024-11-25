@@ -257,20 +257,19 @@ public class TravelPlanController {
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
 		
-		int user_pk = userService.findIdByUserId(req_comment.getUser_id()).get();
+		String user_id = jwtUtil.getUserId(header);
+		int user_pk = userService.findIdByUserId(user_id).get();
 		
 		TravelPlanCommentsDto comment = new TravelPlanCommentsDto();
-		comment.setId(req_comment.getId());
+
 		comment.setPlan_id(req_comment.getPlan_id());
 		comment.setUser_id(user_pk);
 		comment.setComment(req_comment.getComment());
-		comment.setCreated_at(req_comment.getCreated_at());
-		comment.setUpdated_at(req_comment.getUpdated_at());
 		comment.setParent_comment_id(req_comment.getParent_comment_id());
 		
 		int cnt = travelPlanService.postComment(comment);
 		
-		if(cnt < 0)
+		if(cnt <= 0)
 		{
 			throw new RuntimeException();
 		}

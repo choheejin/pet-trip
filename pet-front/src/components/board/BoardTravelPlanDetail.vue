@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import travelplanApi from "@/api/travelplanApi.js";
 import BoardTravelPlanItemList from "./BoardTravelPlanItemList.vue";
 import { useAuthStore } from "@/stores/user";
+import BoardComment from "./BoardComment.vue";
 
 // 상세조회할 id
 const route = useRoute();
@@ -18,6 +19,7 @@ const writerInfo = ref({
   user_id: "",
   profile_path: "",
 });
+const comments = ref([]);
 
 const authStore = useAuthStore();
 
@@ -160,7 +162,9 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="comment"></div>
+    <div class="comment">
+      <BoardComment :plan_id="id" />
+    </div>
   </div>
 </template>
 
