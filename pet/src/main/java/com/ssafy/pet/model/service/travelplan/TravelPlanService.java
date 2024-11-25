@@ -53,7 +53,7 @@ public interface TravelPlanService {
 	List<TravelPlanCommentsDto> listChildComments(int parent_comment_id);
 	
 	//댓글 작성
-	int postComment(TravelPlanCommentsDto comment);
+	TravelPlanCommentsRequestDto postComment(TravelPlanCommentsDto comment);
 	
 	//댓글 삭제
 	int deleteComment(int comment_pk);
