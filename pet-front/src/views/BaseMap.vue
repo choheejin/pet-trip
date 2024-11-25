@@ -9,6 +9,7 @@ import attractionApi from "@/api/attractionApi";
 import { useCartStore } from "@/stores/cart";
 import { useSidoStore } from "@/stores/sido";
 import MapContentIdList from "@/components/map/MapContentIdList.vue";
+import { useRoute } from "vue-router";
 
 /* 전체적으로 자주 쓰이는 값 */
 const attractions = ref([]); // 리스트의 값
@@ -126,6 +127,11 @@ onMounted(() => {
     title.value = mainSelectStore.selectedAttraction;
   }
 
+  const route = useRoute();
+  const id = route.query.id;
+  if (id) {
+    setShowCart(true);
+  }
   getAttractions();
 });
 
