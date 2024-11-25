@@ -23,7 +23,8 @@ public class WebConfig implements WebMvcConfigurer {
 			"/user/updateimage",
 			"/user/info/**",
 			"/attraction/**",
-			"/attraction/user-likes/**"
+			"/attraction/user-likes/**",
+			"/review/**"
 	);
 	
 	private final List<String> excludePatterns = Arrays.asList(

@@ -15,7 +15,6 @@ public class TravelReviewsDto {
     private boolean is_public;
     private int view_cnt;
     private int favorite_cnt;
-    private String thumbnail_image;
-    private byte dog_size;
+    private int dog_size;
 }
 
