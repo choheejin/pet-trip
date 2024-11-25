@@ -23,7 +23,7 @@ myPageApi.interceptors.response.use(
     if (error.status == 401) {
       const authStore = useAuthStore();
       authStore.logout();
-      alert("로그인이 필요합니다");
+      alert("로그인 시간이 만료되었습니다");
     }
 
     return Promise.reject(error);

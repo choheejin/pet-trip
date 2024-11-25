@@ -19,7 +19,17 @@ travelplanApi.interceptors.response.use(
   (config) => config,
   (error) => {
     if (error.status == 401) {
-      alert("로그인 하세요");
+      const originalRequest = error.config;
+
+      if (originalRequest.method == "get" && !originalRequest._retry) {
+        originalRequest._retry = true;
+        const authStore = useAuthStore();
+        authStore.logout();
+
+        delete originalRequest.headers.accessToken;
+
+        return travelplanApi(originalRequest);
+      }
     }
   }
 );
