@@ -72,6 +72,9 @@ public class UserController {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
 		
+		boolean isPasswordReset = jwtUtil.isPasswordResetToken(user.get)
+		
+		
 		UsersDto loginUser = userService.login(user).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
 
 		String accessToken = jwtUtil.createAccessToken(loginUser.getId(), loginUser.getUser_id());
@@ -104,11 +107,9 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("등록되지 않은 사용자 입니다.");
 		}
 		
-		String token = jwtUtil.createPasswordResetToken(user.getId());
+		String resetToken = jwtUtil.createPasswordResetToken(user.getId());
 		
-		String resetLink = "https://localhost:5173/reset-password?token=" + token;
-		
-		return ResponseEntity.ok("패스워드 재설정 이메일이 발송되었습니다.");
+		return ResponseEntity.ok(Map.of("resetToken", resetToken));
 	}
 
 	@GetMapping("/info")

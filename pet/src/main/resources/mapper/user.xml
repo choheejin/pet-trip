@@ -7,7 +7,7 @@
 		insert into users(user_id,
 		username, email, password)
 		values (#{user_id}, #{username}, #{email},
-		#{password});
+		#{p+sword});
 	</insert>
 
 	<select id="login" parameterType="usersDto">
@@ -28,6 +28,12 @@
 		update users
 		set username=#{username}, email=#{email}, password=#{password}
 		where user_id=#{user_id}
+	</update>
+	
+	<update id="updatePassword">
+		update users
+		set password=#{password}
+		where id=#{id};
 	</update>
 
 	<update id="deactivate" parameterType="string">

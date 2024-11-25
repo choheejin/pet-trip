@@ -2,6 +2,7 @@ package com.ssafy.pet.model.service.user;
 
 import java.util.Optional;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.pet.dto.ProfileImageDto;
@@ -25,6 +26,9 @@ public interface UserService {
 	
 	// 정보 수정: username, email, pwd 한꺼번에 수정
 	Optional<Integer> update(UsersDto user);
+	
+	//비밀번호 변경
+	Optional<Integer> updatePassword(@Param("user_id") int user_id, @Param("password") String password);
 	
 	// 탈퇴
 	Optional<Integer> deactivate(String user_id);
