@@ -56,6 +56,12 @@
 		where id = #{plan_id}
 	</delete>
 
+	<select id="findUserByUserIdAndEmail" parameterType="PasswordCheck" resultType="UsersDto">
+		select *
+		from users
+		where user_id=#{user_id} and email=#{email};
+	</select>
+
 	<select id="findPlanById" parameterType="int"
 		resultType="travelPlansDto">
 		select * from travel_plans where id=#{id}

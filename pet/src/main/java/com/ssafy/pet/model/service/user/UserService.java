@@ -17,6 +17,9 @@ public interface UserService {
 	// 정보 조회
 	Optional<UsersDto> userInfo(String user_id);
 	
+	//사용자 아이디와 이메일로 사용자 찾기
+	UsersDto findUserByUserIdAndEmail(String user_id, String email);
+	
 	// 사용자 아이디 이미 사용중인지 확인하기
 	Optional<Integer> findIdByUserId(String user_id);
 	
@@ -31,6 +34,7 @@ public interface UserService {
 	
 	// 프로필 이미지 조회
 	ProfileImageDto getProfileImageByUserId(int user_id);
-
 	
+	//비밀번호 찾기 이메일 보내기
+	void sendEmail(String to, String subject, String text);
 }

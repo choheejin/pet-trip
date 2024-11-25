@@ -34,8 +34,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.TravelPlanCommentsDto;
 import com.ssafy.pet.dto.TravelPlanCommentsRequestDto;
-import com.ssafy.pet.dto.PaginatedResponseDto;
-import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UserPlansResponseDto;
@@ -134,23 +132,27 @@ public class TravelPlanController {
 
 	@GetMapping("/parent-comments")
 	@ResponseBody
-	public ResponseEntity<List<TravelPlanCommentsDto>> getComments(@RequestParam(value = "plan_id") int plan_id) {
+	public ResponseEntity<List<TravelPlanCommentsRequestDto>> getComments(@RequestParam(value = "plan_id") int plan_id) {
 		List<TravelPlanCommentsDto> comments = new ArrayList<>();
-
+		List<TravelPlanCommentsRequestDto> convertedComments = new ArrayList<>();
+		
 		comments = travelPlanService.listParentComments(plan_id);
+		convertedComments = travelPlanService.convertToCommentsRequestDto(comments);
 
-		return ResponseEntity.ok(comments);
+		return ResponseEntity.ok(convertedComments);
 	}
 	
 	@GetMapping("/child-comments")
 	@ResponseBody
-	public ResponseEntity<List<TravelPlanCommentsDto>> listChildComments(@RequestParam(value="parent_comment_id") int parent_comment_id)
+	public ResponseEntity<List<TravelPlanCommentsRequestDto>> listChildComments(@RequestParam(value="parent_comment_id") int parent_comment_id)
 	{
 		List<TravelPlanCommentsDto> childComments = new ArrayList<>();
+		List<TravelPlanCommentsRequestDto> convertedComments = new ArrayList<>();
 		
 		childComments = travelPlanService.listChildComments(parent_comment_id);
+		convertedComments = travelPlanService.convertToCommentsRequestDto(childComments);
 		
-		return ResponseEntity.ok(childComments);
+		return ResponseEntity.ok(convertedComments);
 	}
 	
 	@PatchMapping("/increase-plan-view-cnt")

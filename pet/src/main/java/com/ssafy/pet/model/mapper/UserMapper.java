@@ -18,6 +18,9 @@ public interface UserMapper {
 	// 사용자 정보 가져오기
 	UsersDto userInfo(String user_id);
 	
+	//사용자 아이디와 이메일로 사용자 찾기
+	UsersDto findUserByUserIdAndEmail(String user_id, String email);
+	
 	// 가입된 아이디인지 확인하기
 	Integer findIdByUserId(String user_id);
 	

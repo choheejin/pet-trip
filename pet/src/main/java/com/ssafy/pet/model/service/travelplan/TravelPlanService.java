@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlanCommentsDto;
+import com.ssafy.pet.dto.TravelPlanCommentsRequestDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 
 public interface TravelPlanService {
@@ -41,6 +42,8 @@ public interface TravelPlanService {
 	
 	//유저가 좋아요한 게시글 조회
 	List<TravelPlansDto> getUserFavoritePlans(int user_id);
+	
+	List<TravelPlanCommentsRequestDto> convertToCommentsRequestDto(List<TravelPlanCommentsDto> plans);
 	
 	/////////////////////////////////////
 	//게시글의 댓글 조회

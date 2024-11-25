@@ -1,11 +1,13 @@
 package com.ssafy.pet.model.service.travelplan;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.ProfileImageDto;
 import com.ssafy.pet.dto.TravelPlanCommentsDto;
+import com.ssafy.pet.dto.TravelPlanCommentsRequestDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UsersDto;
@@ -291,5 +294,24 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	public Optional<Integer> delete(int plan_id) {
 		int cnt = travelPlanMapper.deletePlan(plan_id);
 		return cnt == 0 ? Optional.empty() : Optional.of(cnt);
+	}
+
+
+	@Override
+	public List<TravelPlanCommentsRequestDto> convertToCommentsRequestDto(List<TravelPlanCommentsDto> comments) {
+		
+	    return comments.stream()
+	            .map(comment -> {
+	                TravelPlanCommentsRequestDto requestDto = new TravelPlanCommentsRequestDto();
+	                requestDto.setId(comment.getId());
+	                requestDto.setPlan_id(comment.getPlan_id());
+	                requestDto.setUser_id(userMapper.findUserIdById(comment.getUser_id()));
+	                requestDto.setComment(comment.getComment());
+	                requestDto.setCreated_at(comment.getCreated_at());
+	                requestDto.setUpdated_at(comment.getUpdated_at());
+	                requestDto.setParent_comment_id(comment.getParent_comment_id());
+	                return requestDto;
+	            })
+	            .collect(Collectors.toList());
 	}
 }

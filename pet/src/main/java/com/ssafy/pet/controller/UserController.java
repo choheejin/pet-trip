@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ssafy.pet.dto.PasswordCheck;
 import com.ssafy.pet.dto.ProfileImageDto;
 import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
@@ -66,7 +67,6 @@ public class UserController {
 		return ResponseEntity.ok(status);
 	}
 
-
 	@PostMapping("/login")
 	public ResponseEntity<?> userLogin(@RequestBody UsersDto user) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -93,6 +93,22 @@ public class UserController {
 		status = HttpStatus.NO_CONTENT;
 
 		return new ResponseEntity<>(status);
+	}
+	
+	@PostMapping("/forgot-password")
+	public ResponseEntity<?> forgetPassword(@RequestBody PasswordCheck pwc){
+		
+		UsersDto user = userService.findUserByUserIdAndEmail(pwc.getUser_id(), pwc.getEmail());
+		if(user == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("등록되지 않은 사용자 입니다.");
+		}
+		
+		String token = jwtUtil.createPasswordResetToken(user.getId());
+		
+		String resetLink = "https://localhost:5173/reset-password?token=" + token;
+		
+		return ResponseEntity.ok("패스워드 재설정 이메일이 발송되었습니다.");
 	}
 
 	@GetMapping("/info")

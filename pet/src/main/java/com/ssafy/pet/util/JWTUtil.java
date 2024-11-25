@@ -19,6 +19,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JWTUtil {
+	
 	@Value("${jwt.salt}")
 	private String salt;
 
@@ -108,5 +109,17 @@ public class JWTUtil {
 		}
 		
 		return (int) userPK;
+	}
+	
+	public String createPasswordResetToken(int user_id) {
+		Claims claims = Jwts.claims().setSubject("password-reset");
+		claims.put("user_id", user_id);
+		claims.setIssuedAt(new Date());
+		claims.setExpiration(new Date(System.currentTimeMillis() + 3600000));
+		
+		return Jwts.builder()
+				.setClaims(claims)
+				.signWith(SignatureAlgorithm.HS256, salt)
+				.compact();
 	}
 }
