@@ -42,6 +42,15 @@ const handleUpdate = () => {
   router.push({ path: "map", query: { id: plan.value.id } });
 };
 
+const handleDelete = async () => {
+  await travelplanApi.delete(`${id}`).then((res) => {
+    if (res.status === 204) {
+      alert("삭제되었습니다");
+      router.push({ path: "/board" });
+    }
+  });
+};
+
 const debounce = (func, delay) => {
   let timer;
   return function (...args) {
@@ -110,7 +119,7 @@ onMounted(() => {
       <div class="right-side">
         <div v-if="authStore.user == writerInfo.user_id" class="writer-group">
           <div @click="handleUpdate">수정</div>
-          <div>삭제</div>
+          <div @click="handleDelete">삭제</div>
         </div>
       </div>
     </div>

@@ -51,6 +51,11 @@
 		where id=#{id}
 	</update>
 
+	<delete id="deletePlan" parameterType="int">
+		delete from travel_plans
+		where id = #{plan_id}
+	</delete>
+
 	<select id="findPlanById" parameterType="int"
 		resultType="travelPlansDto">
 		select * from travel_plans where id=#{id}

@@ -248,24 +248,20 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		return travelPlanMapper.addFavoritePlan(user_id, favorite_plan_id);
 	}
 
-
 	@Override
 	public int deleteFavoritePlan(int user_id, int favorite_plan_id) {
 		return travelPlanMapper.deleteFavoritePlan(user_id, favorite_plan_id);
 	}
-
 
 	@Override
 	public List<TravelPlanCommentsDto> listChildComments(int parent_comment_id) {
 		return travelPlanMapper.listChildComments(parent_comment_id);
 	}
 
-
 	@Override
 	public int postComment(TravelPlanCommentsDto comment) {
 		return travelPlanMapper.postComment(comment);
 	}
-
 
 	@Override
 	public int deleteComment(int comment_pk) {
@@ -280,16 +276,20 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		return cnt != 0;
 	}
 
-
 	@Override
 	public int findUserIdByCommentId(int comment_pk) {
 		return travelPlanMapper.findUserIdByCommentId(comment_pk);
 	}
 
-
 	@Override
 	public Optional<Integer> increasePlanViewCnt(int plan_id) {
 		int rowsAffected = travelPlanMapper.increasePlanViewCnt(plan_id);
 		return rowsAffected > 0 ? Optional.of(rowsAffected) : Optional.empty();
+	}
+	
+	@Override
+	public Optional<Integer> delete(int plan_id) {
+		int cnt = travelPlanMapper.deletePlan(plan_id);
+		return cnt == 0 ? Optional.empty() : Optional.of(cnt);
 	}
 }

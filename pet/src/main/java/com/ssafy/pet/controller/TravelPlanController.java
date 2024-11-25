@@ -412,4 +412,14 @@ public class TravelPlanController {
 
 		return new ResponseEntity<>(status);
 	}
+	
+	@DeleteMapping("/{plan_id}")
+	public ResponseEntity<?> deletePlan(@RequestHeader("accessToken") String header, @PathVariable("plan_id") int plan_id) {
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		travelPlanService.delete(plan_id).orElseThrow(() -> new RuntimeException());
+		
+		status = HttpStatus.NO_CONTENT;
+		return new ResponseEntity<>(status);
+	}
 }
