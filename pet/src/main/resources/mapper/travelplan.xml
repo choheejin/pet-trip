@@ -143,9 +143,9 @@
 		order by created_at;
 	</select>
 	
-	<insert id="postComment" parameterType="TravelPlanCommentsDto">
+	<insert id="postComment" parameterType="TravelPlanCommentsDto" useGeneratedKeys="true" keyProperty="id">
 		insert into travel_plan_comments (plan_id, user_id, comment, created_at, updated_at, level, parent_comment_id)
-		values(#{plan_id}, #{user_id}, #{comment}, now(), now(), #{level},
+		values(#{plan_id}, #{user_id}, #{comment}, #{created_at}, #{updated_at}, #{level},
 		<if test="!parent_comment_id">null</if>
 		<if test="parent_comment_id">#{parent_comment_id}</if>
 		);

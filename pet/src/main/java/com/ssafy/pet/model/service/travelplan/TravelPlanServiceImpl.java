@@ -1,6 +1,6 @@
 package com.ssafy.pet.model.service.travelplan;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.yaml.snakeyaml.tokens.CommentToken;
 
 import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.dto.ProfileImageDto;
@@ -263,12 +262,27 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public int postComment(TravelPlanCommentsDto comment) {
+	public TravelPlanCommentsRequestDto postComment(TravelPlanCommentsDto comment) {
+		LocalDateTime now = LocalDateTime.now();
+		
+		comment.setCreated_at(now);
+		comment.setUpdated_at(now);
+		
 		if(comment.getParent_comment_id() != 0) {
-			int level = travelPlanMapper.getCommentLevelByParentId(comment.getParent_comment_id());
+			Integer level = travelPlanMapper.getCommentLevelByParentId(comment.getParent_comment_id());
+			if(level == null) {
+				level = 0;
+			}
 			comment.setLevel(level + 1);
 		}
-		return travelPlanMapper.postComment(comment);
+		
+		int cnt = travelPlanMapper.postComment(comment);
+		
+		if(cnt <= 0) throw new RuntimeException();
+		
+		TravelPlanCommentsRequestDto response = convertToCommentRequestDto(comment);
+		
+		return response;
 	}
 
 	@Override
@@ -306,17 +320,20 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	public List<TravelPlanCommentsRequestDto> convertToCommentsRequestDto(List<TravelPlanCommentsDto> comments) {
 		
 	    return comments.stream()
-	            .map(comment -> {
-	                TravelPlanCommentsRequestDto requestDto = new TravelPlanCommentsRequestDto();
-	                requestDto.setId(comment.getId());
-	                requestDto.setPlan_id(comment.getPlan_id());
-	                requestDto.setUser_id(userMapper.findUserIdById(comment.getUser_id()));
-	                requestDto.setComment(comment.getComment());
-	                requestDto.setCreated_at(comment.getCreated_at());
-	                requestDto.setUpdated_at(comment.getUpdated_at());
-	                requestDto.setParent_comment_id(comment.getParent_comment_id());
-	                return requestDto;
-	            })
+	            .map(comment -> convertToCommentRequestDto(comment))
 	            .collect(Collectors.toList());
+	}
+	
+	private TravelPlanCommentsRequestDto convertToCommentRequestDto(TravelPlanCommentsDto comment) {
+        TravelPlanCommentsRequestDto requestDto = new TravelPlanCommentsRequestDto();
+        requestDto.setId(comment.getId());
+        requestDto.setPlan_id(comment.getPlan_id());
+        requestDto.setUser_id(userMapper.findUserIdById(comment.getUser_id()));
+        requestDto.setComment(comment.getComment());
+        requestDto.setCreated_at(comment.getCreated_at());
+        requestDto.setUpdated_at(comment.getUpdated_at());
+        requestDto.setParent_comment_id(comment.getParent_comment_id());
+        requestDto.setLevel(comment.getLevel() == null ? 0 : comment.getLevel());
+        return requestDto;
 	}
 }

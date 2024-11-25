@@ -152,6 +152,8 @@ public class TravelPlanController {
 		
 		childComments = travelPlanService.listChildComments(parent_comment_id);
 		convertedComments = travelPlanService.convertToCommentsRequestDto(childComments);
+		System.out.println("childComments::");
+		System.out.println(childComments);
 		
 		return ResponseEntity.ok(convertedComments);
 	}
@@ -281,16 +283,11 @@ public class TravelPlanController {
 		comment.setComment(req_comment.getComment());
 		comment.setParent_comment_id(req_comment.getParent_comment_id());
 		
-		int cnt = travelPlanService.postComment(comment);
-		
-		if(cnt <= 0)
-		{
-			throw new RuntimeException();
-		}
+		TravelPlanCommentsRequestDto result = travelPlanService.postComment(comment);
 		
 		status = HttpStatus.CREATED;
 		
-		return ResponseEntity.ok(status);
+		return new ResponseEntity<TravelPlanCommentsRequestDto>(result, status);
 	}
 	
 	@DeleteMapping("/delete-comment")

@@ -2,22 +2,22 @@
 import travelplanApi from "@/api/travelplanApi";
 import { ref } from "vue";
 
-const props = defineProps(["plan_id", "parent_comment_id"]);
+const props = defineProps(["parent_comment_id", "plan_id"]);
 const comment = ref("");
 
-const handlePostComment = async () => {
+const emit = defineEmits(["handleSubmit"]);
+
+const handleSubmit = () => {
   if (comment.value == "") return;
+
   const data = {
     plan_id: props.plan_id,
     comment: comment.value,
     parent_comment_id: props.parent_comment_id,
   };
 
-  await travelplanApi.post("/post-comment", data).then((res) => {
-    if (res.status == 200) {
-      comment.value = "";
-    }
-  });
+  emit("handleSubmit", data);
+  comment.value = "";
 };
 </script>
 
@@ -30,7 +30,7 @@ const handlePostComment = async () => {
       placeholder="댓글을 작성하세요"
     ></textarea>
     <div class="submit">
-      <button @click="handlePostComment">댓글 작성</button>
+      <button @click="handleSubmit">댓글 작성</button>
     </div>
   </div>
 </template>

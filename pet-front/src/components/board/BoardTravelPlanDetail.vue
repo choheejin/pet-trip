@@ -21,8 +21,6 @@ const writerInfo = ref({
   profile_path: "",
 });
 
-const comments = ref([]);
-
 const authStore = useAuthStore();
 
 const getDetail = async () => {
@@ -95,25 +93,8 @@ const handleLikeOrDisLike = debounce(() => {
   }
 }, 500);
 
-const getCommentList = async () => {
-  const params = {
-    plan_id: id,
-  };
-  await travelplanApi.get("/parent-comments", { params }).then((res) => {
-    comments.value = res.data;
-    comments.value.map((item) => {
-      return { id: item.id, isShow: false };
-    });
-  });
-};
-
-const totalComments = computed(() => {
-  return comments.value.length;
-});
-
 onMounted(() => {
   getDetail();
-  getCommentList();
 });
 </script>
 
@@ -182,19 +163,29 @@ onMounted(() => {
     </div>
 
     <div class="comment">
-      <BoardCommentWrite :plan_id="id" :parent_comment_id="0" />
-      <div class="strong">댓글 {{ totalComments }}개</div>
-      <BoardCommentList :plan_id="id" :comments="comments" />
+      <BoardCommentWrite :parent_comment_id="0" :plan_id="id" />
+      <BoardCommentList :plan_id="id" />
     </div>
   </div>
 </template>
 
 <style scoped>
-.board-detail-container {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  padding: 152px 32rem;
+@media (min-width: 1440px) {
+  .board-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 152px 20rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .board-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 152px 32rem;
+  }
 }
 .board-detail-container > .meta-data {
   display: flex;
@@ -235,15 +226,12 @@ onMounted(() => {
 }
 
 .heart-group {
-  width: 3.5rem;
-  height: 4.5rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   border: 1px solid rgb(244 63 94);
+  justify-content: flex-end;
   border-radius: 8rem;
-  padding: 0.25rem 0.5rem;
+  gap: 10px;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
 }
 
@@ -258,11 +246,11 @@ onMounted(() => {
 
 .heart-group:hover {
   display: flex;
-  justify-content: center;
   border: 1px solid rgb(244 63 94);
   background-color: rgb(244 63 94);
   border-radius: 8rem;
-  padding: 0.25rem 0.5rem;
+  gap: 10px;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
 }
 
@@ -276,16 +264,12 @@ onMounted(() => {
 }
 
 .heart-group-fill {
-  width: 3.5rem;
-  height: 4.5rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   border: 1px solid rgb(244 63 94);
   background-color: rgb(244 63 94);
   border-radius: 8rem;
-  padding: 0.25rem 0.5rem;
+  gap: 10px;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
   color: white;
 }
@@ -316,13 +300,6 @@ onMounted(() => {
 .description > .item-list > .item-list-title {
   font-size: large;
   text-align: center;
-}
-
-.comment {
-  border-top: 1px solid rgb(209 213 219);
-  margin-top: 3rem;
-  padding: 0.5rem 1rem;
-  width: 100%;
 }
 
 .strong {
