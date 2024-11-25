@@ -1,9 +1,11 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import travelplanApi from "@/api/travelplanApi.js";
 import BoardTravelPlanItemList from "./BoardTravelPlanItemList.vue";
 import { useAuthStore } from "@/stores/user";
+import BoardCommentWrite from "./BoardCommentWrite.vue";
+import BoardCommentList from "./BoardCommentList.vue";
 
 // 상세조회할 id
 const route = useRoute();
@@ -160,16 +162,30 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="comment"></div>
+    <div class="comment">
+      <BoardCommentWrite :parent_comment_id="0" :plan_id="id" />
+      <BoardCommentList :plan_id="id" />
+    </div>
   </div>
 </template>
 
 <style scoped>
-.board-detail-container {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-  padding: 152px 32rem;
+@media (min-width: 1440px) {
+  .board-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 152px 20rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .board-detail-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 152px 32rem;
+  }
 }
 .board-detail-container > .meta-data {
   display: flex;
@@ -210,15 +226,12 @@ onMounted(() => {
 }
 
 .heart-group {
-  width: 3.5rem;
-  height: 4.5rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   border: 1px solid rgb(244 63 94);
+  justify-content: flex-end;
   border-radius: 8rem;
-  padding: 0.25rem 0.5rem;
+  gap: 10px;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
 }
 
@@ -233,11 +246,11 @@ onMounted(() => {
 
 .heart-group:hover {
   display: flex;
-  justify-content: center;
   border: 1px solid rgb(244 63 94);
   background-color: rgb(244 63 94);
   border-radius: 8rem;
-  padding: 0.25rem 0.5rem;
+  gap: 10px;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
 }
 
@@ -251,16 +264,12 @@ onMounted(() => {
 }
 
 .heart-group-fill {
-  width: 3.5rem;
-  height: 4.5rem;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   border: 1px solid rgb(244 63 94);
   background-color: rgb(244 63 94);
   border-radius: 8rem;
-  padding: 0.25rem 0.5rem;
+  gap: 10px;
+  padding: 0.5rem 0.75rem;
   cursor: pointer;
   color: white;
 }
@@ -291,13 +300,6 @@ onMounted(() => {
 .description > .item-list > .item-list-title {
   font-size: large;
   text-align: center;
-}
-
-.comment {
-  border-top: 1px solid rgb(209 213 219);
-  margin-top: 3rem;
-  padding: 0.5rem 1rem;
-  width: 100%;
 }
 
 .strong {
