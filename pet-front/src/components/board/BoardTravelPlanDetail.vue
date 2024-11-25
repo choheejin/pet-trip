@@ -1,11 +1,14 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import travelplanApi from "@/api/travelplanApi.js";
 import BoardTravelPlanItemList from "./BoardTravelPlanItemList.vue";
+import { useAuthStore } from "@/stores/user";
 
 // 상세조회할 id
 const route = useRoute();
+const router = useRouter();
+
 const id = route.query.id;
 
 const isLiked = ref(false);
@@ -15,6 +18,8 @@ const writerInfo = ref({
   user_id: "",
   profile_path: "",
 });
+
+const authStore = useAuthStore();
 
 const getDetail = async () => {
   await travelplanApi.get(`/${id}`).then((res) => {
@@ -31,6 +36,10 @@ const getDetail = async () => {
     console.log("확인 : ", plan.value);
     console.log("여행지들 : ", items.value);
   });
+};
+
+const handleUpdate = () => {
+  router.push({ path: "map", query: { id: plan.value.id } });
 };
 
 const debounce = (func, delay) => {
@@ -97,8 +106,31 @@ onMounted(() => {
         <div v-if="!plan.is_public">비공개</div>
         <div v-else>조회수: {{ plan.view_cnt }}</div>
       </div>
+
+      <div class="right-side">
+        <div v-if="authStore.user == writerInfo.user_id" class="writer-group">
+          <div @click="handleUpdate">수정</div>
+          <div>삭제</div>
+        </div>
+      </div>
+    </div>
+    <!-- <div v-if="plan.image" class="thumbnail">{{ plan.image }}</div> -->
+    <div class="description">
+      {{ plan.description }}
+
+      <div class="item-list">
+        <div class="strong item-list-title">여행 경로</div>
+        <BoardTravelPlanItemList
+          v-for="(item, idx) in items"
+          :key="item.id"
+          :item="item"
+          :idx="idx + 1"
+        />
+      </div>
+    </div>
+    <div class="heart-group-container">
       <div
-        :class="{ 'right-side': !isLiked, 'right-side-fill': isLiked }"
+        :class="{ 'heart-group': !isLiked, 'heart-group-fill': isLiked }"
         @click="handleLikeOrDisLike"
       >
         <svg
@@ -118,20 +150,7 @@ onMounted(() => {
         <div class="cnt">{{ plan.favorite_cnt }}</div>
       </div>
     </div>
-    <!-- <div v-if="plan.image" class="thumbnail">{{ plan.image }}</div> -->
-    <div class="description">
-      {{ plan.description }}
 
-      <div class="item-list">
-        <div class="strong item-list-title">여행 경로</div>
-        <BoardTravelPlanItemList
-          v-for="(item, idx) in items"
-          :key="item.id"
-          :item="item"
-          :idx="idx + 1"
-        />
-      </div>
-    </div>
     <div class="comment"></div>
   </div>
 </template>
@@ -141,7 +160,7 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding: 152px 315px;
+  padding: 152px 32rem;
 }
 .board-detail-container > .meta-data {
   display: flex;
@@ -157,60 +176,98 @@ onMounted(() => {
   gap: 20px;
 }
 
+.board-detail-container > .meta-data > .left-side > .profile {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.board-detail-container > .meta-data > .left-side > .profile > img {
+  width: 30px;
+  height: 30px;
+  border-radius: 30rem;
+  border: 1px solid rgb(209 213 219);
+}
+
 .board-detail-container > .meta-data > .right-side {
   display: flex;
   align-items: center;
+  gap: 10px;
+}
+
+.heart-group-container {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+}
+
+.heart-group {
+  width: 3.5rem;
+  height: 4.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   border: 1px solid rgb(244 63 94);
   border-radius: 8rem;
   padding: 0.25rem 0.5rem;
-  gap: 1rem;
   cursor: pointer;
 }
 
-.right-side > .heart {
-  width: 20px;
+.heart-group > .heart {
+  width: 24px;
   stroke: rgb(244 63 94);
 }
 
-.right-side > .cnt {
+.heart-group > .cnt {
   color: rgb(244 63 94);
 }
 
-.board-detail-container > .meta-data > .right-side:hover {
+.heart-group:hover {
   display: flex;
+  justify-content: center;
+  border: 1px solid rgb(244 63 94);
+  background-color: rgb(244 63 94);
+  border-radius: 8rem;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+}
+
+.heart-group:hover > .heart {
+  width: 24px;
+  stroke: white;
+}
+
+.heart-group:hover > .cnt {
+  color: white;
+}
+
+.heart-group-fill {
+  width: 3.5rem;
+  height: 4.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
   border: 1px solid rgb(244 63 94);
   background-color: rgb(244 63 94);
   border-radius: 8rem;
   padding: 0.25rem 0.5rem;
-  gap: 1rem;
   cursor: pointer;
-}
-
-.right-side:hover > .heart {
-  width: 20px;
-  stroke: white;
-}
-
-.right-side:hover > .cnt {
   color: white;
 }
 
-.board-detail-container > .meta-data > .right-side-fill {
+.heart-group-fill > .heart {
+  width: 24px;
+  stroke: white;
+}
+
+.right-side > .writer-group {
   display: flex;
-  align-items: center;
-  border: 1px solid rgb(244 63 94);
-  background-color: rgb(244 63 94);
-  border-radius: 8rem;
-  padding: 0.25rem 0.5rem;
-  gap: 1rem;
-  cursor: pointer;
-  color: white;
+  gap: 10px;
 }
 
-.right-side-fill > .heart {
-  width: 20px;
-  stroke: white;
+.right-side > .writer-group > div {
+  cursor: pointer;
 }
 
 .description > .item-list {

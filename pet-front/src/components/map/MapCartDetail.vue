@@ -1,5 +1,6 @@
 <script setup>
 import { useCartStore } from "@/stores/cart";
+import { onMounted } from "vue";
 
 const props = defineProps(["attraction"]);
 
