@@ -6,8 +6,7 @@
 	<insert id="signup" parameterType="usersDto">
 		insert into users(user_id,
 		username, email, password)
-		values (#{user_id}, #{username}, #{email},
-		#{p+sword});
+		values (#{user_id}, #{username}, #{email}, #{password});
 	</insert>
 
 	<select id="login" parameterType="usersDto">
@@ -33,7 +32,7 @@
 	<update id="updatePassword">
 		update users
 		set password=#{password}
-		where id=#{id};
+		where id=#{user_pk};
 	</update>
 
 	<update id="deactivate" parameterType="string">
@@ -47,6 +46,11 @@
 		select id
 		from users
 		where user_id=#{user_id}
+	</select>
+	
+	<select id="findUserByUserIdAndEmail" parameterType="PasswordCheck" resultType="UsersDto">
+		select * from users
+		where email=#{email} and user_id=#{user_id};
 	</select>
 
 	<select id="findUserIdById" parameterType="int">

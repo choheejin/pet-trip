@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,7 @@ import com.ssafy.pet.exception.errorcode.UserErrorCode;
 import com.ssafy.pet.model.service.user.UserHelperService;
 import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
+import com.ssafy.pet.util.PasswordGenerator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -41,6 +43,7 @@ public class UserController {
 	private final JWTUtil jwtUtil;
 	private final UserService userService;
 	private final UserHelperService userHelperService;
+	private final PasswordEncoder passwordEncoder;
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> userRegister(@RequestBody UsersDto userDto) {
@@ -72,18 +75,51 @@ public class UserController {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
 		
-		boolean isPasswordReset = jwtUtil.isPasswordResetToken(user.get)
-		
-		
 		UsersDto loginUser = userService.login(user).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
+		System.out.println(loginUser);
+		if(user.is_temporary_password())
+		{
+			 resultMap.put("message", "임시 비밀번호로 로그인되었습니다. 비밀번호를 변경하세요.");
+	         resultMap.put("resetToken", jwtUtil.createPasswordResetToken(loginUser.getId()));
+	         status = HttpStatus.FORBIDDEN;
+		}
+		else {
 
-		String accessToken = jwtUtil.createAccessToken(loginUser.getId(), loginUser.getUser_id());
-
-		resultMap.put("access-token", accessToken);
-
-		status = HttpStatus.CREATED;
-
+			String accessToken = jwtUtil.createAccessToken(loginUser.getId(), loginUser.getUser_id());
+			resultMap.put("access-token", accessToken);
+			status = HttpStatus.CREATED;
+		}
+		
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
+	
+	@PatchMapping("/forgot-password")
+	public ResponseEntity<?> forgetPassword(@RequestBody PasswordCheck pwc){
+		
+		UsersDto user = userService.findUserByUserIdAndEmail(pwc.getUser_id(), pwc.getEmail());
+		System.out.println("forgetPassword user: " + user);
+		
+		if(user == null)
+		{
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("등록되지 않은 사용자 입니다.");
+		}
+		
+		String temporaryPwd = PasswordGenerator.generateSecurePassword();
+		
+		userService.updatePassword(user.getId(), passwordEncoder.encode(temporaryPwd));
+		
+		user.set_temporary_password(true);
+		System.out.println("Getter 확인: " + user.is_temporary_password());
+		
+		String resetToken = jwtUtil.createPasswordResetToken(user.getId());
+		
+		userService.sendEmail(user.getEmail(), "임시 비밀번호가 이메일로 발송 되었습니다.", temporaryPwd);
+		
+		 // 클라이언트에게 성공 응답 반환
+	    return ResponseEntity.ok(Map.of(
+	        "message", "임시 비밀번호가 이메일로 발송되었습니다.",
+	        "resetToken", resetToken // 선택: 클라이언트에 토큰 제공
+	    ));
 	}
 
 	@GetMapping("/{user_id}")
@@ -96,20 +132,6 @@ public class UserController {
 		status = HttpStatus.NO_CONTENT;
 
 		return new ResponseEntity<>(status);
-	}
-	
-	@PostMapping("/forgot-password")
-	public ResponseEntity<?> forgetPassword(@RequestBody PasswordCheck pwc){
-		
-		UsersDto user = userService.findUserByUserIdAndEmail(pwc.getUser_id(), pwc.getEmail());
-		if(user == null)
-		{
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("등록되지 않은 사용자 입니다.");
-		}
-		
-		String resetToken = jwtUtil.createPasswordResetToken(user.getId());
-		
-		return ResponseEntity.ok(Map.of("resetToken", resetToken));
 	}
 
 	@GetMapping("/info")

@@ -12,6 +12,6 @@ public class UsersDto {
 	private String password;
 	private String create_at;
 	private short is_activate;
-	
+	private boolean is_temporary_password;
 	private ProfileImageDto profileImage;
 }

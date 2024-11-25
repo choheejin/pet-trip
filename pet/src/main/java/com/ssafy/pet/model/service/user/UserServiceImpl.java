@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 	private final UserMapper userMapper;
 	private final PasswordEncoder passwordEncoder;
-	private JavaMailSender javaMailSender;
-	
+	private final JavaMailSender javaMailSender;
+
 	@Override
 	public Optional<Integer> signup(UsersDto user) {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));

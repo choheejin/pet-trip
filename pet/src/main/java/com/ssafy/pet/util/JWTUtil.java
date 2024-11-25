@@ -119,7 +119,7 @@ public class JWTUtil {
 		
 		return Jwts.builder()
 				.setClaims(claims)
-				.signWith(SignatureAlgorithm.HS256, salt)
+				.signWith(SignatureAlgorithm.HS256, generateKey())
 				.compact();
 	}
 	

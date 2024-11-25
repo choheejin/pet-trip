@@ -28,7 +28,7 @@ public interface UserMapper {
 	int update(UsersDto user);
 	
 	//비밀번호 변경
-	int updatePassword(@Param("user_id") int user_id, @Param("password") String password);
+	int updatePassword(@Param("user_pk") int user_id, @Param("password") String password);
 		
 	// 탈퇴
 	int deactivate(String user_id);
