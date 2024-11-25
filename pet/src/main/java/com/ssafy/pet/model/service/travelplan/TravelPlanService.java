@@ -57,6 +57,9 @@ public interface TravelPlanService {
 	int findUserIdByCommentId(int comment_pk);
 	////////////////////////////////////
 	
+	//게시글 조회수 증가
+	Optional<Integer> increasePlanViewCnt(int plan_id);
+	
 	//정렬 타입별 게시글 조회
 	List<TravelPlansDto> getPlansBySort(String sort, int page_start, int page_size);
 	

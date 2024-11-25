@@ -66,6 +66,9 @@ public interface TravelPlanMapper {
 	List<Integer> getUserFavoritePlanIds(int user_id);
 	/////////////////////////////////////////////////////
 	
+	//게시글 조회수 증가
+	int increasePlanViewCnt(int plan_id);
+	
 	//유저가 좋아요 누른 게시글 plans_favorites에 추가하기
 	int addFavoritePlan(@Param("user_id") int user_id, @Param("plan_id") int favorite_plan_id);
 	

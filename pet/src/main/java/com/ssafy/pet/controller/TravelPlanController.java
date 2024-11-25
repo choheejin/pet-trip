@@ -152,6 +152,17 @@ public class TravelPlanController {
 		
 		return ResponseEntity.ok(childComments);
 	}
+	
+	@PatchMapping("/increase-plan-view-cnt")
+	public ResponseEntity<?> increasePlanViewCnt(@RequestParam(value="plan_id") int plan_id){
+		HttpStatus status = HttpStatus.ACCEPTED;
+		
+		travelPlanService.increasePlanViewCnt(plan_id).orElseThrow(() -> new RuntimeException());
+
+		status = HttpStatus.NO_CONTENT;
+		
+		return ResponseEntity.ok(status);
+	}
 
 	@PostMapping
 	public ResponseEntity<?> postPlans(@RequestHeader("accessToken") String header, @RequestBody ObjectNode request)

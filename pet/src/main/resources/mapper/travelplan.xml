@@ -44,6 +44,12 @@
 			`plan_id`=#{plan_id}
 		</foreach>
 	</update>
+	
+	<update id="increasePlanViewCnt" parameterType="int">
+		update travel_plans
+		set view_cnt = view_cnt + 1
+		where id=#{id}
+	</update>
 
 	<select id="findPlanById" parameterType="int"
 		resultType="travelPlansDto">

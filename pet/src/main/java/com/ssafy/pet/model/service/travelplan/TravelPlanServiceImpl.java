@@ -285,4 +285,11 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	public int findUserIdByCommentId(int comment_pk) {
 		return travelPlanMapper.findUserIdByCommentId(comment_pk);
 	}
+
+
+	@Override
+	public Optional<Integer> increasePlanViewCnt(int plan_id) {
+		int rowsAffected = travelPlanMapper.increasePlanViewCnt(plan_id);
+		return rowsAffected > 0 ? Optional.of(rowsAffected) : Optional.empty();
+	}
 }

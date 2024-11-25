@@ -18,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-	
 	private final List<String> patterns = Arrays.asList(
 			"/plan/**",
 			"/user/updateimage",
@@ -27,11 +26,16 @@ public class WebConfig implements WebMvcConfigurer {
 			"/attraction/user-likes/**"
 	);
 	
+	private final List<String> excludePatterns = Arrays.asList(
+			"/plan/increase-plan-view-cnt"
+	);
+	
 	private final ConfirmInterceptor confirmInterceptor;
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(confirmInterceptor).addPathPatterns(patterns);
+		registry.addInterceptor(confirmInterceptor).addPathPatterns(patterns)
+		.excludePathPatterns(excludePatterns);
 	}
 	
 	@Override
