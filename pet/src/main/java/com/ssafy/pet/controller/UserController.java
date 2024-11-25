@@ -74,6 +74,9 @@ public class UserController {
 	public ResponseEntity<?> userLogin(@RequestBody UsersDto user) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
+
+		boolean isPasswordReset = jwtUtil.isPasswordResetToken(user.get);
+		
 		
 		UsersDto loginUser = userService.login(user).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
 		System.out.println(loginUser);
