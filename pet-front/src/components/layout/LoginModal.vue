@@ -107,6 +107,9 @@ const findPassword = async () => {
   <div v-if="!showFindPasswordModal && !showResetPasswordModal">
     <div class="modal">
       <div class="modal-content">
+        <div class="icon">
+          <img src="/icon.png" alt="default" />
+        </div>
         <div class="modal-header">
           <button
             type="button"
@@ -232,7 +235,7 @@ const findPassword = async () => {
   flex-direction: column;
 }
 .icon {
-  width: 80px;
+  width: 70px;
 }
 .modal-title {
   font-weight: bold;
