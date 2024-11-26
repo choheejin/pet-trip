@@ -68,8 +68,8 @@ const loadMore = () => {
 // 상세조회
 const reviewDetail = (id) => {
   // console.log("선택된 여행 후기 : ", review)
-  router.push({name:"ReviewDetail", query: {id: id}});
-}
+  router.push({ name: "ReviewDetail", query: { id: id } });
+};
 // 처음 데이터 불러오기
 onMounted(async () => {
   await getTravelReviewsBySorting();
@@ -87,32 +87,38 @@ onMounted(async () => {
         />
       </div>
       <div class="right" style="width: 70%">
-        <div class="card-container"
-             v-infinite-scroll="loadMore"
-             :scroll-distance="100"
-             style="overflow-y: auto; height: 100%" >
-          <div v-for="review in travelreviews"
-               :key="review.id"
-               class="card" @click="reviewDetail(review.id)">
-
+        <div
+          class="card-container"
+          v-infinite-scroll="loadMore"
+          :scroll-distance="100"
+          style="overflow-y: auto; height: 100%"
+        >
+          <div
+            v-for="review in travelreviews"
+            :key="review.id"
+            class="card"
+            @click="reviewDetail(review.id)"
+          >
             <div
-                class="card-img"
-                :style="{
-                        backgroundImage: `url(${
-                          review.stored_name
-                            ? 'http://localhost:8080/pet/reviews/' + review.id + '/' + review.stored_name
-                            : defaultImg
-                        })`,
-                      }"
-              ></div>
+              class="card-img"
+              :style="{
+                backgroundImage: `url(${
+                  review.stored_name
+                    ? 'http://localhost:8080/pet/reviews/' +
+                      review.id +
+                      '/' +
+                      review.stored_name
+                    : defaultImg
+                })`,
+              }"
+            ></div>
             <div class="stats">
               <i class="fa fa-eye eye-icon"></i> {{ review.view_cnt }}
               <i class="fa fa-heart heart-icon"></i> {{ review.favorite_cnt }}
             </div>
-              <div class="card-title">
-                <div>{{ review.title }}</div>
-              </div>
-
+            <div class="card-title">
+              <div>{{ review.title }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -149,7 +155,7 @@ onMounted(async () => {
 .card {
   height: 300px;
   /*border: 1px solid #ccd5aeca;*/
-  border-radius: 15px;
+  border-radius: 10px;
   /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3); */
   cursor: pointer;
 }
@@ -165,7 +171,7 @@ onMounted(async () => {
 .stats {
   position: absolute;
   right: 10px;
-  top:5px;
+  top: 5px;
   text-align: right;
   font-size: 15px;
   padding-top: 10px;
@@ -181,7 +187,7 @@ onMounted(async () => {
 }
 .card-img {
   position: relative;
-  border-radius: 15px;
+  border-radius: 10px;
   overflow: hidden;
   height: 100%;
   background-size: cover;

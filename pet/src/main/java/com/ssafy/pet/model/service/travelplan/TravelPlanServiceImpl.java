@@ -151,6 +151,8 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		TravelPlansDto plan = travelPlanMapper.findPlanById(id);
 		String userId = userMapper.findUserIdById(plan.getUser_id());
 		
+		travelPlanMapper.incrementViewCount(id);
+		
 		UsersDto userInfo = userMapper.userInfo(userId);
 		ProfileImageDto profileInfo = userMapper.getProfileImageByUserId(userInfo.getId());
 		List<Map<String, Object>> items = travelPlanMapper.findItemById(id);

@@ -35,5 +35,8 @@ public interface TravelReviewsMapper {
 
     // 좋아요 취소
     void deleteFavorite(@Param("userId") int userId, @Param("reviewId") int reviewId);
+    
+    // 좋아요 확인
+    int checkLiked(Map<String, Object> params);
 
 }

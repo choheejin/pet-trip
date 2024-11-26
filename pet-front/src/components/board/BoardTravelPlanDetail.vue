@@ -115,7 +115,7 @@ onMounted(() => {
         </div>
         <div>{{ plan.created_at }}</div>
         <div v-if="!plan.is_public">비공개</div>
-        <div v-else>조회수: {{ plan.view_cnt }}</div>
+        <div v-else>조회수: {{ plan.view_cnt + 1 }}</div>
       </div>
 
       <div class="right-side">

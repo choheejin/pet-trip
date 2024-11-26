@@ -176,6 +176,19 @@ public class TravelReviewsController {
         return ResponseEntity.ok("Favorite removed successfully!");
     }
 	
+    // 사용자가 좋아요 눌렀는지 여부 확인할 수 있게
+    @GetMapping("/like/user")
+    public ResponseEntity<Boolean> checkUserLikedReview(
+            @RequestParam("review_id") int reviewId,
+            @RequestHeader("accessToken") String header) {
+    	
+    	// 헤더에서 user_id 추출
+        int userId = userHelperService.getUserIdFromHeader(header);
+        
+        boolean isLiked = travelReviewsService.checkLiked(reviewId, userId);
+        return ResponseEntity.ok(isLiked);
+    }
+    
 
 
 }

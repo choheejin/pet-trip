@@ -93,6 +93,7 @@
 		SET view_cnt = view_cnt + 1
 		WHERE id = #{id}
 	</update>
+	
 
 	<insert id="insertFavorite">
 		INSERT INTO reviews_favorite (review_id, user_id)
@@ -103,6 +104,9 @@
 		WHERE review_id = #{reviewId} AND user_id = #{userId};
 	</delete>
 
-
+	<select id="checkLiked" resultType="int" parameterType="map">
+		select count(*)
+		from reviews_favorite where review_id = #{reviewId} and user_id = #{userId}
+	</select>
 
 </mapper>

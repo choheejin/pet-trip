@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/user";
 import axios from "axios";
 import { ref } from "vue";
 import { useRoute } from "vue-router";
+import router from "@/router/index.js";
 
 const route = useRoute();
 const planInfo = ref({
@@ -169,6 +170,7 @@ const saveReview = async (reviewData) => {
         reviewId
       );
     }
+    router.push({ name: "Review" });
   } catch (error) {
     console.log("리뷰 저장 실패 : ", error);
   }
@@ -388,7 +390,7 @@ const submitReview = async () => {
 }
 
 .input-item {
-  margin-bottom: 5px;
+  margin-top: 10px;
 }
 
 .images {

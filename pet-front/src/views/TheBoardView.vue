@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import travelplanApi from "@/api/travelplanApi";
 import BoardSide from "@/components/board/BoardSide.vue";
 import BoardTravelPlan from "@/components/board/BoardTravelPlan.vue";
@@ -9,6 +9,17 @@ const travelplans = ref([]);
 const favorites = ref([]);
 const page = ref(1);
 const sort = ref("");
+const totalPages = ref(1);
+const range = 5;
+
+const start = computed(() => range * parseInt((page.value - 1) / range) + 1);
+const end = computed(() => {
+  const number = (parseInt((page.value - 1) / range) + 1) * range;
+  return number > totalPages.value ? totalPages.value : number;
+});
+const pages = computed(() =>
+  Array.from({ length: end.value - start.value + 1 }, (_, i) => start.value + i)
+);
 
 // 좋아요 추가
 const addFavorite = async (param) => {
@@ -70,6 +81,7 @@ const getTravelPlansBySorting = async () => {
     console.log("정렬!!!", data);
     travelplans.value = data.plans;
     favorites.value = data.favoritePlans;
+    totalPages.value = data.total_pages;
     // console.log(sort.value, "조건으로 정렬된 계획 : ", travelplans.value);
   } catch (error) {
     console.error("Error fetching travel plans:", error);
@@ -79,6 +91,7 @@ const getTravelPlansBySorting = async () => {
 // 페이지 네이션에서 페이지 변경 시 호출되는 함수
 const changePage = (newPage) => {
   page.value = newPage;
+  console.log(page.value);
   // sort가 빈 값이면 오래된 순으로 getTravelPlansBySorting() 호출
   if (sort.value === "") {
     sort.value = "oldest";
@@ -129,42 +142,107 @@ onMounted(async () => {
             />
           </div>
 
-          <!-- 페이지네이션 -->
           <div class="pagination-group">
             <nav aria-label="Page navigation example">
               <ul class="pagination">
-                <li class="page-item" :class="{ disabled: page.value === 1 }">
+                <li class="page-item" :class="{ disabled: start === 1 }">
                   <a
                     class="page-link"
                     href="#"
                     aria-label="Previous"
-                    @click.prevent="changePage(page.value - 1)"
+                    @click.prevent="changePage(start - 1)"
+                  >
+                    <span aria-hidden="true">&laquo;</span>
+                    <!-- <span class="sr-only">Previous</span> -->
+                  </a>
+                </li>
+
+                <li
+                  v-for="p in pages"
+                  :key="p"
+                  class="page-item"
+                  :class="{ active: p == page }"
+                >
+                  <a
+                    class="page-link"
+                    href="#"
+                    @click.prevent="changePage(p)"
+                    >{{ p }}</a
+                  >
+                </li>
+
+                <li class="page-item" :class="{ disabled: end == totalPages }">
+                  <a
+                    class="page-link"
+                    href="#"
+                    aria-label="Next"
+                    @click.prevent="changePage(end + 1)"
+                  >
+                    <span aria-hidden="true">&raquo;</span>
+                    <!-- <span class="sr-only">Next</span> -->
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          <!-- 페이지네이션 -->
+          <!-- <div class="pagination-group">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination">
+                <li class="page-item" :class="{ disabled: page === 1 }">
+                  <a
+                    class="page-link"
+                    href="#"
+                    aria-label="Previous"
+                    @click.prevent="changePage(page - 1)"
                   >
                     <span aria-hidden="true">&laquo;</span>
                     <span class="sr-only">Previous</span>
                   </a>
                 </li>
-                <li class="page-item" :class="{ active: page.value === 1 }">
-                  <a class="page-link" href="#" @click.prevent="changePage(1)"
-                    >1</a
+                <li class="page-item" :class="{ active: page % 3 === 1 }">
+                  <a
+                    class="page-link"
+                    href="#"
+                    @click.prevent="changePage(page)"
+                    >{{ page }}</a
                   >
                 </li>
-                <li class="page-item" :class="{ active: page.value === 2 }">
-                  <a class="page-link" href="#" @click.prevent="changePage(2)"
-                    >2</a
+                <li
+                  v-if="page + 1 > totalPages"
+                  class="page-item"
+                  :class="{ active: page % 3 === 2 }"
+                >
+                  <a
+                    class="page-link"
+                    href="#"
+                    @click.prevent="
+                      changePage(Math.ceil(page + 1 / totalPages))
+                    "
+                    >{{ page }}</a
                   >
                 </li>
-                <li class="page-item" :class="{ active: page.value === 3 }">
-                  <a class="page-link" href="#" @click.prevent="changePage(3)"
-                    >3</a
+                <li
+                  v-if="page + 2 > totalPages"
+                  class="page-item"
+                  :class="{ active: page % 3 === 0 }"
+                >
+                  <a
+                    class="page-link"
+                    href="#"
+                    @click.prevent="
+                      changePage(Math.ceil(page + 2 / totalPages))
+                    "
+                    >{{ page }}</a
                   >
                 </li>
-                <li class="page-item" :class="{ disabled: page.value === 3 }">
+                <li class="page-item" :class="{ disabled: page < totalPages }">
                   <a
                     class="page-link"
                     href="#"
                     aria-label="Next"
-                    @click.prevent="changePage(page.value + 1)"
+                    @click.prevent="changePage(page + 1)"
                   >
                     <span aria-hidden="true">&raquo;</span>
                     <span class="sr-only">Next</span>
@@ -172,7 +250,7 @@ onMounted(async () => {
                 </li>
               </ul>
             </nav>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>

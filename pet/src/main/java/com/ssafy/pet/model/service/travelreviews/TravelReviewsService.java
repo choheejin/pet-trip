@@ -28,4 +28,7 @@ public interface TravelReviewsService {
 
     // 좋아요 취소
     void removeFavorite(int userId, int reviewId);
+
+    // 좋아요 확인
+    boolean checkLiked(int reviewId, int userId);
 }

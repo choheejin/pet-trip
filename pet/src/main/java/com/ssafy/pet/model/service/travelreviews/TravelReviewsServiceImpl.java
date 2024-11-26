@@ -1,5 +1,6 @@
 package com.ssafy.pet.model.service.travelreviews;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,5 +58,16 @@ public class TravelReviewsServiceImpl implements TravelReviewsService {
     public void removeFavorite(int userId, int reviewId) {
         travelReviewsMapper.deleteFavorite(userId, reviewId);
     }
+    
+    @Override
+    public boolean checkLiked(int reviewId, int userId) {
+    	Map<String, Object> params = new HashMap<>();
+        params.put("reviewId", reviewId);
+        params.put("userId", userId);
+        int count = travelReviewsMapper.checkLiked(params);
+        return count > 0; // 결과를 boolean으로 변환
+    }
+    
+    
 	
 }

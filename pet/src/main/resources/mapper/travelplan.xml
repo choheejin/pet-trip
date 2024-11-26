@@ -198,5 +198,12 @@
 		where id=#{parent_comment_id}
 	</select>
 	
+	<!-- view_cnt 증가 -->
+	<update id="incrementViewCount">
+		update travel_plans 
+		set view_cnt = view_cnt+1 
+		where id = #{id}
+	</update>
+	
 </mapper>
 

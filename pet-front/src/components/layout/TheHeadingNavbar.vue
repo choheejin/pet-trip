@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/user";
 import LoginModal from "@/components/layout/LoginModal.vue";
 import SignupModal from "@/components/layout/SignupModal.vue";
 import myPageApi from "@/api/myPageApi.js";
+import router from "@/router/index.js";
 
 const userStore = useAuthStore();
 const img = ref("/icon.png");
@@ -13,6 +14,7 @@ const userInfo = ref([]);
 const logout = () => {
   userStore.logout();
   userImg.value = img.value;
+  router.push({ name: "main" });
 };
 
 // 사용자 프로필 이미지
@@ -154,7 +156,6 @@ onMounted(() => {
 .navbar-nav {
   display: flex;
   justify-content: center;
-
 }
 
 .navbar-nav .nav-link {
