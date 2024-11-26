@@ -45,7 +45,7 @@ function selectTravelPlan(id) {
   selectedTravelPlan.value = id;
   mainSelectStore.setTravelPlan(id);
   // 이걸로 여행 세부 계획 전송??
-  // router.push({});
+  router.push({ path: "planDetail", query: { id: id } });
 }
 </script>
 <template>

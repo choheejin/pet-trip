@@ -18,6 +18,7 @@ const selectAttraction = ref(null); // 상세 보기의 값
 /* ================상세보기START================ */
 const showDetail = ref(false);
 const detailInfo = ref({});
+const dogInfo = ref({});
 
 const setShowDetail = (isShowed) => {
   showDetail.value = isShowed;
@@ -29,6 +30,15 @@ const selected = (attraction) => {
   isCartShowed.value = false;
   selectAttraction.value = attraction;
   getSelectDetail();
+  getDogInfo();
+};
+
+const getDogInfo = async () => {
+  const { data } = await attractionApi.get(
+    `/detail/${selectAttraction.value.content_id}`
+  );
+  dogInfo.value = data.petAttraction;
+  console.log(dogInfo.value);
 };
 
 const getSelectDetail = async () => {
@@ -554,6 +564,7 @@ onMounted(() => {
       <!-- 상세조회 -->
       <div class="detail-side" v-if="showDetail">
         <MapDetail
+          :dog-info="dogInfo"
           :attraction="selectAttraction"
           :detail-info="detailInfo"
           @set-show-detail="setShowDetail"

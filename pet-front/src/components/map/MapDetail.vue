@@ -1,8 +1,8 @@
 <script setup>
 import attractionApi from "@/api/attractionApi";
-import { defineProps, ref } from "vue";
+import { defineProps, onMounted, ref } from "vue";
 
-const props = defineProps(["attraction", "detailInfo"]);
+const props = defineProps(["attraction", "detailInfo", "dogInfo"]);
 
 const debounce = (func, delay) => {
   let timer;
@@ -44,6 +44,8 @@ const emitHandler = () => {
   console.log("경로 추가");
   emit("addCartItem", props.attraction);
 };
+
+onMounted(() => {});
 </script>
 
 <template>
@@ -217,6 +219,19 @@ const emitHandler = () => {
             }}
           </div>
         </div>
+
+        <div v-if="dogInfo">
+          <span class="material-symbols-outlined"> pet_supplies </span>
+          <div>
+            <p>
+              {{ dogInfo.acmpyTypeCd }}
+            </p>
+            <p>
+              {{ dogInfo.etcAcmpyInfo }}
+            </p>
+            <p>{{ dogInfo.acmpyNeedMtr }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -355,8 +370,7 @@ img {
 
 .info-container > div {
   display: flex;
-  gap: 0.5rem;
-  align-items: center;
+  gap: 0.75rem;
   width: 100%;
   height: fit-content;
 }
@@ -364,5 +378,14 @@ img {
 .info-container > div > svg {
   padding-top: 2px;
   max-width: 20px;
+}
+
+.info-container > div > span {
+  padding-top: 2px;
+  max-width: 20px;
+}
+
+.info-container > div > div > p {
+  margin-bottom: 0;
 }
 </style>
