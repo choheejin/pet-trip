@@ -34,6 +34,7 @@ import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.PasswordGenerator;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -110,7 +111,11 @@ public class UserController {
 		
 		String resetToken = jwtUtil.createPasswordResetToken(user.getId());
 		
-		userService.sendEmail(user.getEmail(), "임시 비밀번호가 이메일로 발송 되었습니다.", temporaryPwd);
+		try {
+			userService.sendPwdResetEmail(user.getEmail(), temporaryPwd);
+		} catch (MessagingException e) {
+		    throw new RuntimeException("이메일 전송 중 문제가 발생했습니다.", e);
+		}
 		
 		 // 클라이언트에게 성공 응답 반환
 	    return ResponseEntity.ok(Map.of(
