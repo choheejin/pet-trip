@@ -124,6 +124,7 @@ getUserInfo();
             <div>
               <i class="fa fa-eye eye-icon"></i> {{ plan.view_cnt }}
               <i class="fa fa-heart heart-icon"></i> {{ plan.favorite_cnt }}
+              <i v-if="!plan.is_public" class="fa-solid fa-lock lock"></i>
             </div>
           </div>
         </div>
@@ -139,6 +140,11 @@ getUserInfo();
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.lock {
+  padding-left: 5px;
+  color: #d1d1d1;
 }
 
 .card {
