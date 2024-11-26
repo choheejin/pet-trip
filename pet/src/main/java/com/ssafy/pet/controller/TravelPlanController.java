@@ -147,13 +147,9 @@ public class TravelPlanController {
 	@ResponseBody
 	public ResponseEntity<List<TravelPlanCommentsRequestDto>> listChildComments(@RequestParam(value="parent_comment_id") int parent_comment_id)
 	{
-		List<TravelPlanCommentsDto> childComments = new ArrayList<>();
-		List<TravelPlanCommentsRequestDto> convertedComments = new ArrayList<>();
-		
-		childComments = travelPlanService.listChildComments(parent_comment_id);
-		convertedComments = travelPlanService.convertToCommentsRequestDto(childComments);
+		List<TravelPlanCommentsRequestDto> convertedComments = travelPlanService.listChildComments(parent_comment_id);
 		System.out.println("childComments::");
-		System.out.println(childComments);
+		System.out.println(convertedComments);
 		
 		return ResponseEntity.ok(convertedComments);
 	}

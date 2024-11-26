@@ -163,7 +163,6 @@ onMounted(() => {
     </div>
 
     <div class="comment">
-      <BoardCommentWrite :parent_comment_id="0" :plan_id="id" />
       <BoardCommentList :plan_id="id" />
     </div>
   </div>

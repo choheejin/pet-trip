@@ -2,7 +2,11 @@
 import travelplanApi from "@/api/travelplanApi";
 import { ref } from "vue";
 
-const props = defineProps(["parent_comment_id", "plan_id"]);
+const props = defineProps([
+  "parent_comment_id",
+  "plan_id",
+  "parent_comment_userid",
+]);
 const comment = ref("");
 
 const emit = defineEmits(["handleSubmit"]);
@@ -14,6 +18,7 @@ const handleSubmit = () => {
     plan_id: props.plan_id,
     comment: comment.value,
     parent_comment_id: props.parent_comment_id,
+    parent_comment_userid: props.parent_comment_userid,
   };
 
   emit("handleSubmit", data);
