@@ -139,14 +139,17 @@ public class UserController {
 	
 	@GetMapping("/{user_id}")
 	public ResponseEntity<?> userFind(@PathVariable("user_id") String user_id) {
-		HttpStatus status = HttpStatus.ACCEPTED;
-
-		userService.findIdByUserId(user_id)
-				.orElseThrow(() -> new ApplicationException(UserErrorCode.USER_ALREADY_EXISTS));
-
-		status = HttpStatus.NO_CONTENT;
-
-		return new ResponseEntity<>(status);
+		return userService.findIdByUserId(user_id)
+	            .map(id -> {
+	                // 아이디가 존재할 경우
+	                System.out.println("userFind id: " + id);
+	                return new ResponseEntity<>("이미 존재하는 아이디 입니다.", HttpStatus.CONFLICT);
+	            })
+	            .orElseGet(() -> {
+	                // 아이디가 존재하지 않을 경우
+	                System.out.println("userFind: No user found with user_id " + user_id);
+	                return new ResponseEntity<>("사용 가능한 아이디 입니다.", HttpStatus.OK);
+	            });
 	}
 
 	@GetMapping("/info")

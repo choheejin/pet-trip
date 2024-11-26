@@ -21,7 +21,8 @@ const idValid = async () => {
     idErrorMessage.value = ""; // 중복된 아이디가 아닌 경우
     return true;
   } catch (error) {
-    idErrorMessage.value = error.response?.data?.message || "아이디 확인 오류";
+    idErrorMessage.value =
+      error.response?.data?.message || "이미 존재하는 아이디입니다.";
     return false;
   }
 };
