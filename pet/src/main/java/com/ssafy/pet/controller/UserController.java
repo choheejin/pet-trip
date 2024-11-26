@@ -168,7 +168,7 @@ public class UserController {
 
 		ProfileImageDto profileImage = userService.getProfileImageByUserId(userInfo.getId());
 		// 프로필 이미지 데이터 가져오기
-		if (profileImage.getStored_name() != null) {
+		if (profileImage != null && profileImage.getStored_name() != null) {
 			System.out.println("profileImage" + profileImage);
 			resultMap.put("image", profileImage.getFile_path() + profileImage.getStored_name());
 		} else {
