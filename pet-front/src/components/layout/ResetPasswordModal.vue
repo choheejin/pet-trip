@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import userApi from "@/api/userApi";
 
 const props = defineProps({
   resetToken: {
@@ -20,16 +21,30 @@ const resetPassword = async () => {
   }
 
   try {
-    const response = await axios.patch(
-      "/api/reset-password",
-      { new_password: newPassword.value },
-      { headers: { accessToken: props.resetToken } }
+    // 서버로 비밀번호 재설정 요청
+    const response = await userApi.patch(
+      "/reset-password",
+      null, // Body가 없으므로 null 전달
+      {
+        headers: {
+          accessToken: props.resetToken,
+        },
+        params: {
+          new_password: newPassword.value, // 쿼리 파라미터로 전달
+        },
+      }
     );
-    alert("비밀번호가 성공적으로 변경되었습니다.");
-    emit("close"); // 모달 닫기
+
+    console.log(response);
+
+    alert(response.data || "비밀번호가 성공적으로 변경되었습니다.");
+    emit("close"); // 성공 시 모달 닫기
   } catch (error) {
-    console.error("비밀번호 재설정 실패:", error);
-    alert("비밀번호 재설정 실패");
+    console.error(
+      "비밀번호 재설정 실패:",
+      error.response?.data || error.message
+    );
+    alert(error.response?.data || "비밀번호 재설정 실패");
   }
 };
 </script>
