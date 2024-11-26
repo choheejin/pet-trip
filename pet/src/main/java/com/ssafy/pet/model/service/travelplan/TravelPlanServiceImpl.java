@@ -22,6 +22,7 @@ import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.exception.errorcode.TravelPlanErrorCode;
+import com.ssafy.pet.exception.errorcode.UserErrorCode;
 import com.ssafy.pet.model.mapper.AttractionMapper;
 import com.ssafy.pet.model.mapper.TravelPlanMapper;
 import com.ssafy.pet.model.mapper.UserMapper;
@@ -147,9 +148,13 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 	
 	@Override
-	public Optional<Map<String, Object>> findPlanWithItemsById(int id) {
+	public Optional<Map<String, Object>> findPlanWithItemsById(String user_id, int id) {
 		TravelPlansDto plan = travelPlanMapper.findPlanById(id);
 		String userId = userMapper.findUserIdById(plan.getUser_id());
+		
+		if(plan.getIs_public() == 0 && userId.equals(userId)) {
+			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
+		}
 		
 		travelPlanMapper.incrementViewCount(id);
 		

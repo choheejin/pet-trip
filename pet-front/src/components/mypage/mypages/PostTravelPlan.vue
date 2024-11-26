@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import myPageApi from "@/api/myPageApi.js";
+import router from "@/router";
 
 const plans = ref([]);
 const page = ref(1); // 현재 페이지 번호
