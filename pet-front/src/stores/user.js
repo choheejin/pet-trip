@@ -39,6 +39,7 @@ export const useAuthStore = defineStore(
 
       // // 로그인 성공 후 메뉴 상태 변경
       // menuStore.changeLoginState(true);
+      return response;
     };
 
     const logout = () => {
