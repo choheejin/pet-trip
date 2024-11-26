@@ -26,7 +26,7 @@ public interface TravelPlanService {
 	
 	TravelPlansDto findPlanByIdAndUserId(int id, String userId);
 	
-	Optional<Map<String, Object>> findPlanWithItemsById(int id); 
+	Optional<Map<String, Object>> findPlanWithItemsById(String user_id, int id); 
 	
 	//오래된 순으로 게시글 조회
 	List<TravelPlansDto> getOldestPlans(int page_start, int page_size);

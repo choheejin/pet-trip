@@ -1,10 +1,9 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import travelplanApi from "@/api/travelplanApi.js";
 import BoardTravelPlanItemList from "./BoardTravelPlanItemList.vue";
 import { useAuthStore } from "@/stores/user";
-import BoardCommentWrite from "./BoardCommentWrite.vue";
 import BoardCommentList from "./BoardCommentList.vue";
 
 // 상세조회할 id
@@ -24,24 +23,33 @@ const writerInfo = ref({
 const authStore = useAuthStore();
 
 const getDetail = async () => {
-  await travelplanApi.get(`/${id}`).then((res) => {
-    console.log(res.data);
+  await travelplanApi
+    .get(`/${id}`)
+    .then((res) => {
+      console.log(res.data);
 
-    isLiked.value = res.data?.isLiked;
-    writerInfo.value = res.data.userInfo;
-    if (writerInfo.value.profile_path == "/profile/null") {
-      writerInfo.value.profile_path = "/src/assets/no-profile.png";
-    } else {
-      writerInfo.value.profile_path =
-        "http://localhost:8080/pet/profile/" +
-        writerInfo.value.profile_path.split("/").pop();
-    }
+      isLiked.value = res.data?.isLiked;
+      writerInfo.value = res.data.userInfo;
+      if (writerInfo.value.profile_path == "/profile/null") {
+        writerInfo.value.profile_path = "/src/assets/no-profile.png";
+      } else {
+        writerInfo.value.profile_path =
+          "http://localhost:8080/pet/profile/" +
+          writerInfo.value.profile_path.split("/").pop();
+      }
 
-    plan.value = res.data.plan;
-    items.value = res.data.items;
-    console.log("확인 : ", plan.value);
-    console.log("여행지들 : ", items.value);
-  });
+      plan.value = res.data.plan;
+      items.value = res.data.items;
+      console.log("확인 : ", plan.value);
+      console.log("여행지들 : ", items.value);
+    })
+    .catch((error) => {
+      console.log(error);
+      if (error.status == 401) {
+        alert("접근 권한이 없습니다");
+        router.push({ path: "/board" });
+      }
+    });
 };
 
 const handleUpdate = () => {

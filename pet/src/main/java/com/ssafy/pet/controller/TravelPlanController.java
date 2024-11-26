@@ -87,16 +87,24 @@ public class TravelPlanController {
 			@PathVariable("plan_id") Integer plan_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
 
-		Map<String, Object> resultMap = travelPlanService.findPlanWithItemsById(plan_id)
-				.orElseThrow(() -> new RuntimeException());
 		
 		if(!header.isEmpty()) {
 			String user_id = jwtUtil.getUserId(header.get());
+
+			Map<String, Object> resultMap = travelPlanService.findPlanWithItemsById(user_id, plan_id)
+					.orElseThrow(() -> new RuntimeException());
+
 			boolean isLiked = travelPlanService.getUserLikedPlan(user_id, plan_id);
 			resultMap.put("isLiked", isLiked);
+			return new ResponseEntity<Map<String, Object>>(resultMap, status);
+		} else {
+			
+			Map<String, Object> resultMap = travelPlanService.findPlanWithItemsById("", plan_id)
+					.orElseThrow(() -> new RuntimeException());
+			return new ResponseEntity<Map<String, Object>>(resultMap, status);
+
 		}
 
-		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 
 	@GetMapping("/plans")
@@ -106,6 +114,8 @@ public class TravelPlanController {
 			@RequestHeader(value = "accessToken", required = false) String header) {
 
 		int page_start = UtilClass.caculateOffest(page);
+		
+		
 		List<TravelPlansDto> sortedPlan = travelPlanService.getPlansBySort(sort, page_start,
 				PaginationConstants.PAGE_SIZE);
 		List<TravelPlansDto> allRes = travelPlanService.getAllPlansBySort(sort);
