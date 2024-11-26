@@ -6,41 +6,25 @@ import travelplanApi from "@/api/travelplanApi";
 import { useAuthStore } from "@/stores/user";
 
 const props = defineProps(["comment", "plan_id"]);
-const emit = defineEmits(["handleDelete"]);
 
 const children = ref([]);
 
 const isWriting = ref(false);
 const authStore = useAuthStore();
 
-const handlePostComment = async (data) => {
+const handlePostComment = async (props) => {
+  const data = {
+    plan_id: props.plan_id,
+    comment: props.comment,
+    parent_comment_id: props.parent_comment_id,
+  };
   await travelplanApi.post("/post-comment", data).then((res) => {
     if (res.status == 201) {
-      console.log(children.value);
-      children.value.push(res.data);
+      const response = res.data;
+      response["metioned"] = "@" + props.parent_comment_userid;
+      console.log(response);
+      children.value.push(response);
       isWriting.value = false;
-    }
-  });
-};
-
-const handle = (comment) => {
-  if (comment.level > 0) {
-    console.log("item에서:: " + comment.id);
-    deleteComment(comment);
-    console.log("?");
-  }
-  emit("handleDelete", comment);
-};
-
-const deleteComment = async (comment) => {
-  const params = {
-    comment_pk: comment.id,
-  };
-
-  await travelplanApi.delete("/delete-comment", { params }).then((res) => {
-    if (res.status == 200 && comment.level == 0) {
-      console.log("list에서:: " + comment.id);
-      children.value = children.value.filter((item) => item.id != comment.id);
     }
   });
 };
@@ -53,6 +37,19 @@ const getChildComments = async (id) => {
   const { data } = await travelplanApi.get("/child-comments", { params });
   console.log(data);
   children.value = data;
+};
+
+const deleteComment = async () => {
+  const params = {
+    comment_pk: props.comment.id,
+  };
+
+  await travelplanApi.delete("/delete-comment", { params }).then((res) => {
+    if (res.status == 200) {
+      console.log("list에서:: " + props.comment.id);
+      props.comment.comment = "삭제된 메세지 입니다";
+    }
+  });
 };
 
 onMounted(() => {
@@ -83,16 +80,27 @@ onMounted(() => {
         <div class="strong">
           {{ comment.user_id }}
         </div>
-        <div class="comment-detail">{{ comment.comment }}</div>
+        <div class="comment-detail">
+          {{ comment.level > 0 ? comment.metioned : "" }} {{ comment.comment }}
+        </div>
 
         <div class="write-group">
           <div class="write-data">
             <span class="create-date">{{ comment.created_at }}</span>
-            <div class="button" @click="isWriting = !isWriting">답글</div>
             <div
               class="button"
-              v-if="authStore.user == comment.user_id"
-              @click="handle(comment)"
+              v-if="comment.comment != '삭제된 메세지 입니다'"
+              @click="isWriting = !isWriting"
+            >
+              답글
+            </div>
+            <div
+              class="button"
+              v-if="
+                authStore.user == comment.user_id &&
+                comment.comment != '삭제된 메세지 입니다'
+              "
+              @click="deleteComment"
             >
               삭제
             </div>
@@ -128,6 +136,7 @@ onMounted(() => {
         :key="comment.id"
         :plan_id="plan_id"
         :parent_comment_id="comment.id"
+        :parent_comment_userid="comment.user_id"
       />
     </div>
 

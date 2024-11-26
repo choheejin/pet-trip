@@ -151,10 +151,17 @@
 		);
 	</insert>
 	
-	<delete id="deleteComment" parameterType="int">
-		delete from travel_plan_comments
+	<update id="deleteComment" parameterType="int">
+		update travel_plan_comments
+		set comment="삭제된 메세지 입니다"
 		where id = #{id};
-	</delete>
+	</update>
+	
+	<select id="getUserIdByParentCommentId" parameterType="int">
+		select user_id
+		from travel_plan_comments
+		where id=#{id}
+	</select>
 
 	<select id="getUserPlans" parameterType="int" resultType="TravelPlansDto">
 		select *

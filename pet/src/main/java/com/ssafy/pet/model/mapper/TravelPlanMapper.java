@@ -84,4 +84,6 @@ public interface TravelPlanMapper {
 	
 	// 부모 댓글 id를 통해 부모의 level을 가져온다
 	Integer getCommentLevelByParentId(int parent_comment_id);
+	
+	int getUserIdByParentCommentId(int id);
 }
