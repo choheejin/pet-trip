@@ -88,4 +88,6 @@ public interface TravelPlanMapper {
 
 	// view_cnt 증가
 	int incrementViewCount(int id);
+	
+	int getUserIdByParentCommentId(int id);
 }

@@ -34,6 +34,7 @@ import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.PasswordGenerator;
 
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -74,13 +75,10 @@ public class UserController {
 	public ResponseEntity<?> userLogin(@RequestBody UsersDto user) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
-
-		boolean isPasswordReset = jwtUtil.isPasswordResetToken(user.getPassword());
-		
 		
 		UsersDto loginUser = userService.login(user).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
-		System.out.println(loginUser);
-		if(user.is_temporary_password())
+
+		if(loginUser.is_temporary_password())
 		{
 			 resultMap.put("message", "임시 비밀번호로 로그인되었습니다. 비밀번호를 변경하세요.");
 	         resultMap.put("resetToken", jwtUtil.createPasswordResetToken(loginUser.getId()));
@@ -109,14 +107,15 @@ public class UserController {
 		
 		String temporaryPwd = PasswordGenerator.generateSecurePassword();
 		
-		userService.updatePassword(user.getId(), passwordEncoder.encode(temporaryPwd));
-		
-		user.set_temporary_password(true);
-		System.out.println("Getter 확인: " + user.is_temporary_password());
+		userService.updatePassword(user.getId(), passwordEncoder.encode(temporaryPwd), true);
 		
 		String resetToken = jwtUtil.createPasswordResetToken(user.getId());
 		
-		userService.sendEmail(user.getEmail(), "임시 비밀번호가 이메일로 발송 되었습니다.", temporaryPwd);
+		try {
+			userService.sendPwdResetEmail(user.getEmail(), temporaryPwd);
+		} catch (MessagingException e) {
+		    throw new RuntimeException("이메일 전송 중 문제가 발생했습니다.", e);
+		}
 		
 		 // 클라이언트에게 성공 응답 반환
 	    return ResponseEntity.ok(Map.of(
@@ -125,6 +124,19 @@ public class UserController {
 	    ));
 	}
 
+	@PatchMapping("/reset-password")
+	public ResponseEntity<?> resetPassword(@RequestHeader("accessToken") String header, @RequestParam("new_password") String new_password)
+	{
+		if(!jwtUtil.isPasswordResetToken(header))
+		{
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
+		}
+		
+		int user_pk = jwtUtil.getUserPk(header);
+		userService.updatePassword(user_pk, passwordEncoder.encode(new_password), false);
+		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다");
+	}
+	
 	@GetMapping("/{user_id}")
 	public ResponseEntity<?> userFind(@PathVariable("user_id") String user_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;

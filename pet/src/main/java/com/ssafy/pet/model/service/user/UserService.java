@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ssafy.pet.dto.ProfileImageDto;
 import com.ssafy.pet.dto.UsersDto;
 
+import jakarta.mail.MessagingException;
+
 public interface UserService {
 	// 회원가입
 	Optional<Integer> signup(UsersDto user);
@@ -28,7 +30,7 @@ public interface UserService {
 	Optional<Integer> update(UsersDto user);
 	
 	//비밀번호 변경
-	Optional<Integer> updatePassword(@Param("user_id") int user_id, @Param("password") String password);
+	Optional<Integer> updatePassword(int user_id, String password, boolean is_temporary_password);
 	
 	// 탈퇴
 	Optional<Integer> deactivate(String user_id);
@@ -39,6 +41,9 @@ public interface UserService {
 	// 프로필 이미지 조회
 	ProfileImageDto getProfileImageByUserId(int user_id);
 	
-	//비밀번호 찾기 이메일 보내기
+	//이메일 보내기
 	void sendEmail(String to, String subject, String text);
+	
+	//비밀번호 찾는 이메일
+	void sendPwdResetEmail(String to, String tmp_pwd) throws MessagingException;
 }

@@ -259,8 +259,19 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public List<TravelPlanCommentsDto> listChildComments(int parent_comment_id) {
-		return travelPlanMapper.listChildComments(parent_comment_id);
+	public List<TravelPlanCommentsRequestDto> listChildComments(int parent_comment_id) {
+		
+		List<TravelPlanCommentsDto> comments = travelPlanMapper.listChildComments(parent_comment_id);
+
+		List<TravelPlanCommentsRequestDto> response =  convertToCommentsRequestDto(comments).stream().map(comment -> {
+			int parent_user_pk = travelPlanMapper.getUserIdByParentCommentId(comment.getParent_comment_id());
+			System.out.println(parent_user_pk);
+			String parent_user_id = userMapper.findUserIdById(parent_user_pk);
+			comment.setMetioned("@"+parent_user_id);
+			return comment;
+		}).collect(Collectors.toList());
+		
+		return response;
 	}
 
 	@Override

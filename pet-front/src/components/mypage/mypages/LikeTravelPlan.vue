@@ -42,9 +42,17 @@ const loadMore = () => {
 };
 
 const travelPlanReview = (plan_id, plan_title) => {
-  console.log("리뷰 작성할 여행 계획 : ", plan_title)
-  router.push({name:"PlanReviewWrite", params: {plan_id}, query: { plan_title}});
-}
+  console.log("리뷰 작성할 여행 계획 : ", plan_title);
+  router.push({
+    name: "PlanReviewWrite",
+    params: { plan_id },
+    query: { plan_title },
+  });
+};
+
+const travelDetail = (id) => {
+  router.push({ path: "planDetail", query: { id: id } });
+};
 // 컴포넌트가 마운트될 때 초기 데이터 로드
 onMounted(() => {
   getPlans(); // 초기 데이터 불러오기
@@ -68,8 +76,10 @@ onMounted(() => {
         ></div>
         <div class="review">
           <!--  리뷰 작성으로 넘어가는 버튼 -->
-          <i class="fa-regular fa-pen-to-square"
-          @click="travelPlanReview(plan.id, plan.title)"></i>
+          <i
+            class="fa-regular fa-pen-to-square"
+            @click="travelPlanReview(plan.id, plan.title)"
+          ></i>
         </div>
         <div class="card-title">
           <div>{{ plan.title }}</div>
@@ -77,7 +87,7 @@ onMounted(() => {
       </div>
       <div class="card-bottom">
         <div class="content">
-          <v-btn class="detail-btn" @click="TravelDetail(plan.id)">
+          <v-btn class="detail-btn" @click="travelDetail(plan.id)">
             상세보기
           </v-btn>
           <div class="stats">

@@ -3,18 +3,27 @@ import BoardCommentItem from "@/components/board/BoardCommentItem.vue";
 import BoardCommentWrite from "./BoardCommentWrite.vue";
 import { ref, onMounted } from "vue";
 import travelplanApi from "@/api/travelplanApi";
+import { useAuthStore } from "@/stores/user";
 
 const props = defineProps(["comment", "plan_id"]);
 
 const children = ref([]);
 
 const isWriting = ref(false);
+const authStore = useAuthStore();
 
-const handlePostComment = async (data) => {
+const handlePostComment = async (props) => {
+  const data = {
+    plan_id: props.plan_id,
+    comment: props.comment,
+    parent_comment_id: props.parent_comment_id,
+  };
   await travelplanApi.post("/post-comment", data).then((res) => {
     if (res.status == 201) {
-      console.log(children.value);
-      children.value.push(res.data);
+      const response = res.data;
+      response["metioned"] = "@" + props.parent_comment_userid;
+      console.log(response);
+      children.value.push(response);
       isWriting.value = false;
     }
   });
@@ -28,6 +37,19 @@ const getChildComments = async (id) => {
   const { data } = await travelplanApi.get("/child-comments", { params });
   console.log(data);
   children.value = data;
+};
+
+const deleteComment = async () => {
+  const params = {
+    comment_pk: props.comment.id,
+  };
+
+  await travelplanApi.delete("/delete-comment", { params }).then((res) => {
+    if (res.status == 200) {
+      console.log("list에서:: " + props.comment.id);
+      props.comment.comment = "삭제된 메세지 입니다";
+    }
+  });
 };
 
 onMounted(() => {
@@ -58,12 +80,30 @@ onMounted(() => {
         <div class="strong">
           {{ comment.user_id }}
         </div>
-        <div class="comment-detail">{{ comment.comment }}</div>
+        <div class="comment-detail">
+          {{ comment.level > 0 ? comment.metioned : "" }} {{ comment.comment }}
+        </div>
 
         <div class="write-group">
           <div class="write-data">
             <span class="create-date">{{ comment.created_at }}</span>
-            <div class="write-button" @click="isWriting = !isWriting">답글</div>
+            <div
+              class="button"
+              v-if="comment.comment != '삭제된 메세지 입니다'"
+              @click="isWriting = !isWriting"
+            >
+              답글
+            </div>
+            <div
+              class="button"
+              v-if="
+                authStore.user == comment.user_id &&
+                comment.comment != '삭제된 메세지 입니다'
+              "
+              @click="deleteComment"
+            >
+              삭제
+            </div>
           </div>
         </div>
       </div>
@@ -96,6 +136,7 @@ onMounted(() => {
         :key="comment.id"
         :plan_id="plan_id"
         :parent_comment_id="comment.id"
+        :parent_comment_userid="comment.user_id"
       />
     </div>
 
@@ -139,7 +180,7 @@ onMounted(() => {
   font-size: small;
 }
 
-.write-group > .write-data > .write-button {
+.write-group > .write-data > .button {
   display: flex;
   font-weight: 700;
   cursor: pointer;
@@ -148,13 +189,6 @@ onMounted(() => {
 
 .comment-detail {
   padding: 0.5rem 0.25rem;
-}
-
-.write-button > svg {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 15px;
 }
 
 .write-input-root {
