@@ -33,6 +33,9 @@ const getPlans = async () => {
     loading.value = false; // 로딩 종료
   }
 };
+const travelDetail = (id) => {
+  router.push({ path: "planDetail", query: { id: id } });
+};
 
 // 스크롤을 감지하여 데이터 로드하는 함수
 const loadMore = () => {
@@ -68,7 +71,7 @@ onMounted(() => {
       </div>
       <div class="card-bottom">
         <div class="content">
-          <v-btn class="detail-btn" @click="TravelDetail(plan.id)">
+          <v-btn class="detail-btn" @click="travelDetail(plan.id)">
             상세보기
           </v-btn>
           <div class="stats">

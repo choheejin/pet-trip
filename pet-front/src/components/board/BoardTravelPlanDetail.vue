@@ -29,9 +29,13 @@ const getDetail = async () => {
 
     isLiked.value = res.data?.isLiked;
     writerInfo.value = res.data.userInfo;
-    writerInfo.value.profile_path =
-      "http://localhost:8080/pet/profile/" +
-      writerInfo.value.profile_path.split("/").pop();
+    if (writerInfo.value.profile_path == "/profile/null") {
+      writerInfo.value.profile_path = "/src/assets/no-profile.png";
+    } else {
+      writerInfo.value.profile_path =
+        "http://localhost:8080/pet/profile/" +
+        writerInfo.value.profile_path.split("/").pop();
+    }
 
     plan.value = res.data.plan;
     items.value = res.data.items;
