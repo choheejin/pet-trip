@@ -6,7 +6,6 @@ import BoardTravelPlanItemList from "./BoardTravelPlanItemList.vue";
 import { useAuthStore } from "@/stores/user";
 import BoardCommentList from "./BoardCommentList.vue";
 
-// 상세조회할 id
 const route = useRoute();
 const router = useRouter();
 
