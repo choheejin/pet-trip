@@ -107,9 +107,6 @@ const findPassword = async () => {
   <div v-if="!showFindPasswordModal && !showResetPasswordModal">
     <div class="modal">
       <div class="modal-content">
-        <div class="icon">
-          <img src="/icon.png" alt="default" />
-        </div>
         <div class="modal-header">
           <button
             type="button"
@@ -167,6 +164,7 @@ const findPassword = async () => {
             aria-label="Close"
             @click="closeFindPasswordModal"
           ></button>
+          <img class="icon" src="/icon.png" />
           <h1 class="modal-title fs-5">비밀번호 찾기</h1>
         </div>
         <div class="modal-body">
