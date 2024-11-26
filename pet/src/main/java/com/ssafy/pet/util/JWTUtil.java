@@ -101,6 +101,7 @@ public class JWTUtil {
 		}
 		
 		Map<String, Object> value = claims.getBody();
+		System.out.println("getUserPk value: " + value);
 		
 		Object userPK = value.get("id");
 		
@@ -113,7 +114,7 @@ public class JWTUtil {
 	
 	public String createPasswordResetToken(int user_id) {
 		Claims claims = Jwts.claims().setSubject("password-reset");
-		claims.put("user_id", user_id);
+		claims.put("id", user_id);
 		claims.setIssuedAt(new Date());
 		claims.setExpiration(new Date(System.currentTimeMillis() + 3600000));
 		
@@ -131,12 +132,14 @@ public class JWTUtil {
 					.parseClaimsJws(token)
 					.getBody();
 			
-			String subject = claims.getSubject();
-			return "password-reset".equals(subject);
+			return "password-reset".equals(claims.getSubject());
 		}
-		catch(Exception e)
+		catch(ExpiredJwtException  e)
 		{
-			return false;
+			throw new ApplicationException(UserErrorCode.EXPIRED_JWT); // 토큰 만료 예외 처리
 		}
+		catch (Exception e) {
+	        return false; // 기타 문제 발생 시
+	    }
 	}
 }

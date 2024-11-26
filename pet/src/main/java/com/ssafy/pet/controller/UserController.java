@@ -74,13 +74,10 @@ public class UserController {
 	public ResponseEntity<?> userLogin(@RequestBody UsersDto user) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
-
-		boolean isPasswordReset = jwtUtil.isPasswordResetToken(user.get);
-		
 		
 		UsersDto loginUser = userService.login(user).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
-		System.out.println(loginUser);
-		if(user.is_temporary_password())
+
+		if(loginUser.is_temporary_password())
 		{
 			 resultMap.put("message", "임시 비밀번호로 로그인되었습니다. 비밀번호를 변경하세요.");
 	         resultMap.put("resetToken", jwtUtil.createPasswordResetToken(loginUser.getId()));
@@ -109,10 +106,7 @@ public class UserController {
 		
 		String temporaryPwd = PasswordGenerator.generateSecurePassword();
 		
-		userService.updatePassword(user.getId(), passwordEncoder.encode(temporaryPwd));
-		
-		user.set_temporary_password(true);
-		System.out.println("Getter 확인: " + user.is_temporary_password());
+		userService.updatePassword(user.getId(), passwordEncoder.encode(temporaryPwd), true);
 		
 		String resetToken = jwtUtil.createPasswordResetToken(user.getId());
 		
@@ -125,6 +119,19 @@ public class UserController {
 	    ));
 	}
 
+	@PatchMapping("/reset-password")
+	public ResponseEntity<?> resetPassword(@RequestHeader("accessToken") String header, @RequestParam("new_password") String new_password)
+	{
+		if(!jwtUtil.isPasswordResetToken(header))
+		{
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
+		}
+		
+		int user_pk = jwtUtil.getUserPk(header);
+		userService.updatePassword(user_pk, passwordEncoder.encode(new_password), false);
+		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다");
+	}
+	
 	@GetMapping("/{user_id}")
 	public ResponseEntity<?> userFind(@PathVariable("user_id") String user_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;

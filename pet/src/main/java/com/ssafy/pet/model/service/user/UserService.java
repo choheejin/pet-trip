@@ -28,7 +28,7 @@ public interface UserService {
 	Optional<Integer> update(UsersDto user);
 	
 	//비밀번호 변경
-	Optional<Integer> updatePassword(@Param("user_id") int user_id, @Param("password") String password);
+	Optional<Integer> updatePassword(int user_id, String password, boolean is_temporary_password);
 	
 	// 탈퇴
 	Optional<Integer> deactivate(String user_id);

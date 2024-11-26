@@ -2,6 +2,7 @@ package com.ssafy.pet.model.service.user;
 
 import java.util.Optional;
 
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.binding.BindingException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -90,8 +91,8 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public Optional<Integer> updatePassword(int user_id, String password) {
-		int cnt = userMapper.updatePassword(user_id, password);
+	public Optional<Integer> updatePassword(int user_id, String password, boolean is_temporary_password) {
+		int cnt = userMapper.updatePassword(user_id, password, is_temporary_password);
 		return cnt > 0 ? Optional.of(cnt) : Optional.empty();
 	}
 
