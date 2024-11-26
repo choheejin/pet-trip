@@ -21,13 +21,14 @@ const logout = () => {
 const getUserImage = async () => {
   const { data } = await myPageApi.get("/user/info", {});
   userInfo.value = data;
+
   if (userInfo.value.image !== null) {
     // userInfo.value.image 경로가 "profile/ssafy1.png" 형태라면
     userImg.value =
       "http://localhost:8080/pet/profile/" +
       userInfo.value.image.split("/").pop();
   } else {
-    userImg.value = img.value;
+    userImg.value = "/src/assets/no-profile.png";
   }
   // console.log("사용자 정보 출력하기 : ", userInfo.value);
 };
@@ -178,7 +179,7 @@ onMounted(() => {
 .profile-image {
   display: flex;
   justify-content: center;
-  border: 1px solid black;
+  border: 1px solid rgb(107 114 128);
   height: 40px;
   width: 40px;
   border-radius: 50%;
