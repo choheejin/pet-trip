@@ -152,7 +152,6 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		TravelPlansDto plan = travelPlanMapper.findPlanById(id);
 		String userId = userMapper.findUserIdById(plan.getUser_id());
 		
-		
 		if(plan.getIs_public() == 0 && userId.equals(userId)) {
 			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
 		}
