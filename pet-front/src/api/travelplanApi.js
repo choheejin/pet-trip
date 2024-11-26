@@ -20,8 +20,13 @@ travelplanApi.interceptors.response.use(
   (error) => {
     if (error.status == 401) {
       const originalRequest = error.config;
+      const pattern = /^\/[0-9]*$/;
 
-      if (originalRequest.method == "get" && !originalRequest._retry) {
+      if (
+        originalRequest.method == "get" &&
+        !pattern.test(originalRequest.url) &&
+        !originalRequest._retry
+      ) {
         originalRequest._retry = true;
         const authStore = useAuthStore();
         authStore.logout();
@@ -29,6 +34,8 @@ travelplanApi.interceptors.response.use(
         delete originalRequest.headers.accessToken;
 
         return travelplanApi(originalRequest);
+      } else {
+        return Promise.reject(error);
       }
     }
   }

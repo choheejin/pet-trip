@@ -758,6 +758,12 @@ onMounted(() => {
   animation: spin 1s linear infinite;
 }
 
+.pagination .page-link:focus {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
