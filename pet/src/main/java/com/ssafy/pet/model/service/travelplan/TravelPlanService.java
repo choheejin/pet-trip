@@ -50,7 +50,7 @@ public interface TravelPlanService {
 	List<TravelPlanCommentsDto> listParentComments(int plan_id);
 	
 	//대댓글 가져오기
-	List<TravelPlanCommentsDto> listChildComments(int parent_comment_id);
+	List<TravelPlanCommentsRequestDto> listChildComments(int parent_comment_id);
 	
 	//댓글 작성
 	TravelPlanCommentsRequestDto postComment(TravelPlanCommentsDto comment);
