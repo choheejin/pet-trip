@@ -48,7 +48,7 @@ const loadMore = () => {
 
 // 위치보기 버튼 = 지도에 마커로 표시
 const attractionOnMap = (title) => {
-  selectedAttraction.value = title;
+  // selectedAttraction.value = title;
   mainSelectStore.setAttraction(title);
   // 이걸로 BaseMap 에 전송??
   router.push({ name: "BaseMap" });
