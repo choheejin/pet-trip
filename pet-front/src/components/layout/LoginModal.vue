@@ -114,6 +114,7 @@ const findPassword = async () => {
             aria-label="Close"
             @click="$emit('close')"
           ></button>
+          <img class="icon" src="/icon.png" />
           <h1 class="modal-title fs-5">로그인</h1>
         </div>
         <div class="modal-body">

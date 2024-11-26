@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import myPageApi from "@/api/myPageApi";
 
 const img = ref("/icon.png");
