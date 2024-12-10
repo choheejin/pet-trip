@@ -38,10 +38,10 @@ public interface TravelPlanService {
 	List<TravelPlansDto> getPlansByMostViews(int page_start, int page_size);
 	
 	//유저가 게시한 게시글 조회
-	List<TravelPlansDto> getUserPlans(int user_id);
+	List<TravelPlansDto> getUserPlans(String user_id);
 	
 	//유저가 좋아요한 게시글 조회
-	List<TravelPlansDto> getUserFavoritePlans(int user_id);
+	List<TravelPlansDto> getUserFavoritePlans(String user_id);
 	
 	List<TravelPlanCommentsRequestDto> convertToCommentsRequestDto(List<TravelPlanCommentsDto> plans);
 	
@@ -56,7 +56,7 @@ public interface TravelPlanService {
 	TravelPlanCommentsRequestDto postComment(TravelPlanCommentsDto comment);
 	
 	//댓글 삭제
-	int deleteComment(int comment_pk);
+	int deleteComment(int comment_pk, String userId);
 	
 	//유저가 작성한 댓글인지 확인하기위해 comment_pk의 user_id 가져오기
 	int findUserIdByCommentId(int comment_pk);
@@ -72,13 +72,13 @@ public interface TravelPlanService {
 	List<TravelPlansDto> getAllPlansBySort(String sort);
 	
 	//유저가 좋아요 누른 게시글 plans_favorites에 추가하기
-	int addFavoritePlan(int user_id, int favorite_plan_id);
+	int addFavoritePlan(String user_id, int favorite_plan_id);
 	
 	//유저가 좋아요 누른 게시글 삭제하기
-	int deleteFavoritePlan(int user_id, int favorite_plan_id);
+	int deleteFavoritePlan(String user_id, int favorite_plan_id);
 	
 	//유저가 좋아요 누른 게시글 상태 계산
-	boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, int user_id);
+	boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, String user_id);
 	
 	//유저가 특정 게시글을 좋아요를 눌렀었는지 확인
 	boolean getUserLikedPlan(String user_id, int plan_id);

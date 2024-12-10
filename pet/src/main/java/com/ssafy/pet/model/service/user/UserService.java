@@ -2,9 +2,6 @@ package com.ssafy.pet.model.service.user;
 
 import java.util.Optional;
 
-import org.apache.ibatis.annotations.Param;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.ssafy.pet.dto.ProfileImageDto;
 import com.ssafy.pet.dto.UsersDto;
 
@@ -36,10 +33,10 @@ public interface UserService {
 	Optional<Integer> deactivate(String user_id);
 	
 	// 프로필 이미지 업데이트
-	Optional<Integer> updateProfileImage(int user_id, ProfileImageDto profileImageDto);
+	Optional<Integer> updateProfileImage(String user_id, ProfileImageDto profileImageDto);
 	
 	// 프로필 이미지 조회
-	ProfileImageDto getProfileImageByUserId(int user_id);
+	ProfileImageDto getProfileImageByUserId(String user_id);
 	
 	//이메일 보내기
 	void sendEmail(String to, String subject, String text);

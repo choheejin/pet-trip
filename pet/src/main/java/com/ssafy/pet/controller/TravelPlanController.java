@@ -39,8 +39,6 @@ import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UserPlansResponseDto;
 import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.model.service.travelplan.TravelPlanService;
-import com.ssafy.pet.model.service.user.UserHelperService;
-import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.UtilClass;
 
@@ -55,8 +53,6 @@ public class TravelPlanController {
 	private final JWTUtil jwtUtil;
 	private final TravelPlanService travelPlanService;
 	private final AttractionService attracionService;
-	private final UserHelperService userHelperService;
-	private final UserService userService;
 
 	@GetMapping("/naver-map")
 	public ResponseEntity<?> getNaverMap(@RequestParam(value = "start") String start,
@@ -120,14 +116,13 @@ public class TravelPlanController {
 				PaginationConstants.PAGE_SIZE);
 		List<TravelPlansDto> allRes = travelPlanService.getAllPlansBySort(sort);
 
-		attracionService.setPlanImage(sortedPlan);
 		int total_pages = UtilClass.calculateTotalPages(allRes.size());
 
 		UserPlansResponseDto res = new UserPlansResponseDto();
 
 		if (header != null && !header.isEmpty()) {
-			int id = userHelperService.getUserIdFromHeader(header);
-			boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, id);
+			String userId = jwtUtil.getUserId(header);
+			boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, userId);
 			res.setFavoritePlans(userFavoriteStatus);
 		} else {
 			boolean[] defaultFavoriteStatus = new boolean[PaginationConstants.PAGE_SIZE];
@@ -212,11 +207,12 @@ public class TravelPlanController {
 	@PostMapping("/add-user-favorite-plan")
 	public ResponseEntity<?> addUserFavoritePlan(@RequestHeader("accessToken") String header,
 			@RequestParam(value = "plan_id") int plan_id) {
-		int id = userHelperService.getUserIdFromHeader(header);
+		String userId = jwtUtil.getUserId(header);
+		
 		HttpStatus status = HttpStatus.ACCEPTED;
 		log.trace("addUserFavoritePlan : {}", plan_id);
 
-		int res = travelPlanService.addFavoritePlan(id, plan_id);
+		int res = travelPlanService.addFavoritePlan(userId, plan_id);
 
 		if (res <= 0) {
 			throw new RuntimeException();
@@ -234,9 +230,9 @@ public class TravelPlanController {
 
 		//log.trace("addUserFavoritePlan : {}",pf);	
 
-		int id = userHelperService.getUserIdFromHeader(header);
+		String userId = jwtUtil.getUserId(header);
 
-		int res = travelPlanService.deleteFavoritePlan(id, plan_id);
+		int res = travelPlanService.deleteFavoritePlan(userId, plan_id);
 
 		if (res <= 0) {
 			throw new RuntimeException();
@@ -251,9 +247,9 @@ public class TravelPlanController {
 	@ResponseBody
 	public ResponseEntity<List<TravelPlansDto>> userPlan(@RequestHeader("accessToken") String header) {
 
-		int id = userHelperService.getUserIdFromHeader(header);
+		String userId = jwtUtil.getUserId(header);
 
-		List<TravelPlansDto> result = travelPlanService.getUserPlans(id);
+		List<TravelPlansDto> result = travelPlanService.getUserPlans(userId);
 
 		attracionService.setPlanImage(result);
 
@@ -264,9 +260,9 @@ public class TravelPlanController {
 	@ResponseBody
 	public ResponseEntity<List<TravelPlansDto>> userFavoritePlans(@RequestHeader("accessToken") String header) {
 
-		int id = userHelperService.getUserIdFromHeader(header);
+		String userId = jwtUtil.getUserId(header);
 
-		List<TravelPlansDto> result = travelPlanService.getUserFavoritePlans(id);
+		List<TravelPlansDto> result = travelPlanService.getUserFavoritePlans(userId);
 
 		attracionService.setPlanImage(result);
 
@@ -280,12 +276,11 @@ public class TravelPlanController {
 		HttpStatus status = HttpStatus.ACCEPTED;
 		
 		String user_id = jwtUtil.getUserId(header);
-		int user_pk = userService.findIdByUserId(user_id).get();
 		
 		TravelPlanCommentsDto comment = new TravelPlanCommentsDto();
 
 		comment.setPlan_id(req_comment.getPlan_id());
-		comment.setUser_id(user_pk);
+		comment.setUserId(user_id);
 		comment.setComment(req_comment.getComment());
 		comment.setParent_comment_id(req_comment.getParent_comment_id());
 		
@@ -301,15 +296,9 @@ public class TravelPlanController {
 	{
 		HttpStatus status = HttpStatus.ACCEPTED;
 
-		//본인이 작성한 댓글만 삭제 가능하도록
-		int plan_user_pk = travelPlanService.findUserIdByCommentId(comment_pk);
-		int user_pk = userHelperService.getUserIdFromHeader(header);
+		String userId = jwtUtil.getUserId(header);
 		
-		if(plan_user_pk != user_pk) {
-			return ResponseEntity.ok(HttpStatus.BAD_REQUEST);
-		}
-		
-		int res = travelPlanService.deleteComment(comment_pk);
+		int res = travelPlanService.deleteComment(comment_pk, userId);
 		
 		if(res < 0) 
 		{

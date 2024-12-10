@@ -8,6 +8,7 @@ public class TravelReviewsDto {
     private int id;
     private int plan_id;
     private int user_id;
+    private String userId;
     private String title;
     private String content;
     private LocalDateTime created_at;

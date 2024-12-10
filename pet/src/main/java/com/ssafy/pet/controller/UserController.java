@@ -29,7 +29,6 @@ import com.ssafy.pet.dto.ProfileImageDto;
 import com.ssafy.pet.dto.UsersDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.UserErrorCode;
-import com.ssafy.pet.model.service.user.UserHelperService;
 import com.ssafy.pet.model.service.user.UserService;
 import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.PasswordGenerator;
@@ -43,7 +42,6 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	private final JWTUtil jwtUtil;
 	private final UserService userService;
-	private final UserHelperService userHelperService;
 	private final PasswordEncoder passwordEncoder;
 
 	@PostMapping("/signup")
@@ -58,16 +56,16 @@ public class UserController {
 
 		return new ResponseEntity<>(status);
 	}
-	
+
 	@PatchMapping("/update-info")
 	@ResponseBody
 	public ResponseEntity<?> updateUserInfo(@RequestHeader("accessToken") String header, @RequestBody UsersDto user) {
 		HttpStatus status = HttpStatus.ACCEPTED;
-		
+
 		userService.update(user).orElseThrow(() -> new RuntimeException());
-		
+
 		status = HttpStatus.NO_CONTENT;
-		
+
 		return ResponseEntity.ok(status);
 	}
 
@@ -75,81 +73,75 @@ public class UserController {
 	public ResponseEntity<?> userLogin(@RequestBody UsersDto user) {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
-		
-		UsersDto loginUser = userService.login(user).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
 
-		if(loginUser.is_temporary_password())
-		{
-			 resultMap.put("message", "임시 비밀번호로 로그인되었습니다. 비밀번호를 변경하세요.");
-	         resultMap.put("resetToken", jwtUtil.createPasswordResetToken(loginUser.getId()));
-	         status = HttpStatus.FORBIDDEN;
-		}
-		else {
+		UsersDto loginUser = userService.login(user)
+				.orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
 
-			String accessToken = jwtUtil.createAccessToken(loginUser.getId(), loginUser.getUser_id());
+		if (loginUser.is_temporary_password()) {
+			resultMap.put("message", "임시 비밀번호로 로그인되었습니다. 비밀번호를 변경하세요.");
+			resultMap.put("resetToken", jwtUtil.createPasswordResetToken(loginUser.getId()));
+			status = HttpStatus.FORBIDDEN;
+		} else {
+
+			String accessToken = jwtUtil.createAccessToken(loginUser.getUser_id());
 			resultMap.put("access-token", accessToken);
 			status = HttpStatus.CREATED;
 		}
-		
+
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
-	
+
 	@PatchMapping("/forgot-password")
-	public ResponseEntity<?> forgetPassword(@RequestBody PasswordCheck pwc){
-		
+	public ResponseEntity<?> forgetPassword(@RequestBody PasswordCheck pwc) {
+
 		UsersDto user = userService.findUserByUserIdAndEmail(pwc.getUser_id(), pwc.getEmail());
 		System.out.println("forgetPassword user: " + user);
-		
-		if(user == null)
-		{
+
+		if (user == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("등록되지 않은 사용자 입니다.");
 		}
-		
+
 		String temporaryPwd = PasswordGenerator.generateSecurePassword();
-		
+
 		userService.updatePassword(user.getId(), passwordEncoder.encode(temporaryPwd), true);
-		
+
 		String resetToken = jwtUtil.createPasswordResetToken(user.getId());
-		
+
 		try {
 			userService.sendPwdResetEmail(user.getEmail(), temporaryPwd);
 		} catch (MessagingException e) {
-		    throw new RuntimeException("이메일 전송 중 문제가 발생했습니다.", e);
+			throw new RuntimeException("이메일 전송 중 문제가 발생했습니다.", e);
 		}
-		
-		 // 클라이언트에게 성공 응답 반환
-	    return ResponseEntity.ok(Map.of(
-	        "message", "임시 비밀번호가 이메일로 발송되었습니다.",
-	        "resetToken", resetToken // 선택: 클라이언트에 토큰 제공
-	    ));
+
+		// 클라이언트에게 성공 응답 반환
+		return ResponseEntity.ok(Map.of("message", "임시 비밀번호가 이메일로 발송되었습니다.", "resetToken", resetToken // 선택: 클라이언트에 토큰
+																										// 제공
+		));
 	}
 
 	@PatchMapping("/reset-password")
-	public ResponseEntity<?> resetPassword(@RequestHeader("accessToken") String header, @RequestParam("new_password") String new_password)
-	{
-		if(!jwtUtil.isPasswordResetToken(header))
-		{
+	public ResponseEntity<?> resetPassword(@RequestHeader("accessToken") String header,
+			@RequestParam("new_password") String new_password) {
+		if (!jwtUtil.isPasswordResetToken(header)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("유효하지 않은 토큰입니다.");
 		}
-		
+
 		int user_pk = jwtUtil.getUserPk(header);
 		userService.updatePassword(user_pk, passwordEncoder.encode(new_password), false);
 		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다");
 	}
-	
+
 	@GetMapping("/{user_id}")
 	public ResponseEntity<?> userFind(@PathVariable("user_id") String user_id) {
-		return userService.findIdByUserId(user_id)
-	            .map(id -> {
-	                // 아이디가 존재할 경우
-	                System.out.println("userFind id: " + id);
-	                return new ResponseEntity<>("이미 존재하는 아이디 입니다.", HttpStatus.CONFLICT);
-	            })
-	            .orElseGet(() -> {
-	                // 아이디가 존재하지 않을 경우
-	                System.out.println("userFind: No user found with user_id " + user_id);
-	                return new ResponseEntity<>("사용 가능한 아이디 입니다.", HttpStatus.OK);
-	            });
+		return userService.findIdByUserId(user_id).map(id -> {
+			// 아이디가 존재할 경우
+			System.out.println("userFind id: " + id);
+			return new ResponseEntity<>("이미 존재하는 아이디 입니다.", HttpStatus.CONFLICT);
+		}).orElseGet(() -> {
+			// 아이디가 존재하지 않을 경우
+			System.out.println("userFind: No user found with user_id " + user_id);
+			return new ResponseEntity<>("사용 가능한 아이디 입니다.", HttpStatus.OK);
+		});
 	}
 
 	@GetMapping("/info")
@@ -160,13 +152,13 @@ public class UserController {
 		String user_id = jwtUtil.getUserId(header);
 		UsersDto userInfo = userService.userInfo(user_id)
 				.orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
-		
+
 		resultMap.put("pk_id", userInfo.getId());
 		resultMap.put("user_id", userInfo.getUser_id());
 		resultMap.put("username", userInfo.getUsername());
 		resultMap.put("email", userInfo.getEmail());
 
-		ProfileImageDto profileImage = userService.getProfileImageByUserId(userInfo.getId());
+		ProfileImageDto profileImage = userService.getProfileImageByUserId(user_id);
 		// 프로필 이미지 데이터 가져오기
 		if (profileImage != null && profileImage.getStored_name() != null) {
 			System.out.println("profileImage" + profileImage);
@@ -189,13 +181,13 @@ public class UserController {
 		userService.deactivate(user_id).orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
 
 		status = HttpStatus.NO_CONTENT;
-		
-		return new ResponseEntity<>(status);	
+
+		return new ResponseEntity<>(status);
 	}
 
 	@GetMapping("/profileimage")
 	public ResponseEntity<?> getProfileImage(@RequestHeader("accessToken") String header) {
-		int user_id = userHelperService.getUserIdFromHeader(header);
+		String user_id = jwtUtil.getUserId(header);
 
 		ProfileImageDto profileImage = userService.getProfileImageByUserId(user_id);
 
@@ -206,7 +198,6 @@ public class UserController {
 	public ResponseEntity<?> updateProfileImage(@RequestHeader("accessToken") String header,
 			@RequestParam("file") MultipartFile file) {
 		String user_id = jwtUtil.getUserId(header);
-		int id = userHelperService.getUserIdFromHeader(header);
 
 		UsersDto userInfo = userService.userInfo(user_id)
 				.orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
@@ -216,15 +207,16 @@ public class UserController {
 		String originalFileName = file.getOriginalFilename();
 //		String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
 		String extension = ".jpg";
-		
+
 		String fileName = user_id + extension; // 저장될 파일 이름
 
-		System.out.println("파일 도착 : !!!!!!"+fileName);
+		System.out.println("파일 도착 : !!!!!!" + fileName);
 		File destination = new File(directory + fileName);
 
 		try {
 			// 파일 저장
-			Files.copy(file.getInputStream(), Paths.get(destination.getAbsolutePath()), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(file.getInputStream(), Paths.get(destination.getAbsolutePath()),
+					StandardCopyOption.REPLACE_EXISTING);
 
 			ProfileImageDto img = new ProfileImageDto();
 			img.setUser_id(userInfo.getId());
@@ -235,7 +227,7 @@ public class UserController {
 
 			System.out.println("저장된 이미지 정보 : " + img);
 
-			int cnt = userService.updateProfileImage(id, img)
+			int cnt = userService.updateProfileImage(user_id, img)
 					.orElseThrow(() -> new ApplicationException(UserErrorCode.UNAUTHORIZED));
 			System.out.println("업데이트된 이미지 갯수: " + cnt);
 

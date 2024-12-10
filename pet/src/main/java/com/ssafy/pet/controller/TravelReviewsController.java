@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ssafy.pet.dto.ReviewImagesDto;
 import com.ssafy.pet.dto.TravelReviewsDto;
 import com.ssafy.pet.model.service.travelreviews.TravelReviewsService;
-import com.ssafy.pet.model.service.user.UserHelperService;
 import com.ssafy.pet.util.JWTUtil;
 
 import io.jsonwebtoken.io.IOException;
@@ -41,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 public class TravelReviewsController {
 	private final JWTUtil jwtUtil;
 	private final TravelReviewsService travelReviewsService;
-	private final UserHelperService userHelperService;
 
 	// 이미지 저장
 	@PostMapping("/insertimage")
@@ -100,9 +97,8 @@ public class TravelReviewsController {
 		
 		try {
 			// accessToken에서 user_id 추출
-			int user_id = userHelperService.getUserIdFromHeader(header);
-
-			reviewDto.setUser_id(user_id);
+			String userId = jwtUtil.getUserId(header);
+			reviewDto.setUserId(userId);
 			
 			System.out.println("전달받은 reviewDto : "+reviewDto);
 
@@ -153,8 +149,8 @@ public class TravelReviewsController {
             @PathVariable("id") int id) {
         
         // 헤더에서 user_id 추출
-        int userId = userHelperService.getUserIdFromHeader(header);
-
+        String userId = jwtUtil.getUserId(header);
+        
         // 서비스 호출
         travelReviewsService.addFavorite(userId, id);
 
@@ -168,7 +164,7 @@ public class TravelReviewsController {
             @PathVariable("id") int id) {
         
         // 헤더에서 user_id 추출
-        int userId = userHelperService.getUserIdFromHeader(header);
+        String userId = jwtUtil.getUserId(header);
 
         // 서비스 호출
         travelReviewsService.removeFavorite(userId, id);
@@ -183,7 +179,7 @@ public class TravelReviewsController {
             @RequestHeader("accessToken") String header) {
     	
     	// 헤더에서 user_id 추출
-        int userId = userHelperService.getUserIdFromHeader(header);
+        String userId = jwtUtil.getUserId(header);
         
         boolean isLiked = travelReviewsService.checkLiked(reviewId, userId);
         return ResponseEntity.ok(isLiked);

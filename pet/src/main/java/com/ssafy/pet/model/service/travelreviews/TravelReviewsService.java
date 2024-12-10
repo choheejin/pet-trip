@@ -24,11 +24,11 @@ public interface TravelReviewsService {
 	TravelReviewsDto getReviewDetail(int id);
 	
 	// 좋아요 추가
-    void addFavorite(int userId, int reviewId);
+    void addFavorite(String userId, int reviewId);
 
     // 좋아요 취소
-    void removeFavorite(int userId, int reviewId);
+    void removeFavorite(String userId, int reviewId);
 
     // 좋아요 확인
-    boolean checkLiked(int reviewId, int userId);
+    boolean checkLiked(int reviewId, String userId);
 }

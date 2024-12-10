@@ -201,12 +201,16 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public List<TravelPlansDto> getUserPlans(int user_id) {
+	public List<TravelPlansDto> getUserPlans(String userId) {
+		int user_id = userMapper.findIdByUserId(userId);
+
 		return travelPlanMapper.getUserPlans(user_id);
 	}
 
 	@Override
-	public List<TravelPlansDto> getUserFavoritePlans(int user_id) {
+	public List<TravelPlansDto> getUserFavoritePlans(String userId) {
+		int user_id = userMapper.findIdByUserId(userId);
+
 		return travelPlanMapper.getUserFavoritePlans(user_id);
 	}
 
@@ -236,7 +240,9 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, int user_id) {
+	public boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, String userId) {
+		int user_id = userMapper.findIdByUserId(userId);
+		
 		List<Integer> plan_ids = travelPlanMapper.getUserFavoritePlanIds(user_id);
 		Set<Integer> favoritePlanSet = new HashSet<>(plan_ids);
 		
@@ -254,12 +260,16 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public int addFavoritePlan(int user_id, int favorite_plan_id) {
+	public int addFavoritePlan(String userId, int favorite_plan_id) {
+		int user_id = userMapper.findIdByUserId(userId);
+		
 		return travelPlanMapper.addFavoritePlan(user_id, favorite_plan_id);
 	}
 
 	@Override
-	public int deleteFavoritePlan(int user_id, int favorite_plan_id) {
+	public int deleteFavoritePlan(String userId, int favorite_plan_id) {
+		int user_id = userMapper.findIdByUserId(userId);
+
 		return travelPlanMapper.deleteFavoritePlan(user_id, favorite_plan_id);
 	}
 
@@ -283,8 +293,12 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	public TravelPlanCommentsRequestDto postComment(TravelPlanCommentsDto comment) {
 		LocalDateTime now = LocalDateTime.now();
 		
+		int user_id = userMapper.findIdByUserId(comment.getUserId());
+
+		comment.setUser_id(user_id);
 		comment.setCreated_at(now);
 		comment.setUpdated_at(now);
+		
 		
 		if(comment.getParent_comment_id() != 0) {
 			Integer level = travelPlanMapper.getCommentLevelByParentId(comment.getParent_comment_id());
@@ -304,7 +318,15 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public int deleteComment(int comment_pk) {
+	public int deleteComment(int comment_pk, String userId) {
+		
+		int plan_user_pk = findUserIdByCommentId(comment_pk);
+		int user_pk = userMapper.findIdByUserId(userId);
+		
+		if(user_pk != plan_user_pk) {
+			throw new ApplicationException(UserErrorCode.UNAUTHORIZED);
+		}
+		
 		return travelPlanMapper.deleteComment(comment_pk);
 	}
 	

@@ -26,11 +26,11 @@ public class JWTUtil {
 	@Value("${jwt.access-token.expiretime}")
 	private long accessTokenExpireTime;
 
-	public String createAccessToken(int i, String user_id) {
-		return create(i, user_id, "access-token", accessTokenExpireTime);
+	public String createAccessToken(String user_id) {
+		return create(user_id, "access-token", accessTokenExpireTime);
 	}
 
-	private String create(int id, String user_id, String subject, long expireTime) {
+	private String create(String user_id, String subject, long expireTime) {
 		Claims claims = Jwts.claims().setSubject(subject) // 토큰 제목 설정 ex) access-token, refresh-token
 				.setIssuedAt(new Date()) // 생성일 설정
 //				만료일 설정 (유효기간)
@@ -40,7 +40,6 @@ public class JWTUtil {
 
 //		저장할 data의 key, value
 		claims.put("user_id", user_id);
-		claims.put("id", id);
 
 		String jwt = Jwts.builder()
 //			Header 설정 : 토큰의 타입, 해쉬 알고리즘 정보 세팅.

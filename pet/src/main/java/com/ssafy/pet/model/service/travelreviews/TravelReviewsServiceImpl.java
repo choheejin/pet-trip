@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.ssafy.pet.dto.ReviewImagesDto;
 import com.ssafy.pet.dto.TravelReviewsDto;
 import com.ssafy.pet.model.mapper.TravelReviewsMapper;
+import com.ssafy.pet.model.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,8 +18,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TravelReviewsServiceImpl implements TravelReviewsService {
 	private final TravelReviewsMapper travelReviewsMapper;
+	private final UserMapper userMapper;
 	
 	public int saveReview(TravelReviewsDto reviewDto) {
+		int user_id = userMapper.findIdByUserId(reviewDto.getUserId());
+		
+		reviewDto.setUser_id(user_id);
+		
 		travelReviewsMapper.saveReview(reviewDto);
         return reviewDto.getId();
 	}
@@ -50,17 +56,23 @@ public class TravelReviewsServiceImpl implements TravelReviewsService {
     }
 	
 	@Override
-    public void addFavorite(int userId, int reviewId) {
+    public void addFavorite(String user_id, int reviewId) {
+		int userId = userMapper.findIdByUserId(user_id);
+
         travelReviewsMapper.insertFavorite(userId, reviewId);
     }
 
     @Override
-    public void removeFavorite(int userId, int reviewId) {
+    public void removeFavorite(String user_id, int reviewId) {
+		int userId = userMapper.findIdByUserId(user_id);
+
         travelReviewsMapper.deleteFavorite(userId, reviewId);
     }
     
     @Override
-    public boolean checkLiked(int reviewId, int userId) {
+    public boolean checkLiked(int reviewId, String user_id) {
+		int userId = userMapper.findIdByUserId(user_id);
+
     	Map<String, Object> params = new HashMap<>();
         params.put("reviewId", reviewId);
         params.put("userId", userId);

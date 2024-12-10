@@ -2,7 +2,6 @@ package com.ssafy.pet.model.service.user;
 
 import java.util.Optional;
 
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.binding.BindingException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -87,7 +86,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Optional<Integer> updateProfileImage(int user_id, ProfileImageDto profileImageDto) {
+	public Optional<Integer> updateProfileImage(String userId, ProfileImageDto profileImageDto) {
+		int user_id = userMapper.findIdByUserId(userId);
+		
 		System.out.println("profileImageDto : " + profileImageDto);
 		int cnt = userMapper.updateProfileImage(user_id, profileImageDto);
 		System.out.println("updateProfileImage 서비스 후");
@@ -101,7 +102,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public ProfileImageDto getProfileImageByUserId(int user_id) {
+	public ProfileImageDto getProfileImageByUserId(String userId) {
+		int user_id = userMapper.findIdByUserId(userId);
 
 		return userMapper.getProfileImageByUserId(user_id);
 	}

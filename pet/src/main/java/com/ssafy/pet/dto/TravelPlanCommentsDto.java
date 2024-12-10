@@ -13,6 +13,7 @@ public class TravelPlanCommentsDto {
 	private int id;
 	private int plan_id;
 	private int user_id;
+	private String userId;
 	private String comment;
 	private LocalDateTime created_at;
 	private LocalDateTime updated_at;
