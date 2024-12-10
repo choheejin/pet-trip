@@ -90,4 +90,6 @@ public interface TravelPlanMapper {
 	int incrementViewCount(int id);
 	
 	int getUserIdByParentCommentId(int id);
+	
+	int getTotalPlansPage();
 }

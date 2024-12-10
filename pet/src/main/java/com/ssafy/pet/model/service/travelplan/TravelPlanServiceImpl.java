@@ -13,12 +13,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.pet.config.PaginationConstants;
+import com.ssafy.pet.domain.TravelPlans;
 import com.ssafy.pet.dto.ProfileImageDto;
 import com.ssafy.pet.dto.TravelPlanCommentsDto;
 import com.ssafy.pet.dto.TravelPlanCommentsRequestDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.dto.UsersDto;
+import com.ssafy.pet.dto.response.TravelPlansResponseDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.exception.errorcode.TravelPlanErrorCode;
@@ -215,6 +217,21 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
+	public TravelPlansResponseDto getPlans(String userId, String sort, int page_start, int page_size) {		
+		TravelPlansResponseDto response = new TravelPlansResponseDto();
+		
+		TravelPlans plans = new TravelPlans(getPlansBySort(sort, page_start, page_size));		
+		List<Boolean> favoriteStatus =  plans.getFavoriteStatus(getUserFavoritePlanIds(userId));
+		int totalPage = plans.getTotalNum();
+		
+		response.setPlans(plans.getTravelPlansDtos());
+		response.setFavoritePlans(favoriteStatus);
+		response.setTotal_pages(totalPage);
+		
+		return response;
+	}
+	
+	@Override
 	public List<TravelPlansDto> getPlansBySort(String sort, int page_start, int page_size) {
 		switch(sort) {
 			//오래된 순
@@ -235,10 +252,17 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public List<TravelPlansDto> getAllPlansBySort(String sort) {
-		return getPlansBySort(sort, -1, -1);
+	public List<Integer> getUserFavoritePlanIds(String userId){
+		
+		if(userId.isBlank()) {
+			return null;
+		}
+		
+		int user_id = userMapper.findIdByUserId(userId);
+		
+		return travelPlanMapper.getUserFavoritePlanIds(user_id);
 	}
-
+	
 	@Override
 	public boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, String userId) {
 		int user_id = userMapper.findIdByUserId(userId);

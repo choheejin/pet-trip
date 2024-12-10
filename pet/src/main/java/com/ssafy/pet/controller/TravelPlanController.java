@@ -36,7 +36,7 @@ import com.ssafy.pet.dto.TravelPlanCommentsDto;
 import com.ssafy.pet.dto.TravelPlanCommentsRequestDto;
 import com.ssafy.pet.dto.TravelPlanItemsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
-import com.ssafy.pet.dto.UserPlansResponseDto;
+import com.ssafy.pet.dto.response.TravelPlansResponseDto;
 import com.ssafy.pet.model.service.attraction.AttractionService;
 import com.ssafy.pet.model.service.travelplan.TravelPlanService;
 import com.ssafy.pet.util.JWTUtil;
@@ -104,34 +104,18 @@ public class TravelPlanController {
 	}
 
 	@GetMapping("/plans")
-	public ResponseEntity<UserPlansResponseDto> getPlans(
+	public ResponseEntity<TravelPlansResponseDto> getPlans(
 			@RequestParam(value = "page", required = false, defaultValue = "1") int page,
 			@RequestParam(value = "sort", required = false, defaultValue = "oldest") String sort,
 			@RequestHeader(value = "accessToken", required = false) String header) {
 
 		int page_start = UtilClass.caculateOffest(page);
 		
+		String userId = header != null ? jwtUtil.getUserId(header) : "";
+
+		TravelPlansResponseDto res = travelPlanService.getPlans(userId, sort, page_start, PaginationConstants.PAGE_SIZE);
 		
-		List<TravelPlansDto> sortedPlan = travelPlanService.getPlansBySort(sort, page_start,
-				PaginationConstants.PAGE_SIZE);
-		List<TravelPlansDto> allRes = travelPlanService.getAllPlansBySort(sort);
-
-		int total_pages = UtilClass.calculateTotalPages(allRes.size());
-
-		UserPlansResponseDto res = new UserPlansResponseDto();
-
-		if (header != null && !header.isEmpty()) {
-			String userId = jwtUtil.getUserId(header);
-			boolean[] userFavoriteStatus = travelPlanService.calculateFavoriteStatus(sortedPlan, userId);
-			res.setFavoritePlans(userFavoriteStatus);
-		} else {
-			boolean[] defaultFavoriteStatus = new boolean[PaginationConstants.PAGE_SIZE];
-			res.setFavoritePlans(defaultFavoriteStatus);
-		}
-
-		res.setPlans(sortedPlan);
-		res.setTotal_pages(total_pages);
-
+		System.out.println(res.getPlans());
 		
 		return ResponseEntity.ok(res);
 	}

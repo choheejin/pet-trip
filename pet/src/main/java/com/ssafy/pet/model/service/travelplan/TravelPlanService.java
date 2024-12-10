@@ -8,6 +8,7 @@ import com.ssafy.pet.dto.PlansFavoritesDto;
 import com.ssafy.pet.dto.TravelPlanCommentsDto;
 import com.ssafy.pet.dto.TravelPlanCommentsRequestDto;
 import com.ssafy.pet.dto.TravelPlansDto;
+import com.ssafy.pet.dto.response.TravelPlansResponseDto;
 
 public interface TravelPlanService {
 	Optional<Integer> insert(Map<String, Object> parmas) throws Exception;
@@ -27,6 +28,10 @@ public interface TravelPlanService {
 	TravelPlansDto findPlanByIdAndUserId(int id, String userId);
 	
 	Optional<Map<String, Object>> findPlanWithItemsById(String user_id, int id); 
+	
+	TravelPlansResponseDto getPlans(String userId, String sort, int page_start, int page_size);
+	
+	List<Integer> getUserFavoritePlanIds(String userId);
 	
 	//오래된 순으로 게시글 조회
 	List<TravelPlansDto> getOldestPlans(int page_start, int page_size);
@@ -67,9 +72,6 @@ public interface TravelPlanService {
 	
 	//정렬 타입별 게시글 조회
 	List<TravelPlansDto> getPlansBySort(String sort, int page_start, int page_size);
-	
-	//페이지네이션용 게시글 조회
-	List<TravelPlansDto> getAllPlansBySort(String sort);
 	
 	//유저가 좋아요 누른 게시글 plans_favorites에 추가하기
 	int addFavoritePlan(String user_id, int favorite_plan_id);

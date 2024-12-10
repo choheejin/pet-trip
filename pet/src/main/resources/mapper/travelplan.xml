@@ -212,5 +212,10 @@
 		where id = #{id}
 	</update>
 	
+	<select id="getTotalPlansPage">
+		select count(*)
+		from travel_plans;
+	</select>
+		
 </mapper>
 
