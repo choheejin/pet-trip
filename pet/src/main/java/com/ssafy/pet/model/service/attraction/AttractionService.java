@@ -3,15 +3,12 @@ package com.ssafy.pet.model.service.attraction;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.annotations.Param;
-
 import com.ssafy.pet.dto.AttractionDetailDto;
 import com.ssafy.pet.dto.AttractionsDto;
 import com.ssafy.pet.dto.GugunsDto;
 import com.ssafy.pet.dto.HotplaceDto;
 import com.ssafy.pet.dto.PetAttractionsDto;
 import com.ssafy.pet.dto.TravelPlansDto;
-import com.ssafy.pet.dto.UsersDto;
 
 public interface AttractionService {
 	// 관광지 검색 모드
@@ -31,15 +28,15 @@ public interface AttractionService {
 
 	//content_id로 hotplace 찾기
 	HotplaceDto searchHotplaceById(int content_id);
-	
-	//user_id로 user table의 primary-key인 id 찾기
+
+	// user_id로 user table의 primary-key인 id 찾기
 	int searchUserByUserId(String user_id);
-	
+
 	// 핫플레이스로 장소 등록
-	int addHotplace(int content_id, int user_id);
+	int addHotplace(int content_id, String user_id);
 	
 	// 핫플레이스 장소 삭제: key_content_id, value: user
-	int deleteHotplace(int content_id, int user_id);
+	int deleteHotplace(int content_id, String user_id);
 	
 	//sido_code로 gugun_code 찾기
 	List<GugunsDto> searchGugunCodeBySidoCode(int sido_code);
@@ -57,7 +54,7 @@ public interface AttractionService {
 	void setPlanImage(List<TravelPlansDto> plans);
 	
 	//user_id를 통해서 hotplace의 content_id 찾기
-	List<Integer> listHotplaceContentIdsByUserId(int user_id);
+	List<Integer> listHotplaceContentIdsByUserId(String user_id);
 	
 	// 핫플레이스 목록 보기
 	List<AttractionsDto> viewHotplaces();

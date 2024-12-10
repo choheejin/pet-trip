@@ -33,7 +33,6 @@ import com.ssafy.pet.dto.TravelPlansDto;
 import com.ssafy.pet.exception.ApplicationException;
 import com.ssafy.pet.exception.errorcode.SearchErrorCode;
 import com.ssafy.pet.model.service.attraction.AttractionService;
-import com.ssafy.pet.model.service.user.UserHelperService;
 import com.ssafy.pet.util.JWTUtil;
 import com.ssafy.pet.util.UtilClass;
 
@@ -45,12 +44,9 @@ import lombok.RequiredArgsConstructor;
 public class AttractionController {
 	private final JWTUtil jwtUtil;
 	private final AttractionService attractionService;
-	private final UserHelperService userHelperService;
 
-	
 	@GetMapping("/openapi-detail")
-	public ResponseEntity<?> getDetail(
-			@RequestHeader(value = "accessToken", required = false) Optional<String> header,
+	public ResponseEntity<?> getDetail(@RequestHeader(value = "accessToken", required = false) Optional<String> header,
 			@RequestParam(name = "contentId") String contentId,
 			@RequestParam(name = "contentTypeId") String contentTypeId) throws Exception {
 
@@ -74,20 +70,21 @@ public class AttractionController {
 		while ((line = br.readLine()) != null) {
 			sb.append(line);
 		}
-		
+
 		ObjectMapper objectMapper = new ObjectMapper();
 		Map<String, Object> responseBody = objectMapper.readValue(sb.toString(), Map.class);
-		
+
 		System.out.println(responseBody);
 		// 유저가 좋아요를 눌렀는지 확인해야한다.
-		if(!header.isEmpty()) {
+		if (!header.isEmpty()) {
 			String user_id = jwtUtil.getUserId(header.get());
 			int content_id = Integer.parseInt(contentId);
 			boolean isLiked = attractionService.getUserLikedContent(user_id, content_id);
-	        Map<String, Object> bodyMap = (Map<String, Object>) ((Map<String, Object>) responseBody.get("response")).get("body");
-	        bodyMap.put("isLiked", isLiked);
+			Map<String, Object> bodyMap = (Map<String, Object>) ((Map<String, Object>) responseBody.get("response"))
+					.get("body");
+			bodyMap.put("isLiked", isLiked);
 		}
-		
+
 		return ResponseEntity.ok(responseBody);
 	}
 
@@ -161,11 +158,12 @@ public class AttractionController {
 	@PostMapping("/hotplace/{content_id}")
 	public ResponseEntity<?> updateHotplace(@RequestHeader("accessToken") String header,
 			@PathVariable("content_id") int content_id) {
+
 		// 유저 아이디 테이블의 아이디 받기
-		int id = userHelperService.getUserIdFromHeader(header);
+		String userId = jwtUtil.getUserId(header);
 
 		// 핫플레이스 테이블에 데이터 추가하기
-		int result = attractionService.addHotplace(content_id, id);
+		int result = attractionService.addHotplace(content_id, userId);
 
 		if (result > 0) {
 			return ResponseEntity.ok("핫플레이스 추가 성공");
@@ -221,9 +219,9 @@ public class AttractionController {
 	public ResponseEntity<List<AttractionsDto>> getUserFavorites(@RequestHeader("accessToken") String header) {
 		List<AttractionsDto> result = new ArrayList<>();
 
-		int id = userHelperService.getUserIdFromHeader(header);
+		String userId = jwtUtil.getUserId(header);
 
-		List<Integer> content_ids = attractionService.listHotplaceContentIdsByUserId(id);
+		List<Integer> content_ids = attractionService.listHotplaceContentIdsByUserId(userId);
 
 		for (var content_id : content_ids) {
 			result.add(attractionService.searchByContentID(content_id));
@@ -237,8 +235,8 @@ public class AttractionController {
 			@RequestParam(value = "content_id") int content_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
 
-		int id = userHelperService.getUserIdFromHeader(header);
-		int cnt = attractionService.addHotplace(content_id, id);
+		String userId = jwtUtil.getUserId(header);
+		int cnt = attractionService.addHotplace(content_id, userId);
 
 		if (cnt <= 0) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Data conflict or operation not permitted");
@@ -254,9 +252,9 @@ public class AttractionController {
 	public ResponseEntity<?> deleteUserHotplace(@RequestHeader("accessToken") String header,
 			@RequestParam(value = "content_id") int content_id) {
 		HttpStatus status = HttpStatus.ACCEPTED;
-		int id = userHelperService.getUserIdFromHeader(header);
+		String userId = jwtUtil.getUserId(header);
 
-		int res = attractionService.deleteHotplace(content_id, id);
+		int res = attractionService.deleteHotplace(content_id, userId);
 
 		if (res <= 0) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Data conflict or operation not permitted");
