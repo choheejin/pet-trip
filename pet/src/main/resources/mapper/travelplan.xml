@@ -44,9 +44,10 @@
 			`plan_id`=#{plan_id}
 		</foreach>
 	</update>
-	
+
 	<update id="increasePlanViewCnt" parameterType="int">
-		update travel_plans
+		update
+		travel_plans
 		set view_cnt = view_cnt + 1
 		where id=#{id}
 	</update>
@@ -56,10 +57,12 @@
 		where id = #{plan_id}
 	</delete>
 
-	<select id="findUserByUserIdAndEmail" parameterType="PasswordCheck" resultType="UsersDto">
+	<select id="findUserByUserIdAndEmail"
+		parameterType="PasswordCheck" resultType="UsersDto">
 		select *
 		from users
-		where user_id=#{user_id} and email=#{email};
+		where
+		user_id=#{user_id} and email=#{email};
 	</select>
 
 	<select id="findPlanById" parameterType="int"
@@ -91,8 +94,9 @@
 		a.content_id = t.content_id
 		where plan_id = #{id};
 	</select>
-	
-	<select id="findUserIdByCommentId" parameterType="int" resultType="int">
+
+	<select id="findUserIdByCommentId" parameterType="int"
+		resultType="int">
 		select user_id
 		from travel_plan_comments
 		where id = #{id};
@@ -100,19 +104,41 @@
 
 	<select id="getOldestPlans" parameterType="int"
 		resultType="TravelPlansDto">
-		select *
-		from travel_plans
+		select tp.id as id, title, created_at, end_at, is_public, description,
+		tp.user_id as user_id, view_cnt, favorite_cnt, image,
+		ifnull(pf.user_id, -1) as like_user_id
+		from travel_plans as tp
+		left join plans_favorites as pf
+
+		<if test="user_id == -1">
+			on tp.id = pf.plan_id and pf.user_id = null
+		</if>
+
+		<if test="user_id != -1">
+			on tp.id = pf.plan_id and pf.user_id = #{user_id}
+		</if>
+
 		order by created_at asc
 		<if test="page_start != -1 and page_size != -1">
 			limit #{page_start}, #{page_size};
 		</if>
-
 	</select>
 
 	<select id="getNewestPlans" parameterType="int"
 		resultType="TravelPlansDto">
-		select *
-		from travel_plans
+		select tp.id as id, title, created_at, end_at, is_public, description,
+		tp.user_id as user_id, view_cnt, favorite_cnt, image,
+		ifnull(pf.user_id, -1) as like_user_id
+		from travel_plans as tp
+		left join plans_favorites as pf
+
+		<if test="user_id == -1">
+			on tp.id = pf.plan_id and pf.user_id = null
+		</if>
+
+		<if test="user_id != -1">
+			on tp.id = pf.plan_id and pf.user_id = #{user_id}
+		</if>
 		order by created_at desc
 		<if test="page_start != -1 and page_size != -1">
 			limit #{page_start}, #{page_size};
@@ -121,101 +147,131 @@
 
 	<select id="getPlansByMostViews" parameterType="int"
 		resultType="TravelPlansDto">
-		select *
-		from travel_plans
+		select tp.id as id, title, created_at, end_at, is_public, description,
+		tp.user_id as user_id, view_cnt, favorite_cnt, image,
+		ifnull(pf.user_id, -1) as like_user_id
+		from travel_plans as tp
+		left join plans_favorites as pf
+
+		<if test="user_id == -1">
+			on tp.id = pf.plan_id and pf.user_id = null
+		</if>
+
+		<if test="user_id != -1">
+			on tp.id = pf.plan_id and pf.user_id = #{user_id}
+		</if>
 		order by view_cnt desc
 		<if test="page_start != -1 and page_size != -1">
 			limit #{page_start}, #{page_size};
 		</if>
 	</select>
 
-	<select id="listParentComments" parameterType="int" resultType="TravelPlanCommentsDto">
+	<select id="listParentComments" parameterType="int"
+		resultType="TravelPlanCommentsDto">
 		select *
 		from travel_plan_comments
-		where parent_comment_id is null and plan_id=#{plan_id}
+		where parent_comment_id is
+		null and plan_id=#{plan_id}
 		order by created_at;
 	</select>
-	
-	<select id="listChildComments" parameterType="int" resultType="TravelPlanCommentsDto">
+
+	<select id="listChildComments" parameterType="int"
+		resultType="TravelPlanCommentsDto">
 		select *
 		from travel_plan_comments
-		where parent_comment_id = #{parent_comment_id}
+		where parent_comment_id =
+		#{parent_comment_id}
 		order by created_at;
 	</select>
-	
-	<insert id="postComment" parameterType="TravelPlanCommentsDto" useGeneratedKeys="true" keyProperty="id">
-		insert into travel_plan_comments (plan_id, user_id, comment, created_at, updated_at, level, parent_comment_id)
-		values(#{plan_id}, #{user_id}, #{comment}, #{created_at}, #{updated_at}, #{level},
+
+	<insert id="postComment" parameterType="TravelPlanCommentsDto"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into travel_plan_comments (plan_id, user_id, comment,
+		created_at, updated_at, level, parent_comment_id)
+		values(#{plan_id},
+		#{user_id}, #{comment}, #{created_at}, #{updated_at}, #{level},
 		<if test="!parent_comment_id">null</if>
 		<if test="parent_comment_id">#{parent_comment_id}</if>
 		);
 	</insert>
-	
+
 	<update id="deleteComment" parameterType="int">
-		update travel_plan_comments
+		update
+		travel_plan_comments
 		set comment="삭제된 메세지 입니다"
 		where id = #{id};
 	</update>
-	
+
 	<select id="getUserIdByParentCommentId" parameterType="int">
-		select user_id
+		select
+		user_id
 		from travel_plan_comments
 		where id=#{id}
 	</select>
 
-	<select id="getUserPlans" parameterType="int" resultType="TravelPlansDto">
+	<select id="getUserPlans" parameterType="int"
+		resultType="TravelPlansDto">
 		select *
 		from travel_plans
 		where user_id = #{user_id};
 	</select>
-	
-	<select id="getUserFavoritePlans" parameterType="int" resultType="TravelPlansDto">
+
+	<select id="getUserFavoritePlans" parameterType="int"
+		resultType="TravelPlansDto">
 		select tp.*
 		from travel_plans tp
 		join plans_favorites pf
-		on tp.id = pf.plan_id
+		on
+		tp.id = pf.plan_id
 		where pf.user_id = #{id};
 	</select>
-	
-	<select id="getUserFavoritePlanIds" parameterType="int" resultType="int">
+
+	<select id="getUserFavoritePlanIds" resultType="int">
 		select plan_id
 		from plans_favorites
-		where user_id = #{user_id};
+		where user_id = #{user_id}
+		and plan_id between
+		#{lowerBound} and #{upperBound};
 	</select>
-		
+
 	<insert id="addFavoritePlan">
 		insert into plans_favorites (plan_id, user_id)
 		values(#{plan_id}, #{user_id});
 	</insert>
-	
+
 	<delete id="deleteFavoritePlan">
 		delete from plans_favorites
-		where plan_id=#{plan_id} and user_id=#{user_id}
+		where plan_id=#{plan_id}
+		and user_id=#{user_id}
 	</delete>
-	
-	<select id="getUserLikedPlan" parameterType="map" resultType="int">
+
+	<select id="getUserLikedPlan" parameterType="map"
+		resultType="int">
 		select count(*)
 		from plans_favorites
-		where user_id=#{user_id} and plan_id=#{plan_id}
+		where user_id=#{user_id}
+		and plan_id=#{plan_id}
 	</select>
-	
+
 	<select id="getCommentLevelByParentId" parameterType="int">
-		select distinct level
+		select
+		distinct level
 		from travel_plan_comments
 		where id=#{parent_comment_id}
 	</select>
-	
+
 	<!-- view_cnt 증가 -->
 	<update id="incrementViewCount">
-		update travel_plans 
-		set view_cnt = view_cnt+1 
-		where id = #{id}
+		update travel_plans
+		set view_cnt = view_cnt+1
+		where id
+		= #{id}
 	</update>
-	
+
 	<select id="getTotalPlansPage">
 		select count(*)
 		from travel_plans;
 	</select>
-		
+
 </mapper>
 

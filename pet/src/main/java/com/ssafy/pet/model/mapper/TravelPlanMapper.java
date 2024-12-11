@@ -33,13 +33,13 @@ public interface TravelPlanMapper {
 	List<TravelPlansDto> selectWithLimit(Integer page);
 
 	// 오래된 순으로 게시글 조회
-	List<TravelPlansDto> getOldestPlans(@Param("page_start") int page_start, @Param("page_size") int page_size);
+	List<TravelPlansDto> getOldestPlans(@Param("page_start") int page_start, @Param("page_size") int page_size, @Param("user_id") int user_id);
 
 	// 최신순으로 게시글 조회
-	List<TravelPlansDto> getNewestPlans(@Param("page_start") int page_start, @Param("page_size") int page_size);
+	List<TravelPlansDto> getNewestPlans(@Param("page_start") int page_start, @Param("page_size") int page_size, @Param("user_id") int user_id);
 
 	// 가장 많이 조회 된 순으로 게시글 조회
-	List<TravelPlansDto> getPlansByMostViews(@Param("page_start") int page_start, @Param("page_size") int page_size);
+	List<TravelPlansDto> getPlansByMostViews(@Param("page_start") int page_start, @Param("page_size") int page_size, @Param("user_id") int user_id);
 
 	/////////////////// 댓글
 	// 게시글의 본 댓글만(대댓글 제외) 조회 - 시간순으로
@@ -66,7 +66,8 @@ public interface TravelPlanMapper {
 	List<TravelPlansDto> getUserFavoritePlans(int user_id);
 
 	// 유저가 좋아요한 게시글 아이디 조회
-	List<Integer> getUserFavoritePlanIds(int user_id);
+	List<Integer> getUserFavoritePlanIds(@Param("user_id") int user_id, @Param("lowerBound") int lowerBound,
+			@Param("upperBound") int upperBound);
 	/////////////////////////////////////////////////////
 
 	// 게시글 조회수 증가
@@ -88,8 +89,8 @@ public interface TravelPlanMapper {
 
 	// view_cnt 증가
 	int incrementViewCount(int id);
-	
+
 	int getUserIdByParentCommentId(int id);
-	
+
 	int getTotalPlansPage();
 }

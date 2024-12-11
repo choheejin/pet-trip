@@ -2,17 +2,14 @@ package com.ssafy.pet.model.service.travelplan;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ssafy.pet.config.PaginationConstants;
 import com.ssafy.pet.domain.TravelPlans;
 import com.ssafy.pet.dto.ProfileImageDto;
 import com.ssafy.pet.dto.TravelPlanCommentsDto;
@@ -182,22 +179,6 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public List<TravelPlansDto> getOldestPlans(int page_start, int page_size) {
-		return travelPlanMapper.getOldestPlans(page_start, page_size);
-	}
-
-	@Override
-	public List<TravelPlansDto> getNewestPlans(int page_start, int page_size) {
-		return travelPlanMapper.getNewestPlans(page_start, page_size);
-	}
-
-
-	@Override
-	public List<TravelPlansDto> getPlansByMostViews(int page_start, int page_size) {
-		return travelPlanMapper.getPlansByMostViews(page_start, page_size);
-	}
-
-	@Override
 	public List<TravelPlanCommentsDto> listParentComments(int plan_id) {
 		return travelPlanMapper.listParentComments(plan_id);
 	}
@@ -220,29 +201,31 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	public TravelPlansResponseDto getPlans(String userId, String sort, int page_start, int page_size) {		
 		TravelPlansResponseDto response = new TravelPlansResponseDto();
 		
-		TravelPlans plans = new TravelPlans(getPlansBySort(sort, page_start, page_size));		
-		List<Boolean> favoriteStatus =  plans.getFavoriteStatus(getUserFavoritePlanIds(userId));
+		int user_id = userId.isBlank() ? - 1: userMapper.findIdByUserId(userId);
+		
+		TravelPlans plans = new TravelPlans(getPlansBySort(sort, page_start, page_size, user_id));		
+		
 		int totalPage = plans.getTotalNum();
 		
 		response.setPlans(plans.getTravelPlansDtos());
-		response.setFavoritePlans(favoriteStatus);
+		response.setFavoritePlans(plans.getFavoriteStatus());
 		response.setTotal_pages(totalPage);
 		
 		return response;
 	}
 	
 	@Override
-	public List<TravelPlansDto> getPlansBySort(String sort, int page_start, int page_size) {
+	public List<TravelPlansDto> getPlansBySort(String sort, int page_start, int page_size, int user_id) {
 		switch(sort) {
 			//오래된 순
 			case "oldest":
-				return travelPlanMapper.getOldestPlans(page_start, page_size);
+				return travelPlanMapper.getOldestPlans(page_start, page_size, user_id);
 			//최신 순
 			case "newest":
-				return travelPlanMapper.getNewestPlans(page_start, page_size);
+				return travelPlanMapper.getNewestPlans(page_start, page_size, user_id);
 			//조회 순
 			case "views":
-				return travelPlanMapper.getPlansByMostViews(page_start, page_size);
+				return travelPlanMapper.getPlansByMostViews(page_start, page_size, user_id);
 			//좋아요 순
 			case "likes":
 				return attractionMapper.getPlanRanking(page_start, page_size);				
@@ -252,7 +235,7 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 	}
 
 	@Override
-	public List<Integer> getUserFavoritePlanIds(String userId){
+	public List<Integer> getUserFavoritePlanIds(String userId, int lowerBound, int upperBound){
 		
 		if(userId.isBlank()) {
 			return null;
@@ -260,29 +243,9 @@ public class TravelPlanServiceImpl implements TravelPlanService {
 		
 		int user_id = userMapper.findIdByUserId(userId);
 		
-		return travelPlanMapper.getUserFavoritePlanIds(user_id);
+		return travelPlanMapper.getUserFavoritePlanIds(user_id, lowerBound, upperBound);
 	}
 	
-	@Override
-	public boolean[] calculateFavoriteStatus(List<TravelPlansDto> plans, String userId) {
-		int user_id = userMapper.findIdByUserId(userId);
-		
-		List<Integer> plan_ids = travelPlanMapper.getUserFavoritePlanIds(user_id);
-		Set<Integer> favoritePlanSet = new HashSet<>(plan_ids);
-		
-		boolean[] favoritePlans = new boolean[PaginationConstants.PAGE_SIZE];
-		
-		for(int i = 0; i < plans.size(); i++)
-		{
-			if(favoritePlanSet.contains(plans.get(i).getId()))
-			{
-				favoritePlans[i] = true;
-			}
-		}
-		
-		return favoritePlans;
-	}
-
 	@Override
 	public int addFavoritePlan(String userId, int favorite_plan_id) {
 		int user_id = userMapper.findIdByUserId(userId);

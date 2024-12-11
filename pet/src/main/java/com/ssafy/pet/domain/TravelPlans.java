@@ -1,10 +1,7 @@
 package com.ssafy.pet.domain;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.ssafy.pet.dto.TravelPlansDto;
 
@@ -26,17 +23,15 @@ public class TravelPlans {
 	public int getTotalNum() {
 		return plans.size();
 	}
-
+		
 	// 좋아요 상태 반환하기
-	public List<Boolean> getFavoriteStatus(List<Integer> plan_ids) {
-		if (plan_ids == null) {
-			return new ArrayList<>(Collections.nCopies(getTotalNum(), false));
-		}
-
-		Set<Integer> favoritePlanSet = new HashSet<>(plan_ids);
-
+	public List<Boolean> getFavoriteStatus() {
+		System.out.println(plans);
 		return plans.stream()
-				.map(p -> favoritePlanSet.contains(p.getId()))
+				.map(p -> {
+					System.out.println(p.getLike_user_id());
+					return p.getLike_user_id() != -1;
+				})
 				.toList();
 	}
 }
