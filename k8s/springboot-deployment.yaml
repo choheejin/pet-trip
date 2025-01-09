@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pettrip-springboot-deployemnt
+  namespace: production
+spec:
+  replicas: 3
+  selector: 
+   matchLabels:
+    app: pettrip-springboot
+  template:
+    metadata:
+      name: pettrip-springboot-pod
+      labels:
+        app: pettrip-springboot
+    spec:
+      containers:
+        - name: springboot
+          image: sha256:b4c6ecd2c358fdd78768d9571d165d9eb2772d2c4a21b0c7686785123ba01735
+          ports:
+          - containerPort: 8080
+---
+
+apiVersion: v1
+kind: Service
+metadata: 
+ name: pettrip-springboot-clusterip
+ namespace: production
+spec:
+  ports:
+    - name: web-port
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: webserver
+  type: ClusterIP
+
